@@ -1,0 +1,31 @@
+{
+  "artifact_status": {
+    "artifact_retention": "complete",
+    "scenario_validation": "pass"
+  },
+  "artifacts": {
+    "binding_metadata_json": "/tmp/iamscope-benchmark-env23-20260506T020925Z/collect/binding_metadata.json",
+    "expected_findings_json": "/tmp/iamscope-benchmark-env23-20260506T020925Z/expected_findings.json",
+    "findings_json": "/tmp/iamscope-benchmark-env23-20260506T020925Z/collect/findings.json",
+    "run_log": "/tmp/iamscope-benchmark-env23-20260506T020925Z/run.log",
+    "scenario_json": "/tmp/iamscope-benchmark-env23-20260506T020925Z/collect/scenario.json",
+    "scenario_validate_txt": "/tmp/iamscope-benchmark-env23-20260506T020925Z/scenario_validate.txt"
+  },
+  "authority": "live_aws",
+  "benchmark_date": "2026-05-06",
+  "case_id": "env23_cross_account_trust_scoped_away_nonvalidated",
+  "confidence": "high",
+  "context": {
+    "source_provider_id": "arn:aws:iam::377114445031:user/iamscope-test/env23-alice",
+    "target_provider_id": "arn:aws:iam::737923406074:role/iamscope-test/env23-cross-account-admin"
+  },
+  "ended_at": "2026-05-06T02:11:05.169129Z",
+  "environment": "acceptance/env23_env22_trust_scoped_away",
+  "git_sha": "1f3288251b7324e22e101eb1c1dc84404734c344",
+  "manifest_type": "benchmark_run_manifest",
+  "run_id": "iamscope-benchmark-env23-20260506T020925Z",
+  "schema_version": "0.1",
+  "started_at": "2026-05-06T02:09:25Z",
+  "tool_claims": [],
+  "tool_name": "iamscope"
+}

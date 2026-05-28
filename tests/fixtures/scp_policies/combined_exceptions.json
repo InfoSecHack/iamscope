@@ -1,0 +1,19 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DenyCombinedExceptions",
+      "Effect": "Deny",
+      "Action": "sts:AssumeRole",
+      "Resource": "*",
+      "Condition": {
+        "ArnNotLike": {
+          "aws:PrincipalArn": "arn:aws:iam::*:role/BreakGlass*"
+        },
+        "StringNotEquals": {
+          "aws:PrincipalOrgID": "o-myorg123"
+        }
+      }
+    }
+  ]
+}

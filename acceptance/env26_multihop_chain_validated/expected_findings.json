@@ -1,0 +1,30 @@
+{
+  "environment": "env26_multihop_chain_validated",
+  "expected_behavior": {
+    "scenario_validation": "pass",
+    "benchmark_level": "finding",
+    "finding_level_claim_required": true
+  },
+  "benchmark_contract": {
+    "required_scenario_edges": {
+      "permission_edge_type": "sts:AssumeRole_permission",
+      "trust_edge_type": "sts:AssumeRole_trust",
+      "min_count_each": 1,
+      "has_conditions": false,
+      "is_wildcard_resource": false,
+      "is_wildcard_principal": false
+    },
+    "assume_role_chain": {
+      "validated_min": 1,
+      "blocked": 0,
+      "inconclusive": 0,
+      "validated_with_blockers": 0
+    },
+    "admin_reachability": {
+      "validated_min": 1,
+      "blocked": 0,
+      "inconclusive": 0,
+      "validated_with_blockers": 0
+    }
+  }
+}

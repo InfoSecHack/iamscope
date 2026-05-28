@@ -1,0 +1,40 @@
+{
+  "assertion_results": [
+    {
+      "actual_value": 1,
+      "assertion_id": "blocked_group_escalation_once",
+      "expected_value": 1,
+      "op": "eq",
+      "passed": true,
+      "type": "finding_count"
+    },
+    {
+      "actual_value": 0,
+      "assertion_id": "validated_group_escalation_absent",
+      "expected_value": 0,
+      "op": "eq",
+      "passed": true,
+      "type": "finding_count"
+    },
+    {
+      "actual_value": 1,
+      "assertion_id": "identity_deny_blocker_present",
+      "expected_value": 1,
+      "op": "gte",
+      "passed": true,
+      "type": "blocker_present"
+    },
+    {
+      "actual_value": 1,
+      "assertion_id": "identity_deny_check_failed",
+      "expected_value": 1,
+      "op": "eq",
+      "passed": true,
+      "type": "check_state_present"
+    }
+  ],
+  "case_id": "env03_identity_deny_group_escalation",
+  "defects": [],
+  "passed": true,
+  "run_id": "iamscope-benchmark-env03-20260424T025701Z"
+}

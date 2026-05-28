@@ -1,0 +1,117 @@
+{
+  "manifest_type": "benchmark_case_manifest",
+  "schema_version": "0.1",
+  "case_id": "deg05_malformed_policy_parse",
+  "family": "degradation_malformed_policy_parse",
+  "tier": "tier0_synthetic_degradation",
+  "purpose": "Prove an Env06-like AssumeRole path is not promoted when caller-side permission evidence is malformed or only partially parsed.",
+  "claim_surface": [
+    "The benchmark scorer can require an explicit malformed policy parse marker.",
+    "Malformed caller-side policy evidence must not be treated as a clean sts:AssumeRole permission witness.",
+    "A false validated admin_reachability finding for this degraded path blocks promotion."
+  ],
+  "benchmark_proves": [
+    "The synthetic scenario contains the expected clean sts:AssumeRole trust edge for Alice to the admin role.",
+    "The synthetic scenario contains an explicit malformed policy parse marker.",
+    "The synthetic scenario does not contain a clean sts:AssumeRole permission edge for the malformed policy.",
+    "The synthetic findings contain zero validated admin_reachability findings for the degraded target path."
+  ],
+  "benchmark_does_not_prove": [
+    "It does not prove live AWS collection behavior.",
+    "It does not prove IAMScope parser behavior beyond the frozen artifact scoring contract.",
+    "It does not prove every malformed policy parse shape."
+  ],
+  "unknowns_remaining": [
+    "Whether future parse-error evidence should become a first-class inconclusive finding remains outside DEG05.",
+    "How partial parse recovery should be represented across all policy sources remains future work."
+  ],
+  "environment": {
+    "acceptance_env": "synthetic/deg05_malformed_policy_parse",
+    "benchmark_family": "synthetic_degradation",
+    "notes": "Synthetic evaluated artifact fixture only. No live AWS resources."
+  },
+  "ground_truth": {
+    "reachable": false,
+    "admin_equivalent": true,
+    "reason": "The target role trusts Alice and is admin-equivalent, but Alice's caller-side policy evidence is malformed and does not produce a clean sts:AssumeRole permission edge."
+  },
+  "honesty_ground_truth": {
+    "directly_proven_if_pass": [
+      "The degraded fixture contains the clean trust edge.",
+      "The degraded fixture contains explicit malformed policy parse evidence.",
+      "The benchmark requires a clean AssumeRole permission witness before treating the path as evidence-sufficient.",
+      "The degraded fixture is not falsely scored as validated admin reachability."
+    ],
+    "strongly_supported_if_pass": [
+      "The benchmark gate catches malformed permission evidence instead of silently promoting a clean-looking admin path."
+    ],
+    "only_implied_even_if_pass": [
+      "Broader malformed-policy behavior outside this exact synthetic fixture remains only implied."
+    ]
+  },
+  "semantic_assertions": [
+    {
+      "assertion_id": "malformed_policy_parse_marker_present",
+      "type": "scenario_constraint_count",
+      "constraint_type": "POLICY_PARSE_ERROR",
+      "condition_key_contains": "deg05",
+      "op": "gte",
+      "expected_value": 1,
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "synthetic"
+    },
+    {
+      "assertion_id": "clean_assumerole_trust_edge_present",
+      "type": "scenario_edge_count",
+      "edge_type": "sts:AssumeRole_trust",
+      "op": "gte",
+      "expected_value": 1,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "synthetic"
+    },
+    {
+      "assertion_id": "clean_assumerole_permission_edge_present",
+      "type": "scenario_edge_count",
+      "edge_type": "sts:AssumeRole_permission",
+      "feature_has_conditions": false,
+      "feature_is_wildcard_resource": false,
+      "op": "gte",
+      "expected_value": 1,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "synthetic"
+    },
+    {
+      "assertion_id": "validated_admin_absent",
+      "type": "finding_count",
+      "pattern_id": "admin_reachability",
+      "verdict": "validated",
+      "op": "eq",
+      "expected_value": 0,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "false_admin_claim",
+      "confidence": "high",
+      "authority": "synthetic"
+    }
+  ],
+  "artifacts_required": [
+    "scenario_json",
+    "findings_json"
+  ],
+  "scoring_expectations": {
+    "required_scenario_validation": "pass",
+    "blocking_defect_classes": [
+      "artifact_insufficient",
+      "false_admin_claim",
+      "semantic_mismatch"
+    ],
+    "human_review_required_if_any_defects": true
+  }
+}

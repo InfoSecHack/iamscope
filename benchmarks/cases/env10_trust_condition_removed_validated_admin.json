@@ -1,0 +1,160 @@
+{
+  "manifest_type": "benchmark_case_manifest",
+  "schema_version": "0.1",
+  "case_id": "env10_trust_condition_removed_validated_admin",
+  "family": "trust_condition_mutation",
+  "tier": "tier1_live_aws",
+  "purpose": "Prove IAMScope emits validated admin reachability once the Env08 MFA trust condition is removed.",
+  "claim_surface": [
+    "IAMScope can distinguish the Env08 trust-conditioned guardrail case from a closely related condition-removed positive case.",
+    "IAMScope can emit validated admin_reachability for the mutated Env10 path without blocked or inconclusive admin findings."
+  ],
+  "benchmark_proves": [
+    "For the Env10 alice->admin path, scenario.json contains the expected sts:AssumeRole permission edge.",
+    "For the Env10 alice->admin path, scenario.json contains the expected sts:AssumeRole trust edge.",
+    "For that path, IAMScope emitted at least one validated admin_reachability finding.",
+    "For that path, IAMScope emitted zero blocked admin_reachability findings.",
+    "For that path, IAMScope emitted zero inconclusive admin_reachability findings.",
+    "For that path, scenario.json does not bind aws:MultiFactorAuthPresent TRUST_CONDITION evidence to the trust edge."
+  ],
+  "benchmark_does_not_prove": [
+    "It does not yet machine-score the pairwise delta versus Env08.",
+    "It does not prove broader trust-condition mutation coverage."
+  ],
+  "unknowns_remaining": [
+    "How stable the same positive result is across richer trust-policy shapes remains unknown here.",
+    "Whether every trust-condition removal should validate remains unproven here."
+  ],
+  "environment": {
+    "acceptance_env": "acceptance/env10_env08_trust_condition_removed",
+    "benchmark_family": "controlled_live_aws",
+    "notes": "Mutation of Env08 with only the MFA trust condition removed."
+  },
+  "ground_truth": {
+    "reachable": true,
+    "admin_equivalent": true,
+    "reason": "Alice can assume env10-admin, env10-admin trusts Alice without the Env08 MFA condition, and env10-admin has AdministratorAccess."
+  },
+  "honesty_ground_truth": {
+    "directly_proven_if_pass": [
+      "The exact Env10 alice->admin permission edge exists structurally.",
+      "The exact Env10 alice->admin trust edge exists structurally.",
+      "The exact Env10 alice->admin path is emitted as validated admin reachability.",
+      "The exact Env10 alice->admin path is not emitted as blocked or inconclusive.",
+      "The Env10 trust edge is not bound to aws:MultiFactorAuthPresent TRUST_CONDITION evidence."
+    ],
+    "strongly_supported_if_pass": [
+      "IAMScope responds meaningfully to this narrow trust-condition removal in a controlled real-AWS case."
+    ],
+    "only_implied_even_if_pass": [
+      "Broader trust-condition mutation behavior outside this exact case remains only implied."
+    ]
+  },
+  "semantic_assertions": [
+    {
+      "assertion_id": "assumerole_permission_edge_present",
+      "type": "scenario_edge_count",
+      "edge_type": "sts:AssumeRole_permission",
+      "op": "gte",
+      "expected_value": 1,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "assumerole_trust_edge_present",
+      "type": "scenario_edge_count",
+      "edge_type": "sts:AssumeRole_trust",
+      "op": "gte",
+      "expected_value": 1,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "trust_condition_absent",
+      "type": "scenario_constraint_count",
+      "constraint_type": "TRUST_CONDITION",
+      "condition_key_contains": "aws:MultiFactorAuthPresent",
+      "op": "eq",
+      "expected_value": 0,
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "trust_edge_not_bound_to_trust_condition",
+      "type": "scenario_edge_constraint_count",
+      "edge_type": "sts:AssumeRole_trust",
+      "constraint_type": "TRUST_CONDITION",
+      "condition_key_contains": "aws:MultiFactorAuthPresent",
+      "op": "eq",
+      "expected_value": 0,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "validated_admin_present",
+      "type": "finding_count",
+      "pattern_id": "admin_reachability",
+      "verdict": "validated",
+      "op": "gte",
+      "expected_value": 1,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "dishonest_degradation",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "blocked_admin_absent",
+      "type": "finding_count",
+      "pattern_id": "admin_reachability",
+      "verdict": "blocked",
+      "op": "eq",
+      "expected_value": 0,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "dishonest_degradation",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "inconclusive_admin_absent",
+      "type": "finding_count",
+      "pattern_id": "admin_reachability",
+      "verdict": "inconclusive",
+      "op": "eq",
+      "expected_value": 0,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "dishonest_degradation",
+      "confidence": "high",
+      "authority": "live_aws"
+    }
+  ],
+  "artifacts_required": [
+    "scenario_json",
+    "findings_json",
+    "binding_metadata_json",
+    "run_log",
+    "scenario_validate_txt"
+  ],
+  "scoring_expectations": {
+    "required_scenario_validation": "pass",
+    "blocking_defect_classes": [
+      "artifact_insufficient",
+      "dishonest_degradation",
+      "semantic_mismatch",
+      "false_admin_claim"
+    ],
+    "human_review_required_if_any_defects": true
+  }
+}

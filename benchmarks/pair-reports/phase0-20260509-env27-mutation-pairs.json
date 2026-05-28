@@ -1,0 +1,1644 @@
+{
+  "complete_pair_count": 10,
+  "pair_count": 10,
+  "pair_delta_pass_count": 10,
+  "pairs": [
+    {
+      "control_family": "identity_deny",
+      "control_present_case_id": "env03_identity_deny_group_escalation",
+      "control_removed_or_mutated_case_id": "env16_identity_deny_removed_validated_group_escalation",
+      "evidence_boundary": "Only compares the Env03/Env16 identity-Deny group-escalation path; it does not prove broad identity-Deny correctness.",
+      "expected_control_present_verdict": "blocked iam_group_membership_escalation",
+      "expected_mutation_verdict": "validated iam_group_membership_escalation",
+      "missing_cases": [],
+      "observed_control_present_summary": {
+        "artifact_sufficient": true,
+        "assertion_results": [
+          {
+            "actual_value": 1,
+            "assertion_id": "blocked_group_escalation_once",
+            "expected_value": 1,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "validated_group_escalation_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "identity_deny_blocker_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "blocker_present"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "identity_deny_check_failed",
+            "expected_value": 1,
+            "op": "eq",
+            "passed": true,
+            "type": "check_state_present"
+          }
+        ],
+        "assertions_passed": true,
+        "case_id": "env03_identity_deny_group_escalation",
+        "defect_classes": [],
+        "promotion_blocked": false,
+        "run_id": "iamscope-benchmark-env03-20260424T025701Z",
+        "score_passed": true,
+        "status": "present"
+      },
+      "observed_mutation_summary": {
+        "artifact_sufficient": true,
+        "assertion_results": [
+          {
+            "actual_value": 1,
+            "assertion_id": "validated_group_escalation_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "blocked_group_escalation_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "inconclusive_group_escalation_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "identity_deny_blocker_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "blocker_present"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "identity_deny_check_passed",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "check_state_present"
+          }
+        ],
+        "assertions_passed": true,
+        "case_id": "env16_identity_deny_removed_validated_group_escalation",
+        "defect_classes": [],
+        "promotion_blocked": false,
+        "run_id": "iamscope-benchmark-env16-24940398230",
+        "score_passed": true,
+        "status": "present"
+      },
+      "pair_complete": true,
+      "pair_delta_passed": true,
+      "pair_id": "env03_env16_identity_deny_removed"
+    },
+    {
+      "control_family": "permission_boundary",
+      "control_present_case_id": "env05_permission_boundary_blocked_chain",
+      "control_removed_or_mutated_case_id": "env09_boundary_removed_validated_admin",
+      "evidence_boundary": "Only compares the Env05/Env09 permission-boundary assume-role/admin path; it does not prove broad boundary handling.",
+      "expected_control_present_verdict": "blocked admin_reachability and blocked assume_role_chain",
+      "expected_mutation_verdict": "validated admin_reachability",
+      "missing_cases": [],
+      "observed_control_present_summary": {
+        "artifact_sufficient": true,
+        "assertion_results": [
+          {
+            "actual_value": 1,
+            "assertion_id": "blocked_chain_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "blocked_admin_reachability_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "validated_chain_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "validated_admin_claim_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          }
+        ],
+        "assertions_passed": true,
+        "case_id": "env05_permission_boundary_blocked_chain",
+        "defect_classes": [],
+        "promotion_blocked": false,
+        "run_id": "iamscope-benchmark-env05-20260424T203548Z",
+        "score_passed": true,
+        "status": "present"
+      },
+      "observed_mutation_summary": {
+        "artifact_sufficient": true,
+        "assertion_results": [
+          {
+            "actual_value": 1,
+            "assertion_id": "validated_admin_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "blocked_admin_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "inconclusive_admin_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          }
+        ],
+        "assertions_passed": true,
+        "case_id": "env09_boundary_removed_validated_admin",
+        "defect_classes": [],
+        "promotion_blocked": false,
+        "run_id": "iamscope-benchmark-env09-20260425T012013Z",
+        "score_passed": true,
+        "status": "present"
+      },
+      "pair_complete": true,
+      "pair_delta_passed": true,
+      "pair_id": "env05_env09_permission_boundary_removed"
+    },
+    {
+      "control_family": "trust_condition",
+      "control_present_case_id": "env08_trust_condition_blocked_admin",
+      "control_removed_or_mutated_case_id": "env10_trust_condition_removed_validated_admin",
+      "evidence_boundary": "Only compares the Env08/Env10 trust-condition path; it does not prove every trust-condition shape.",
+      "expected_control_present_verdict": "non-validated admin_reachability",
+      "expected_mutation_verdict": "validated admin_reachability",
+      "missing_cases": [],
+      "observed_control_present_summary": {
+        "artifact_sufficient": true,
+        "assertion_results": [
+          {
+            "actual_value": 1,
+            "assertion_id": "assumerole_permission_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "assumerole_trust_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "trust_condition_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_constraint_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "trust_edge_bound_to_trust_condition",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_constraint_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "validated_admin_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "inconclusive_admin_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "finding_count"
+          }
+        ],
+        "assertions_passed": true,
+        "case_id": "env08_trust_condition_blocked_admin",
+        "defect_classes": [],
+        "promotion_blocked": false,
+        "run_id": "iamscope-benchmark-env08-20260425T002835Z",
+        "score_passed": true,
+        "status": "present"
+      },
+      "observed_mutation_summary": {
+        "artifact_sufficient": true,
+        "assertion_results": [
+          {
+            "actual_value": 1,
+            "assertion_id": "assumerole_permission_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "assumerole_trust_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "trust_condition_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "scenario_constraint_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "trust_edge_not_bound_to_trust_condition",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "scenario_edge_constraint_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "validated_admin_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "blocked_admin_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "inconclusive_admin_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          }
+        ],
+        "assertions_passed": true,
+        "case_id": "env10_trust_condition_removed_validated_admin",
+        "defect_classes": [],
+        "promotion_blocked": false,
+        "run_id": "iamscope-benchmark-env10-20260425T015458Z",
+        "score_passed": true,
+        "status": "present"
+      },
+      "pair_complete": true,
+      "pair_delta_passed": true,
+      "pair_id": "env08_env10_trust_condition_removed"
+    },
+    {
+      "control_family": "permission_condition",
+      "control_present_case_id": "env14_permission_condition_blocked_admin",
+      "control_removed_or_mutated_case_id": "env15_permission_condition_removed_validated_admin",
+      "evidence_boundary": "Only compares the Env14/Env15 permission-side MFA-condition path; it does not prove every permission-condition shape.",
+      "expected_control_present_verdict": "non-validated admin_reachability",
+      "expected_mutation_verdict": "validated admin_reachability",
+      "missing_cases": [],
+      "observed_control_present_summary": {
+        "artifact_sufficient": true,
+        "assertion_results": [
+          {
+            "actual_value": 1,
+            "assertion_id": "conditioned_assumerole_permission_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "clean_assumerole_trust_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "validated_admin_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "inconclusive_admin_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "finding_count"
+          }
+        ],
+        "assertions_passed": true,
+        "case_id": "env14_permission_condition_blocked_admin",
+        "defect_classes": [],
+        "promotion_blocked": false,
+        "run_id": "iamscope-benchmark-env14-24940398230",
+        "score_passed": true,
+        "status": "present"
+      },
+      "observed_mutation_summary": {
+        "artifact_sufficient": true,
+        "assertion_results": [
+          {
+            "actual_value": 1,
+            "assertion_id": "unconditioned_assumerole_permission_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "mfa_conditioned_permission_edge_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "clean_assumerole_trust_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "validated_admin_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "blocked_admin_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "inconclusive_admin_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          }
+        ],
+        "assertions_passed": true,
+        "case_id": "env15_permission_condition_removed_validated_admin",
+        "defect_classes": [],
+        "promotion_blocked": false,
+        "run_id": "iamscope-benchmark-env15-24940398230",
+        "score_passed": true,
+        "status": "present"
+      },
+      "pair_complete": true,
+      "pair_delta_passed": true,
+      "pair_id": "env14_env15_permission_condition_removed"
+    },
+    {
+      "control_family": "scp",
+      "control_present_case_id": "env13_complete_scp_blocked_assumerole",
+      "control_removed_or_mutated_case_id": "env17_scp_removed_validated_admin",
+      "evidence_boundary": "Only compares the Env13/Env17 complete-SCP target path; it does not prove every SCP attachment or condition form.",
+      "expected_control_present_verdict": "blocked admin_reachability",
+      "expected_mutation_verdict": "validated admin_reachability",
+      "missing_cases": [],
+      "observed_control_present_summary": {
+        "artifact_sufficient": true,
+        "assertion_results": [
+          {
+            "actual_value": 1,
+            "assertion_id": "assumerole_permission_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "assumerole_trust_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 7,
+            "assertion_id": "scp_deny_assumerole_constraint_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_constraint_count"
+          },
+          {
+            "actual_value": 4,
+            "assertion_id": "trust_edge_bound_to_scp",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_constraint_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "blocked_admin_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "scp_blocker_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "blocker_present"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "validated_admin_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "inconclusive_admin_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "validated_assume_role_chain_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          }
+        ],
+        "assertions_passed": true,
+        "case_id": "env13_complete_scp_blocked_assumerole",
+        "defect_classes": [],
+        "promotion_blocked": false,
+        "run_id": "iamscope-benchmark-env13-20260425T035707Z",
+        "score_passed": true,
+        "status": "present"
+      },
+      "observed_mutation_summary": {
+        "artifact_sufficient": true,
+        "assertion_results": [
+          {
+            "actual_value": 1,
+            "assertion_id": "assumerole_permission_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "assumerole_trust_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "trust_edge_not_bound_to_scp",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "scenario_edge_constraint_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "validated_admin_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "blocked_admin_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "inconclusive_admin_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "scp_blocker_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "blocker_present"
+          }
+        ],
+        "assertions_passed": true,
+        "case_id": "env17_scp_removed_validated_admin",
+        "defect_classes": [],
+        "promotion_blocked": false,
+        "run_id": "iamscope-benchmark-env17-24940398230",
+        "score_passed": true,
+        "status": "present"
+      },
+      "pair_complete": true,
+      "pair_delta_passed": true,
+      "pair_id": "env13_env17_scp_removed"
+    },
+    {
+      "control_family": "lambda_passrole_passedtoservice",
+      "control_present_case_id": "env18_lambda_passrole_validated",
+      "control_removed_or_mutated_case_id": "env19_passedtoservice_scoped_away_nonvalidated",
+      "evidence_boundary": "Only compares the Env18/Env19 Lambda PassRole path; it does not prove every iam:PassedToService operator or Lambda PassRole shape.",
+      "expected_control_present_verdict": "validated passrole_lambda",
+      "expected_mutation_verdict": "precondition_only passrole_lambda",
+      "missing_cases": [],
+      "observed_control_present_summary": {
+        "artifact_sufficient": true,
+        "assertion_results": [
+          {
+            "actual_value": 1,
+            "assertion_id": "lambda_create_permission_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "passrole_permission_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "lambda_service_trust_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "validated_passrole_lambda_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "blocked_passrole_lambda_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "inconclusive_passrole_lambda_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "precondition_only_passrole_lambda_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "source_has_lambda_create_function_check_passes",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "check_state_present"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "source_has_passrole_to_target_check_passes",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "check_state_present"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "target_trusts_lambda_service_check_passes",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "check_state_present"
+          }
+        ],
+        "assertions_passed": true,
+        "case_id": "env18_lambda_passrole_validated",
+        "defect_classes": [],
+        "promotion_blocked": false,
+        "run_id": "iamscope-benchmark-env18-24940398230",
+        "score_passed": true,
+        "status": "present"
+      },
+      "observed_mutation_summary": {
+        "artifact_sufficient": true,
+        "assertion_results": [
+          {
+            "actual_value": 1,
+            "assertion_id": "lambda_create_permission_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "passrole_permission_edge_conditioned_to_ec2_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "lambda_service_trust_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "validated_passrole_lambda_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "precondition_only_passrole_lambda_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "blocked_passrole_lambda_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "inconclusive_passrole_lambda_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "passed_to_service_blocker_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "blocker_present"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "passed_to_service_check_fails",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "check_state_present"
+          }
+        ],
+        "assertions_passed": true,
+        "case_id": "env19_passedtoservice_scoped_away_nonvalidated",
+        "defect_classes": [],
+        "promotion_blocked": false,
+        "run_id": "iamscope-benchmark-env19-24940398230",
+        "score_passed": true,
+        "status": "present"
+      },
+      "pair_complete": true,
+      "pair_delta_passed": true,
+      "pair_id": "env18_env19_lambda_passedtoservice_scoped_away"
+    },
+    {
+      "control_family": "ecs_passrole_passedtoservice",
+      "control_present_case_id": "env20_ecs_passrole_validated",
+      "control_removed_or_mutated_case_id": "env21_ecs_passedtoservice_scoped_away_nonvalidated",
+      "evidence_boundary": "Only compares the Env20/Env21 ECS PassRole path; it does not prove every iam:PassedToService operator or ECS PassRole shape.",
+      "expected_control_present_verdict": "validated passrole_ecs",
+      "expected_mutation_verdict": "precondition_only passrole_ecs",
+      "missing_cases": [],
+      "observed_control_present_summary": {
+        "artifact_sufficient": true,
+        "assertion_results": [
+          {
+            "actual_value": 1,
+            "assertion_id": "ecs_register_permission_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "ecs_run_permission_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "passrole_permission_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "ecs_task_service_trust_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "validated_passrole_ecs_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "blocked_passrole_ecs_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "inconclusive_passrole_ecs_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "precondition_only_passrole_ecs_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "source_has_ecs_create_and_run_check_passes",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "check_state_present"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "source_has_passrole_to_target_check_passes",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "check_state_present"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "target_trusts_ecs_tasks_service_check_passes",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "check_state_present"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "passrole_condition_scoped_to_ecs_or_absent_check_passes",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "check_state_present"
+          }
+        ],
+        "assertions_passed": true,
+        "case_id": "env20_ecs_passrole_validated",
+        "defect_classes": [],
+        "promotion_blocked": false,
+        "run_id": "iamscope-benchmark-env20-24940398230",
+        "score_passed": true,
+        "status": "present"
+      },
+      "observed_mutation_summary": {
+        "artifact_sufficient": true,
+        "assertion_results": [
+          {
+            "actual_value": 1,
+            "assertion_id": "ecs_register_permission_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "ecs_run_permission_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "passrole_permission_edge_conditioned_to_ec2_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "ecs_task_service_trust_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "validated_passrole_ecs_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "precondition_only_passrole_ecs_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "blocked_passrole_ecs_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "inconclusive_passrole_ecs_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "passed_to_service_blocker_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "blocker_present"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "passed_to_service_check_fails",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "check_state_present"
+          }
+        ],
+        "assertions_passed": true,
+        "case_id": "env21_ecs_passedtoservice_scoped_away_nonvalidated",
+        "defect_classes": [],
+        "promotion_blocked": false,
+        "run_id": "iamscope-benchmark-env21-24940398230",
+        "score_passed": true,
+        "status": "present"
+      },
+      "pair_complete": true,
+      "pair_delta_passed": true,
+      "pair_id": "env20_env21_ecs_passedtoservice_scoped_away"
+    },
+    {
+      "control_family": "cross_account_trust",
+      "control_present_case_id": "env22_cross_account_validated_admin",
+      "control_removed_or_mutated_case_id": "env23_cross_account_trust_scoped_away_nonvalidated",
+      "evidence_boundary": "Only compares the Env22/Env23 cross-account AssumeRole path; it does not prove every cross-account trust principal shape.",
+      "expected_control_present_verdict": "validated admin_reachability and validated cross_account_trust",
+      "expected_mutation_verdict": "non-validated admin_reachability and non-validated cross_account_trust",
+      "missing_cases": [],
+      "observed_control_present_summary": {
+        "artifact_sufficient": true,
+        "assertion_results": [
+          {
+            "actual_value": 1,
+            "assertion_id": "assume_role_permission_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "assume_role_trust_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "validated_admin_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "blocked_admin_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "inconclusive_admin_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "validated_admin_has_no_scp_blocker",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "blocker_present"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "validated_admin_has_no_permission_boundary_blocker",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "blocker_present"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "validated_cross_account_trust_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "blocked_cross_account_trust_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "inconclusive_cross_account_trust_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          }
+        ],
+        "assertions_passed": true,
+        "case_id": "env22_cross_account_validated_admin",
+        "defect_classes": [],
+        "promotion_blocked": false,
+        "run_id": "iamscope-benchmark-env22-20260505T210729Z",
+        "score_passed": true,
+        "status": "present"
+      },
+      "observed_mutation_summary": {
+        "artifact_sufficient": true,
+        "assertion_results": [
+          {
+            "actual_value": 1,
+            "assertion_id": "assume_role_permission_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "matching_assume_role_trust_edge_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "validated_admin_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "validated_cross_account_trust_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          }
+        ],
+        "assertions_passed": true,
+        "case_id": "env23_cross_account_trust_scoped_away_nonvalidated",
+        "defect_classes": [],
+        "promotion_blocked": false,
+        "run_id": "iamscope-benchmark-env23-20260506T020925Z",
+        "score_passed": true,
+        "status": "present"
+      },
+      "pair_complete": true,
+      "pair_delta_passed": true,
+      "pair_id": "env22_env23_cross_account_trust_scoped_away"
+    },
+    {
+      "control_family": "s3_resource_policy_allow",
+      "control_present_case_id": "env24_s3_resource_policy_allow",
+      "control_removed_or_mutated_case_id": "env25_s3_resource_policy_allow_scoped_away_nonvalidated",
+      "evidence_boundary": "Only compares the Env24/Env25 S3 resource-policy Allow scenario-edge path; it does not prove finding-level resource-policy reachability or generic resource-policy Deny support.",
+      "expected_control_present_verdict": "scenario-edge resource-policy Allow edge present for reader",
+      "expected_mutation_verdict": "reader resource-policy Allow edge absent; decoy resource-policy Allow edge present",
+      "missing_cases": [],
+      "observed_control_present_summary": {
+        "artifact_sufficient": true,
+        "assertion_results": [
+          {
+            "actual_value": 1,
+            "assertion_id": "reader_node_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_node_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "bucket_node_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_node_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "s3_getobject_resource_policy_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "identity_s3_getobject_permission_edge_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "resource_policy_condition_constraint_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "scenario_constraint_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "resource_policy_deny_constraint_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "scenario_constraint_count"
+          }
+        ],
+        "assertions_passed": true,
+        "case_id": "env24_s3_resource_policy_allow",
+        "defect_classes": [],
+        "promotion_blocked": false,
+        "run_id": "iamscope-benchmark-env24-20260508T151202Z",
+        "score_passed": true,
+        "status": "present"
+      },
+      "observed_mutation_summary": {
+        "artifact_sufficient": true,
+        "assertion_results": [
+          {
+            "actual_value": 1,
+            "assertion_id": "reader_node_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_node_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "decoy_node_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_node_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "bucket_node_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_node_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "decoy_s3_getobject_resource_policy_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "reader_s3_getobject_resource_policy_edge_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "reader_identity_s3_getobject_permission_edge_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "resource_policy_condition_constraint_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "scenario_constraint_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "resource_policy_deny_constraint_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "scenario_constraint_count"
+          }
+        ],
+        "assertions_passed": true,
+        "case_id": "env25_s3_resource_policy_allow_scoped_away_nonvalidated",
+        "defect_classes": [],
+        "promotion_blocked": false,
+        "run_id": "iamscope-benchmark-env25-20260508T210637Z",
+        "score_passed": true,
+        "status": "present"
+      },
+      "pair_complete": true,
+      "pair_delta_passed": true,
+      "pair_id": "env24_env25_s3_resource_policy_allow_scoped_away"
+    },
+    {
+      "control_family": "same_account_multihop_trust",
+      "control_present_case_id": "env26_multihop_chain_validated_admin",
+      "control_removed_or_mutated_case_id": "env27_multihop_trust_scoped_away_nonvalidated",
+      "evidence_boundary": "Only compares the Env26/Env27 controlled same-account multihop AssumeRole path; it does not prove arbitrary enterprise graph correctness or broader multihop-chain behavior.",
+      "expected_control_present_verdict": "validated assume_role_chain and validated admin_reachability",
+      "expected_mutation_verdict": "non-validated assume_role_chain and non-validated admin_reachability",
+      "missing_cases": [],
+      "observed_control_present_summary": {
+        "artifact_sufficient": true,
+        "assertion_results": [
+          {
+            "actual_value": 1,
+            "assertion_id": "alice_node_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_node_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "hop1_node_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_node_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "hop2_node_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_node_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "admin_node_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_node_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "alice_to_hop1_permission_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "alice_to_hop1_trust_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "hop1_to_hop2_permission_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "hop1_to_hop2_trust_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "hop2_to_admin_permission_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "hop2_to_admin_trust_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "validated_assume_role_chain_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "blocked_assume_role_chain_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "inconclusive_assume_role_chain_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "validated_admin_reachability_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "blocked_admin_reachability_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "inconclusive_admin_reachability_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "validated_assume_role_chain_has_no_scp_blocker",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "blocker_present"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "validated_assume_role_chain_has_no_boundary_blocker",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "blocker_present"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "validated_assume_role_chain_has_no_identity_deny_blocker",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "blocker_present"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "validated_admin_reachability_has_no_scp_blocker",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "blocker_present"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "validated_admin_reachability_has_no_boundary_blocker",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "blocker_present"
+          }
+        ],
+        "assertions_passed": true,
+        "case_id": "env26_multihop_chain_validated_admin",
+        "defect_classes": [],
+        "promotion_blocked": false,
+        "run_id": "iamscope-benchmark-env26-20260509T012216Z",
+        "score_passed": true,
+        "status": "present"
+      },
+      "observed_mutation_summary": {
+        "artifact_sufficient": true,
+        "assertion_results": [
+          {
+            "actual_value": 1,
+            "assertion_id": "alice_node_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_node_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "decoy_node_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_node_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "hop1_node_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_node_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "hop2_node_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_node_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "admin_node_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_node_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "alice_to_hop1_permission_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "alice_to_hop1_trust_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "hop1_to_hop2_permission_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "hop1_to_hop2_matching_trust_edge_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "decoy_to_hop2_trust_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "hop2_to_admin_permission_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 1,
+            "assertion_id": "hop2_to_admin_trust_edge_present",
+            "expected_value": 1,
+            "op": "gte",
+            "passed": true,
+            "type": "scenario_edge_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "validated_assume_role_chain_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          },
+          {
+            "actual_value": 0,
+            "assertion_id": "validated_admin_reachability_absent",
+            "expected_value": 0,
+            "op": "eq",
+            "passed": true,
+            "type": "finding_count"
+          }
+        ],
+        "assertions_passed": true,
+        "case_id": "env27_multihop_trust_scoped_away_nonvalidated",
+        "defect_classes": [],
+        "promotion_blocked": false,
+        "run_id": "iamscope-benchmark-env27-20260509T212354Z",
+        "score_passed": true,
+        "status": "present"
+      },
+      "pair_complete": true,
+      "pair_delta_passed": true,
+      "pair_id": "env26_env27_multihop_trust_scoped_away"
+    }
+  ],
+  "report_boundary": "This report summarizes expected vs observed deltas for known benchmark mutation pairs only. It does not emit a composite score and does not claim broad IAMScope correctness or production readiness.",
+  "report_type": "benchmark_mutation_pair_report",
+  "schema_version": "0.1",
+  "snapshot_id": "phase0-20260509-env27",
+  "snapshot_path": "benchmarks/snapshots/phase0-20260509-env27"
+}

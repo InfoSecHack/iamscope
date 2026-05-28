@@ -1,0 +1,27 @@
+{
+  "environment": "env18_lambda_passrole_validated",
+  "purpose": "Validated Lambda PassRole benchmark",
+  "description": "Alice can create a precise Lambda function, pass an admin-equivalent Lambda execution role, and the target role trusts lambda.amazonaws.com.",
+  "ground_truth": {
+    "attack_path_reachable": true,
+    "reasoning": "Alice has lambda:CreateFunction and iam:PassRole permissions, the target role trusts Lambda, and the target role has AdministratorAccess."
+  },
+  "benchmark_contract": {
+    "target_pattern_id": "passrole_lambda",
+    "required_scenario_edges": {
+      "lambda_create_edge_type": "lambda:CreateFunction_permission",
+      "passrole_edge_type": "iam:PassRole_permission",
+      "lambda_trust_edge_type": "sts:AssumeRole_trust",
+      "min_count_each": 1
+    },
+    "passrole_lambda": {
+      "validated_min": 1,
+      "blocked": 0,
+      "inconclusive": 0,
+      "precondition_only": 0,
+      "validated_with_blockers": 0,
+      "validated_severity": "critical"
+    }
+  },
+  "assertion_strategy": "The benchmark wrapper asserts the Lambda CreateFunction edge, exact PassRole edge, Lambda service trust edge, validated critical passrole_lambda finding, zero blocked/inconclusive/precondition_only target findings, no blockers on the validated target finding, and PASS states for the required Lambda PassRole checks."
+}

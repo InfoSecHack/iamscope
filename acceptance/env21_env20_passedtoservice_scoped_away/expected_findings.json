@@ -1,0 +1,33 @@
+{
+  "environment": "env21_env20_passedtoservice_scoped_away",
+  "purpose": "Non-validated ECS PassRole PassedToService mutation benchmark",
+  "description": "Alice has ECS RegisterTaskDefinition, ECS RunTask, and iam:PassRole to an admin-equivalent ECS task role, but the PassRole statement is scoped to ec2.amazonaws.com.",
+  "ground_truth": {
+    "attack_path_reachable": false,
+    "reasoning": "The target role trusts ECS tasks and is admin-equivalent, but Alice's PassRole grant is scoped away from ECS with iam:PassedToService = ec2.amazonaws.com."
+  },
+  "benchmark_contract": {
+    "target_pattern_id": "passrole_ecs",
+    "required_scenario_edges": {
+      "ecs_register_edge_type": "ecs:RegisterTaskDefinition_permission",
+      "ecs_run_edge_type": "ecs:RunTask_permission",
+      "passrole_edge_type": "iam:PassRole_permission",
+      "ecs_trust_edge_type": "sts:AssumeRole_trust",
+      "min_count_each": 1
+    },
+    "required_condition": {
+      "condition_key": "iam:PassedToService",
+      "condition_value": "ec2.amazonaws.com",
+      "min_count": 1
+    },
+    "passrole_ecs": {
+      "validated": 0,
+      "blocked": 0,
+      "inconclusive": 0,
+      "precondition_only_min": 1,
+      "passed_to_service_blockers_min": 1,
+      "precondition_severity": "medium"
+    }
+  },
+  "assertion_strategy": "The benchmark wrapper asserts clean ECS RegisterTaskDefinition and RunTask edges, exact conditioned PassRole edge, ECS task-service trust edge, zero validated/blocked/inconclusive target findings, at least one precondition_only target finding, and passed_to_service blocker/check failure evidence."
+}

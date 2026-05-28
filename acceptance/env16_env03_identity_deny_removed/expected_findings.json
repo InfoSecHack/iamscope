@@ -1,0 +1,21 @@
+{
+  "environment": "env16_env03_identity_deny_removed",
+  "purpose": "Positive mutation benchmark for removing Env03's explicit identity-policy Deny",
+  "description": "Alice can call iam:AddUserToGroup on an AdministratorAccess-backed group, and the matching explicit identity Deny from Env03 is removed.",
+  "ground_truth": {
+    "attack_path_reachable": true,
+    "reasoning": "Alice's identity policy allows iam:AddUserToGroup on env16-admins, env16-admins has AdministratorAccess, and no explicit identity Deny blocks the target action."
+  },
+  "benchmark_contract": {
+    "target_pattern_id": "iam_group_membership_escalation",
+    "iam_group_membership_escalation": {
+      "validated_min": 1,
+      "blocked": 0,
+      "inconclusive": 0,
+      "validated_with_blockers": 0,
+      "identity_deny_blockers": 0,
+      "identity_deny_check_pass_min": 1
+    }
+  },
+  "assertion_strategy": "The benchmark wrapper asserts at least one validated iam_group_membership_escalation finding for alice->admins, zero blocked or inconclusive findings for that path, no blockers on validated findings, no identity_deny blockers, and a passing no_identity_deny_blocks_add_user_to_group check."
+}

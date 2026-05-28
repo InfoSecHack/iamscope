@@ -1,0 +1,33 @@
+{
+  "environment": "env13_complete_scp_blocked_assumerole",
+  "ground_truth": {
+    "reachable": false,
+    "admin_equivalent": true,
+    "reason": "Alice has IAM permission and role trust for env13-admin, but an Env13-specific SCP attached to the member account denies sts:AssumeRole with Resource * for the target path while carving out the collection caller."
+  },
+  "benchmark_contract": {
+    "required_scenario_edges": {
+      "permission_edge_type": "sts:AssumeRole_permission",
+      "trust_edge_type": "sts:AssumeRole_trust",
+      "min_count_each": 1
+    },
+    "required_scp": {
+      "constraint_type": "SCP",
+      "deny_action": "sts:AssumeRole",
+      "statement_id": "Env13DenyAssumeRoleExceptCollector",
+      "resource_scope": "wildcard Resource * with ArnNotLike aws:PrincipalArn carveout for the management collection caller",
+      "min_constraints": 1,
+      "min_edge_bindings": 1,
+      "min_complete_blocking": 1
+    },
+    "admin_reachability": {
+      "validated_max": 0,
+      "blocked_min": 1,
+      "inconclusive_max": 0
+    },
+    "assume_role_chain": {
+      "validated_max": 0
+    }
+  },
+  "extra_findings_policy": "Extra non-target findings are noise unless they validate admin_reachability for env13-alice -> env13-admin or prevent the required blocked target finding."
+}

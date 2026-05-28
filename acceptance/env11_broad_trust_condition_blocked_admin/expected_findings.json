@@ -1,0 +1,30 @@
+{
+  "environment": "env11_broad_trust_condition_blocked_admin",
+  "purpose": "Broad-looking same-account root trust with MFA condition must not produce false validated admin reachability.",
+  "description": "Alice has sts:AssumeRole permission to an admin-equivalent role. The role trust allows same-account root but requires MFA, which this benchmark does not prove satisfied.",
+  "ground_truth": {
+    "attack_path_reachable_via_iam": false,
+    "reasoning": "The trust policy requires aws:MultiFactorAuthPresent=true. The benchmark session does not prove Alice satisfies that condition, so IAMScope must not claim validated admin reachability."
+  },
+  "benchmark_contract": {
+    "required_scenario_edges": {
+      "permission_edge_type": "sts:AssumeRole_permission",
+      "trust_edge_type": "sts:AssumeRole_trust",
+      "min_count_each": 1
+    },
+    "required_trust_condition": {
+      "constraint_type": "TRUST_CONDITION",
+      "condition_key": "aws:MultiFactorAuthPresent",
+      "min_constraints": 1,
+      "min_edge_bindings": 1
+    },
+    "admin_reachability": {
+      "validated_max": 0
+    },
+    "contract_note": "A blocked or inconclusive target outcome is acceptable today; a validated admin_reachability finding for alice -> broad-conditioned-admin is benchmark-failing overclaim."
+  },
+  "benchmark_does_not_prove": [
+    "It does not prove runtime MFA satisfaction checking.",
+    "It does not prove broad trust handling for every condition shape."
+  ]
+}

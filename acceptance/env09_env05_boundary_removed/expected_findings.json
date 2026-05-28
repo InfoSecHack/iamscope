@@ -1,0 +1,41 @@
+{
+  "environment": "env09_env05_boundary_removed",
+  "purpose": "Mutation of Env05 with the blocking permission boundary removed",
+  "description": "Alice can still assume devops and devops can still assume admin, but the permission boundary from Env05 is removed. IAMScope should now emit validated admin reachability for alice -> admin.",
+  "mutation_of": "env05_permission_boundary_blocked_chain",
+  "expected_semantic_delta": {
+    "base_case": {
+      "assume_role_chain.blocked_min": 1,
+      "admin_reachability.validated": 0
+    },
+    "mutated_case": {
+      "admin_reachability.validated_min": 1,
+      "admin_reachability.blocked": 0,
+      "admin_reachability.inconclusive": 0
+    },
+    "intended_local_change": "Remove only the permission boundary that prevented env05-devops from using sts:AssumeRole on the admin role."
+  },
+  "ground_truth": {
+    "attack_path_reachable_via_iam_chain": true,
+    "reasoning": "Alice can assume devops, devops can assume admin, and the admin role remains admin-equivalent. Removing the boundary restores the second hop instead of blocking it."
+  },
+  "benchmark_contract": {
+    "target_pattern_id": "admin_reachability",
+    "expected_counts": {
+      "validated_min": 1,
+      "blocked": 0,
+      "inconclusive": 0
+    },
+    "validated_findings": {
+      "blockers_observed_total": 0
+    },
+    "assume_role_chain_observation": {
+      "validated_min_if_emitted": 1,
+      "note": "The harness logs assume_role_chain counts but does not fail if the current reasoner omits a validated chain finding for this positive two-hop path."
+    }
+  },
+  "benchmark_does_not_prove": [
+    "It does not yet machine-score the pairwise delta against Env05.",
+    "It does not prove broader two-hop positive-path coverage beyond this narrow mutation case."
+  ]
+}

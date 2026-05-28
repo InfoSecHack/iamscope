@@ -1,0 +1,33 @@
+{
+  "manifest_type": "promotion_gate_manifest",
+  "schema_version": "0.1",
+  "gates": [
+    {
+      "gate_id": "artifact_sufficient",
+      "description": "Required artifacts and scenario validation must be present.",
+      "blocks_on": ["artifact_insufficient"],
+      "severity": "block"
+    },
+    {
+      "gate_id": "false_admin_claim",
+      "description": "False validated admin claims block promotion.",
+      "blocks_on": ["false_admin_claim"],
+      "severity": "block"
+    },
+    {
+      "gate_id": "dishonest_degradation",
+      "description": "Truth-degrading regressions block promotion.",
+      "blocks_on": ["dishonest_degradation"],
+      "severity": "block"
+    },
+    {
+      "gate_id": "semantic_mismatch",
+      "description": "Target-case semantic mismatches block promotion.",
+      "blocks_on": ["semantic_mismatch"],
+      "severity": "block"
+    }
+  ],
+  "human_review": {
+    "required_on_any_defect": true
+  }
+}

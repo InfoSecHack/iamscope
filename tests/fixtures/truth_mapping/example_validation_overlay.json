@@ -1,0 +1,38 @@
+{
+  "schema_version": "iamscope.validation_overlay.v1",
+  "edge_id": null,
+  "edge_key": {
+    "source_role_arn": "arn:aws:iam::111111111111:role/ExampleSourceRole",
+    "target_role_arn": "arn:aws:iam::222222222222:role/ExampleTargetRole",
+    "external_id": true
+  },
+  "validated_state": "denied",
+  "validator": "iamscope.edge_truth_map",
+  "timestamp": "2026-01-01T00:00:00Z",
+  "evidence": {
+    "declared_state": "declared",
+    "simulator_state": "allowed",
+    "evidence_level": "live_validated",
+    "agreement": "mismatch",
+    "likely_denial_layer": "organizations",
+    "aws_error": "Access denied with an explicit deny in a service control policy",
+    "simulator_raw": {
+      "EvalDecision": "allowed"
+    },
+    "live_raw": {}
+  },
+  "confounded": true,
+  "confounder_reasons": [
+    "inherited_org_control_governs_sts_assumerole"
+  ],
+  "blockers": [
+    {
+      "policy_id": "p-example",
+      "policy_name": "DenyCrossAccountAssumeRoleProd",
+      "attachment_level": "ou",
+      "inherited": true,
+      "relevant_to_sts_assume_role": true,
+      "relevance_method": "heuristic_action_match"
+    }
+  ]
+}

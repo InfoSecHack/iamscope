@@ -1,0 +1,46 @@
+{
+  "environment": "env05_ar1_blocked_chain",
+  "purpose": "Regression test for AR-1 contradictory-verdict bug (Session 6c Phase 2)",
+  "description": "alice -> devops -> admin chain where a permission boundary on devops excludes sts:AssumeRole, blocking hop 2. Tests that iamscope correctly emits BLOCKED (assume_role_chain) + INCONCLUSIVE with cross_reasoner_blocked blocker (admin_reachability) rather than the pre-fix contradictory VALIDATED.",
+  "ground_truth": {
+    "attack_path_reachable_via_iam_chain": false,
+    "reasoning": "devops's permission boundary allows only s3:ListBucket. sts:AssumeRole is not in the Allow set, so the boundary produces an implicit deny on that action. Per AWS evaluation logic, the effective permission is the intersection of identity policy (which grants sts:AssumeRole) and boundary (which doesn't). The intersection excludes sts:AssumeRole, so devops cannot actually assume admin at runtime.",
+    "aws_documentation_references": [
+      "Permission boundaries: https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html — 'A permissions boundary is an advanced feature for using a managed policy to set the maximum permissions that an identity-based policy can grant to an IAM entity.'",
+      "Effective permissions: intersection of identity policy and boundary. Action absent from boundary Allow set produces implicit deny."
+    ]
+  },
+  "expected_iamscope_behavior": {
+    "after_phase2_fix_current_state": {
+      "assume_role_chain": {
+        "verdict": "blocked",
+        "source_provider_id": "arn:aws:iam::<ACCOUNT>:user/iamscope-test/env05-alice",
+        "target_provider_id": "arn:aws:iam::<ACCOUNT>:role/iamscope-test/env05-admin",
+        "reasoning": "Per-hop boundary check on devops->admin permission edge finds likely_blocking=True; chain emits BLOCKED."
+      },
+      "admin_reachability": {
+        "verdict": "inconclusive",
+        "source_provider_id": "arn:aws:iam::<ACCOUNT>:user/iamscope-test/env05-alice",
+        "target_provider_id": "arn:aws:iam::<ACCOUNT>:role/iamscope-test/env05-admin",
+        "blocker": {
+          "kind": "cross_reasoner_blocked",
+          "constraint_id": null,
+          "edge_id": "<dynamic: overlapping hop edge_id>",
+          "reason": "<dynamic: references the blocked assume_role_chain finding_id and hop edge_id>"
+        },
+        "reasoning": "admin_reachability's BFS ignores boundaries and would emit VALIDATED. Phase 2 post-processor detects edge_refs overlap with the BLOCKED assume_role_chain finding on the same (source, target) pair, demotes to INCONCLUSIVE with cross_reasoner_blocked blocker."
+      }
+    },
+    "before_phase2_fix_historical_bug": {
+      "assume_role_chain": {
+        "verdict": "blocked",
+        "note": "Same as after — assume_role_chain was always correct"
+      },
+      "admin_reachability": {
+        "verdict": "validated",
+        "note": "The AR-1 bug: admin_reachability claimed validated while assume_role_chain said blocked. Contradictory verdicts for the same path with no signal to the operator."
+      }
+    }
+  },
+  "assertion_strategy": "run.sh performs structural assertions via bash + jq: (1) exactly one assume_role_chain finding with matching source/target and verdict=blocked; (2) exactly one admin_reachability finding with matching source/target and verdict=inconclusive; (3) that admin_reachability finding has blockers_observed containing at least one with kind=cross_reasoner_blocked AND constraint_id=null. Dynamic fields (edge_id hashes, finding_id portions in reason strings) are not compared."
+}

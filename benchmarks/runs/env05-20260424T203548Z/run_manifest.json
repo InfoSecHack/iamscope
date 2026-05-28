@@ -1,0 +1,32 @@
+{
+  "artifact_status": {
+    "artifact_retention": "complete",
+    "scenario_validation": "pass"
+  },
+  "artifacts": {
+    "binding_metadata_json": "/tmp/iamscope-benchmark-env05-20260424T203548Z/collect/binding_metadata.json",
+    "expected_findings_json": "/tmp/iamscope-benchmark-env05-20260424T203548Z/expected_findings.json",
+    "findings_json": "/tmp/iamscope-benchmark-env05-20260424T203548Z/collect/findings.json",
+    "run_log": "/tmp/iamscope-benchmark-env05-20260424T203548Z/run.log",
+    "scenario_json": "/tmp/iamscope-benchmark-env05-20260424T203548Z/collect/scenario.json",
+    "scenario_validate_txt": "/tmp/iamscope-benchmark-env05-20260424T203548Z/scenario_validate.txt"
+  },
+  "authority": "live_aws",
+  "benchmark_date": "2026-04-24",
+  "case_id": "env05_permission_boundary_blocked_chain",
+  "confidence": "high",
+  "context": {
+    "account_id": "516525145310",
+    "source_provider_id": "arn:aws:iam::516525145310:user/iamscope-test/env05-alice",
+    "target_provider_id": "arn:aws:iam::516525145310:role/iamscope-test/env05-admin"
+  },
+  "ended_at": "2026-04-24T20:37:11.302352Z",
+  "environment": "acceptance/env05_ar1_blocked_chain",
+  "git_sha": "7cac783734e18b0999fba4b6297e775c73f44503",
+  "manifest_type": "benchmark_run_manifest",
+  "run_id": "iamscope-benchmark-env05-20260424T203548Z",
+  "schema_version": "0.1",
+  "started_at": "2026-04-24T20:35:48Z",
+  "tool_claims": [],
+  "tool_name": "iamscope"
+}

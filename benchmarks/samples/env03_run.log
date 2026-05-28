@@ -1,0 +1,7 @@
+Resources deployed:
+  alice_arn  : arn:aws:iam::516525145310:user/iamscope-test/env03-cc1-alice
+  admins_arn : arn:aws:iam::516525145310:group/iamscope-test/env03-cc1-admins
+  account_id : 516525145310
+scenario validation: PASS
+semantic assertion counts: iam_group_membership_escalation.blocked=1 iam_group_membership_escalation.validated=0 identity_deny.blockers=1 no_identity_deny_blocks_add_user_to_group.fail=1
+benchmark semantic assertion: PASS

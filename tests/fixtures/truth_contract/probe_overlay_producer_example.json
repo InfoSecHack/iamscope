@@ -1,0 +1,24 @@
+{
+  "engagement_run_id": "run-producer-example",
+  "generated_at_utc": "2026-01-01T00:00:00Z",
+  "probes": [
+    {
+      "action_class": "sts:AssumeRole",
+      "authorization_ref": null,
+      "cloudtrail_state": null,
+      "confounded": false,
+      "confounded_reason": "",
+      "contributing_control_refs": [],
+      "edge_id": "edge-assume-role-1",
+      "notes_digest": null,
+      "probe_id": "probe-producer-example",
+      "probe_kind": "runtime",
+      "probe_state": "probed_correlated_allowed",
+      "probed_at_utc": "2026-01-01T00:00:00Z",
+      "runtime_state": "allowed",
+      "simulator_state": "allowed"
+    }
+  ],
+  "scenario_canonical_hash": "hash-probe-runner",
+  "schema_version": "iamscope.probe_overlay.v1"
+}

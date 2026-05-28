@@ -1,0 +1,7 @@
+{
+  "allowed_defect_classes": ["artifact_insufficient", "dishonest_degradation", "false_admin_claim", "semantic_mismatch"],
+  "gate_required_fields": ["gate_id", "description", "blocks_on", "severity"],
+  "manifest_type": "promotion_gate_manifest",
+  "required": ["manifest_type", "schema_version", "gates", "human_review"],
+  "schema_version": "0.1"
+}

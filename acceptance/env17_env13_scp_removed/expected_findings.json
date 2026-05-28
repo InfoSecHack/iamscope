@@ -1,0 +1,29 @@
+{
+  "environment": "env17_env13_scp_removed",
+  "purpose": "Positive mutation benchmark for removing Env13's complete SCP blocker",
+  "description": "Alice has sts:AssumeRole permission on an admin role, the admin role cleanly trusts Alice, and no Env17 SCP is created or attached.",
+  "ground_truth": {
+    "attack_path_reachable": true,
+    "reasoning": "The Env13 target IAM shape is preserved, but the complete SCP Deny blocker is absent."
+  },
+  "benchmark_contract": {
+    "target_pattern_id": "admin_reachability",
+    "required_scenario_edges": {
+      "permission_edge_type": "sts:AssumeRole_permission",
+      "trust_edge_type": "sts:AssumeRole_trust",
+      "min_count_each": 1
+    },
+    "forbidden_scp_binding": {
+      "constraint_type": "SCP",
+      "max_target_edge_bindings": 0
+    },
+    "admin_reachability": {
+      "validated_min": 1,
+      "blocked": 0,
+      "inconclusive": 0,
+      "validated_with_blockers": 0,
+      "scp_blockers": 0
+    }
+  },
+  "assertion_strategy": "The benchmark wrapper asserts that the direct permission and trust edges exist, the target trust edge is not bound to an SCP constraint, at least one validated admin_reachability finding exists for alice->admin, no blocked or inconclusive admin_reachability findings exist for that path, and validated findings have no blockers."
+}

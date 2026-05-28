@@ -1,0 +1,29 @@
+{
+  "environment": "env12_scp_blocked_assumerole",
+  "ground_truth": {
+    "reachable": false,
+    "admin_equivalent": true,
+    "reason": "Alice has IAM permission and role trust for env12-admin, but an Env12-specific SCP attached to the member account denies sts:AssumeRole on the env12-admin role ARN."
+  },
+  "benchmark_contract": {
+    "required_scenario_edges": {
+      "permission_edge_type": "sts:AssumeRole_permission",
+      "trust_edge_type": "sts:AssumeRole_trust",
+      "min_count_each": 1
+    },
+    "required_scp": {
+      "constraint_type": "SCP",
+      "deny_action": "sts:AssumeRole",
+      "resource_scope": "env12-admin role ARN only; collection role must not be denied",
+      "min_constraints": 1,
+      "min_edge_bindings": 1
+    },
+    "admin_reachability": {
+      "validated_max": 0
+    },
+    "assume_role_chain": {
+      "validated_max": 0
+    }
+  },
+  "extra_findings_policy": "Extra non-target findings are noise unless they validate admin_reachability for env12-alice -> env12-admin."
+}

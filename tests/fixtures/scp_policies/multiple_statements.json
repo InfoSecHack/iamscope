@@ -1,0 +1,23 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DenyAssumeRole",
+      "Effect": "Deny",
+      "Action": "sts:AssumeRole",
+      "Resource": "*"
+    },
+    {
+      "Sid": "DenyPassRole",
+      "Effect": "Deny",
+      "Action": "iam:PassRole",
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowBasic",
+      "Effect": "Allow",
+      "Action": "*",
+      "Resource": "*"
+    }
+  ]
+}

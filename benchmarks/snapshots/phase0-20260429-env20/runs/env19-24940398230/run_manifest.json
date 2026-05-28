@@ -1,0 +1,32 @@
+{
+  "artifact_status": {
+    "artifact_retention": "complete",
+    "scenario_validation": "pass"
+  },
+  "artifacts": {
+    "binding_metadata_json": "/tmp/iamscope-benchmark-env19-24940398230/collect/binding_metadata.json",
+    "expected_findings_json": "/tmp/iamscope-benchmark-env19-24940398230/expected_findings.json",
+    "findings_json": "/tmp/iamscope-benchmark-env19-24940398230/collect/findings.json",
+    "run_log": "/tmp/iamscope-benchmark-env19-24940398230/run.log",
+    "scenario_json": "/tmp/iamscope-benchmark-env19-24940398230/collect/scenario.json",
+    "scenario_validate_txt": "/tmp/iamscope-benchmark-env19-24940398230/scenario_validate.txt"
+  },
+  "authority": "live_aws",
+  "benchmark_date": "2026-04-29",
+  "case_id": "env19_passedtoservice_scoped_away_nonvalidated",
+  "confidence": "high",
+  "context": {
+    "account_id": "516525145310",
+    "source_provider_id": "arn:aws:iam::516525145310:user/iamscope-test/env19-alice",
+    "target_provider_id": "arn:aws:iam::516525145310:role/iamscope-test/env19-lambda-admin-exec"
+  },
+  "ended_at": "2026-04-29T23:30:38.371483Z",
+  "environment": "acceptance/env19_env18_passedtoservice_scoped_away",
+  "git_sha": "cf64f50b7da217bb060e3ede91504b0fb6142eb7",
+  "manifest_type": "benchmark_run_manifest",
+  "run_id": "iamscope-benchmark-env19-24940398230",
+  "schema_version": "0.1",
+  "started_at": null,
+  "tool_claims": [],
+  "tool_name": "iamscope"
+}

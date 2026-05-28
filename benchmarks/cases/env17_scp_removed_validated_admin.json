@@ -1,0 +1,166 @@
+{
+  "manifest_type": "benchmark_case_manifest",
+  "schema_version": "0.1",
+  "case_id": "env17_scp_removed_validated_admin",
+  "family": "scp_removed_mutation",
+  "tier": "tier1_live_aws",
+  "purpose": "Prove IAMScope emits validated admin reachability for the Env13 target IAM path when the complete SCP blocker is absent.",
+  "claim_surface": [
+    "IAMScope can distinguish the Env13 complete-SCP blocked case from a closely related SCP-removed positive case.",
+    "IAMScope can emit validated admin_reachability for the mutated Env17 path without blocked or inconclusive admin findings.",
+    "IAMScope can preserve the target Alice-to-admin role shape while responding to the SCP removal."
+  ],
+  "benchmark_proves": [
+    "For the Env17 alice->admin path, scenario.json contains the expected sts:AssumeRole permission edge.",
+    "For the Env17 alice->admin path, scenario.json contains the expected clean sts:AssumeRole trust edge.",
+    "For that path, the target trust edge is not bound to an SCP constraint.",
+    "For that path, IAMScope emitted at least one validated admin_reachability finding.",
+    "For that path, IAMScope emitted zero blocked admin_reachability findings.",
+    "For that path, IAMScope emitted zero inconclusive admin_reachability findings.",
+    "For that path, IAMScope emitted zero SCP blockers on validated admin_reachability findings."
+  ],
+  "benchmark_does_not_prove": [
+    "It does not yet machine-score the pairwise delta versus Env13 as a single combined assertion.",
+    "It does not prove broader SCP correctness.",
+    "It does not prove inherited SCP, OU/root SCP, or complex Organizations exception behavior."
+  ],
+  "unknowns_remaining": [
+    "Whether every complete SCP removal should validate remains unproven here.",
+    "Whether multi-account AssumeRole paths interact with SCP removal the same way remains outside this case."
+  ],
+  "environment": {
+    "acceptance_env": "acceptance/env17_env13_scp_removed",
+    "benchmark_family": "controlled_live_aws",
+    "notes": "Mutation of Env13 with the same target IAM path shape but no Env17-created or attached SCP."
+  },
+  "ground_truth": {
+    "reachable": true,
+    "admin_equivalent": true,
+    "reason": "Alice can assume env17-admin, env17-admin trusts Alice, env17-admin has AdministratorAccess, and the Env13 complete SCP Deny blocker is absent."
+  },
+  "honesty_ground_truth": {
+    "directly_proven_if_pass": [
+      "The exact Env17 alice->admin permission edge exists structurally.",
+      "The exact Env17 alice->admin trust edge exists structurally.",
+      "The exact Env17 alice->admin trust edge is not bound to an SCP constraint.",
+      "The exact Env17 alice->admin path is emitted as validated admin reachability.",
+      "The exact Env17 alice->admin path is not emitted as blocked or inconclusive.",
+      "The exact Env17 alice->admin path has no SCP blocker evidence."
+    ],
+    "strongly_supported_if_pass": [
+      "IAMScope responds meaningfully to this narrow SCP-removal mutation in a controlled real-AWS case."
+    ],
+    "only_implied_even_if_pass": [
+      "Broader SCP removal behavior outside this exact case remains only implied."
+    ]
+  },
+  "semantic_assertions": [
+    {
+      "assertion_id": "assumerole_permission_edge_present",
+      "type": "scenario_edge_count",
+      "edge_type": "sts:AssumeRole_permission",
+      "op": "gte",
+      "expected_value": 1,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "assumerole_trust_edge_present",
+      "type": "scenario_edge_count",
+      "edge_type": "sts:AssumeRole_trust",
+      "op": "gte",
+      "expected_value": 1,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "trust_edge_not_bound_to_scp",
+      "type": "scenario_edge_constraint_count",
+      "edge_type": "sts:AssumeRole_trust",
+      "constraint_type": "SCP",
+      "op": "eq",
+      "expected_value": 0,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "validated_admin_present",
+      "type": "finding_count",
+      "pattern_id": "admin_reachability",
+      "verdict": "validated",
+      "op": "gte",
+      "expected_value": 1,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "dishonest_degradation",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "blocked_admin_absent",
+      "type": "finding_count",
+      "pattern_id": "admin_reachability",
+      "verdict": "blocked",
+      "op": "eq",
+      "expected_value": 0,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "dishonest_degradation",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "inconclusive_admin_absent",
+      "type": "finding_count",
+      "pattern_id": "admin_reachability",
+      "verdict": "inconclusive",
+      "op": "eq",
+      "expected_value": 0,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "dishonest_degradation",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "scp_blocker_absent",
+      "type": "blocker_present",
+      "pattern_id": "admin_reachability",
+      "verdict": "validated",
+      "kind": "scp",
+      "op": "eq",
+      "expected_value": 0,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "dishonest_degradation",
+      "confidence": "high",
+      "authority": "live_aws"
+    }
+  ],
+  "artifacts_required": [
+    "scenario_json",
+    "findings_json",
+    "binding_metadata_json",
+    "run_log",
+    "scenario_validate_txt"
+  ],
+  "scoring_expectations": {
+    "required_scenario_validation": "pass",
+    "blocking_defect_classes": [
+      "artifact_insufficient",
+      "dishonest_degradation",
+      "semantic_mismatch",
+      "false_admin_claim"
+    ],
+    "human_review_required_if_any_defects": true
+  }
+}

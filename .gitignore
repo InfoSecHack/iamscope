@@ -1,0 +1,32 @@
+__pycache__/
+*.egg-info/
+.venv/
+.hypothesis/
+.pytest_cache/
+.ruff_cache/
+*.pyc
+dist/
+build/
+.env
+scenario.json
+binding_metadata.json
+enrichment.json
+pre-regen-fixture-hashes.txt
+verify-*.sh
+acceptance/step8/*.tfstate*
+acceptance/step8/.terraform/
+acceptance/step8/findings-*.json
+
+# local Terraform/cache/state artifacts should not be committed
+**/.terraform/
+*.tfstate
+*.tfstate.backup
+
+# local/model-specific private context
+CLAUDE.md
+CLAUDE.local.md
+CHATGPT.md
+CHATGPT.local.md
+.claude/
+.chatgpt/
+.codex/local/

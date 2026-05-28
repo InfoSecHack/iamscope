@@ -1,0 +1,24 @@
+{
+  "schema_version": "iamscope.probe_overlay.v1",
+  "engagement_run_id": "example-run",
+  "scenario_canonical_hash": "example-scenario-hash",
+  "generated_at_utc": "2026-01-01T00:00:01Z",
+  "probes": [
+    {
+      "probe_id": "example-probe-1",
+      "edge_id": "example-edge-id",
+      "action_class": "sts:AssumeRole",
+      "probe_kind": "simulator",
+      "probe_state": "simulator_only_allowed",
+      "probed_at_utc": "2026-01-01T00:00:00Z",
+      "authorization_ref": null,
+      "confounded": true,
+      "confounded_reason": "inherited_org_control_governs_sts_assumerole",
+      "contributing_control_refs": ["p-deny-prod-assume"],
+      "simulator_state": "allowed",
+      "runtime_state": null,
+      "cloudtrail_state": null,
+      "notes_digest": null
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "manifest_type": "benchmark_case_manifest",
+  "schema_version": "0.1",
+  "case_id": "deg02_missing_permission_edge",
+  "family": "degradation_missing_evidence",
+  "tier": "tier0_synthetic_degradation",
+  "purpose": "Prove an Env06-like admin path is not validated when the target trust edge exists but the required caller-side AssumeRole permission edge is missing.",
+  "claim_surface": [
+    "The benchmark scorer can represent an AssumeRole trust edge without a matching identity permission edge.",
+    "A missing identity permission edge must not be treated as proof of validated admin reachability.",
+    "A false validated admin_reachability finding for this degraded path blocks promotion."
+  ],
+  "benchmark_proves": [
+    "The synthetic scenario contains the expected sts:AssumeRole trust edge for Alice to the admin role.",
+    "The synthetic scenario contains zero matching sts:AssumeRole permission edges for Alice to the admin role.",
+    "The synthetic findings contain zero validated admin_reachability findings for the degraded target path."
+  ],
+  "benchmark_does_not_prove": [
+    "It does not prove live AWS collection behavior.",
+    "It does not prove IAMScope reasoner behavior beyond the frozen artifact scoring contract.",
+    "It does not prove every missing-permission or partial-identity-policy shape."
+  ],
+  "unknowns_remaining": [
+    "Whether IAMScope should emit an explicit inconclusive finding for every missing-permission shape remains outside DEG02.",
+    "How richer partial identity-policy collection states should be represented remains future work."
+  ],
+  "environment": {
+    "acceptance_env": "synthetic/deg02_missing_permission_edge",
+    "benchmark_family": "synthetic_degradation",
+    "notes": "Synthetic evaluated artifact fixture only. No live AWS resources."
+  },
+  "ground_truth": {
+    "reachable": false,
+    "admin_equivalent": true,
+    "reason": "The admin role trusts Alice and is admin-equivalent, but Alice lacks the required sts:AssumeRole permission edge to the role."
+  },
+  "honesty_ground_truth": {
+    "directly_proven_if_pass": [
+      "The degraded fixture contains the target-side AssumeRole trust evidence.",
+      "The degraded fixture is missing the required caller-side AssumeRole permission evidence.",
+      "The degraded fixture is not falsely scored as validated admin reachability."
+    ],
+    "strongly_supported_if_pass": [
+      "The benchmark gate catches false validated admin claims when required identity permission evidence is missing."
+    ],
+    "only_implied_even_if_pass": [
+      "Broader missing-permission behavior outside this exact synthetic fixture remains only implied."
+    ]
+  },
+  "semantic_assertions": [
+    {
+      "assertion_id": "assumerole_trust_edge_present",
+      "type": "scenario_edge_count",
+      "edge_type": "sts:AssumeRole_trust",
+      "op": "gte",
+      "expected_value": 1,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "synthetic"
+    },
+    {
+      "assertion_id": "assumerole_permission_edge_absent",
+      "type": "scenario_edge_count",
+      "edge_type": "sts:AssumeRole_permission",
+      "op": "eq",
+      "expected_value": 0,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "synthetic"
+    },
+    {
+      "assertion_id": "validated_admin_absent",
+      "type": "finding_count",
+      "pattern_id": "admin_reachability",
+      "verdict": "validated",
+      "op": "eq",
+      "expected_value": 0,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "false_admin_claim",
+      "confidence": "high",
+      "authority": "synthetic"
+    }
+  ],
+  "artifacts_required": [
+    "scenario_json",
+    "findings_json"
+  ],
+  "scoring_expectations": {
+    "required_scenario_validation": "pass",
+    "blocking_defect_classes": [
+      "artifact_insufficient",
+      "false_admin_claim",
+      "semantic_mismatch"
+    ],
+    "human_review_required_if_any_defects": true
+  }
+}

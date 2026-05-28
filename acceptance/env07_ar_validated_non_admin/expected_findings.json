@@ -1,0 +1,22 @@
+{
+  "environment": "env07_ar_validated_non_admin",
+  "purpose": "Reachable non-admin AssumeRole benchmark",
+  "description": "alice can directly assume a non-admin reader role. IAMScope should represent the reachable AssumeRole path structurally in scenario.json while emitting no validated admin_reachability claim for alice -> reader.",
+  "ground_truth": {
+    "attack_path_reachable_via_iam": true,
+    "reasoning": "Alice has an identity policy allowing sts:AssumeRole on env07-reader, and env07-reader's trust policy explicitly allows Alice. The target role has only s3:ListAllMyBuckets and is not admin-equivalent."
+  },
+  "benchmark_contract": {
+    "required_scenario_edges": {
+      "permission_edge_type": "sts:AssumeRole_permission",
+      "trust_edge_type": "sts:AssumeRole_trust",
+      "min_count_each": 1
+    },
+    "admin_reachability": {
+      "validated": 0,
+      "blocked": 0,
+      "inconclusive": 0
+    },
+    "contract_note": "Current IAMScope does not emit a dedicated validated non-admin AssumeRole finding for this case; this benchmark proves reachable non-admin structure plus no false admin claim."
+  }
+}

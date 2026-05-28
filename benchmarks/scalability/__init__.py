@@ -1,0 +1,1 @@
+"""Synthetic scalability benchmark helpers."""

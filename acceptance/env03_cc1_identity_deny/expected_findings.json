@@ -1,0 +1,31 @@
+{
+  "environment": "env03_cc1_identity_deny",
+  "purpose": "Regression benchmark for CC-1 identity-policy Deny handling",
+  "description": "alice can call iam:AddUserToGroup by Allow, but an explicit identity-policy Deny on the same action must win. IAMScope should emit BLOCKED iam_group_membership_escalation with identity_deny evidence, not VALIDATED.",
+  "ground_truth": {
+    "attack_path_reachable_via_iam": false,
+    "reasoning": "AWS IAM evaluation gives explicit Deny precedence over Allow. Alice's inline user policy contains both Allow and Deny for iam:AddUserToGroup, so the effective permission is denied at runtime. Adding alice to the AdministratorAccess-backed admins group is therefore blocked.",
+    "aws_documentation_references": [
+      "IAM policy evaluation logic: explicit deny overrides allow.",
+      "Identity-based policies can both allow and explicitly deny the same action; the explicit deny wins."
+    ]
+  },
+  "benchmark_contract": {
+    "target_pattern_id": "iam_group_membership_escalation",
+    "expected_counts": {
+      "blocked": 1,
+      "validated": 0
+    },
+    "required_blocker": {
+      "kind": "identity_deny",
+      "constraint_id_type": "string",
+      "edge_id_type": "string",
+      "min_count": 1
+    },
+    "required_check": {
+      "name": "no_identity_deny_blocks_add_user_to_group",
+      "state": "fail",
+      "count": 1
+    }
+  }
+}

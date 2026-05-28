@@ -1,0 +1,33 @@
+{
+    "manifest_type":  "benchmark_run_manifest",
+    "schema_version":  "0.1",
+    "run_id":  "env03-live-sample-2026-04-24",
+    "case_id":  "env03_identity_deny_group_escalation",
+    "tool_name":  "iamscope",
+    "git_sha":  null,
+    "started_at":  null,
+    "ended_at":  null,
+    "authority":  "live_aws",
+    "confidence":  "high",
+    "benchmark_date":  "2026-04-24",
+    "environment":  "acceptance/env03_cc1_identity_deny",
+    "tool_claims":  [
+                        "IAMScope emitted blocked iam_group_membership_escalation for env03-alice -\u003e env03-admins.",
+                        "IAMScope did not emit validated iam_group_membership_escalation for that path."
+                    ],
+    "context":  {
+                    "source_provider_id":  "arn:aws:iam::516525145310:user/iamscope-test/env03-cc1-alice",
+                    "target_provider_id":  "arn:aws:iam::516525145310:group/iamscope-test/env03-cc1-admins"
+                },
+    "artifact_status":  {
+                            "scenario_validation":  "pass",
+                            "artifact_retention":  "complete"
+                        },
+    "artifacts":  {
+                      "scenario_json":  "benchmark-results/env03/scenario.json",
+                      "findings_json":  "benchmark-results/env03/findings.json",
+                      "binding_metadata_json":  "benchmark-results/env03/binding_metadata.json",
+                      "run_log":  "benchmarks/samples/env03_run.log",
+                      "scenario_validate_txt":  "benchmark-results/env03/scenario_validate.txt"
+                  }
+}

@@ -1,0 +1,35 @@
+{
+  "artifact_status": {
+    "artifact_retention": "complete",
+    "scenario_validation": "pass"
+  },
+  "artifacts": {
+    "binding_metadata_json": "/tmp/iamscope-benchmark-env27-20260509T212354Z/collect/binding_metadata.json",
+    "expected_findings_json": "/tmp/iamscope-benchmark-env27-20260509T212354Z/expected_findings.json",
+    "findings_json": "/tmp/iamscope-benchmark-env27-20260509T212354Z/collect/findings.json",
+    "run_log": "/tmp/iamscope-benchmark-env27-20260509T212354Z/run.log",
+    "scenario_json": "/tmp/iamscope-benchmark-env27-20260509T212354Z/collect/scenario.json",
+    "scenario_validate_txt": "/tmp/iamscope-benchmark-env27-20260509T212354Z/scenario_validate.txt"
+  },
+  "authority": "live_aws",
+  "benchmark_date": "2026-05-09",
+  "case_id": "env27_multihop_trust_scoped_away_nonvalidated",
+  "confidence": "high",
+  "context": {
+    "account_id": "516525145310",
+    "decoy_provider_id": "arn:aws:iam::516525145310:user/iamscope-test/env27-decoy",
+    "hop1_provider_id": "arn:aws:iam::516525145310:role/iamscope-test/env27-hop1",
+    "hop2_provider_id": "arn:aws:iam::516525145310:role/iamscope-test/env27-hop2",
+    "source_provider_id": "arn:aws:iam::516525145310:user/iamscope-test/env27-alice",
+    "target_provider_id": "arn:aws:iam::516525145310:role/iamscope-test/env27-admin"
+  },
+  "ended_at": "2026-05-09T21:25:14.800033Z",
+  "environment": "acceptance/env27_env26_multihop_trust_scoped_away",
+  "git_sha": "306caea33a7464a67efcefc0bd921da0feba2f41",
+  "manifest_type": "benchmark_run_manifest",
+  "run_id": "iamscope-benchmark-env27-20260509T212354Z",
+  "schema_version": "0.1",
+  "started_at": "2026-05-09T21:23:54Z",
+  "tool_claims": [],
+  "tool_name": "iamscope"
+}

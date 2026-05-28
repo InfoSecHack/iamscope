@@ -1,0 +1,24 @@
+{
+  "environment": "env06_ar_validated_admin",
+  "purpose": "Positive benchmark for validated admin_reachability",
+  "description": "alice can directly assume an AdministratorAccess-backed role. IAMScope should emit validated admin_reachability for alice -> admin with no blockers on that validated target path.",
+  "ground_truth": {
+    "attack_path_reachable_via_iam": true,
+    "reasoning": "Alice has an identity policy allowing sts:AssumeRole on env06-admin, and env06-admin's trust policy explicitly allows Alice. The target role carries AdministratorAccess, so the path is structurally and runtime reachable.",
+    "aws_documentation_references": [
+      "STS AssumeRole requires both a matching trust policy on the target role and an identity-based allow on the source principal.",
+      "AdministratorAccess marks the target role as admin-equivalent for IAMScope reachability reasoning."
+    ]
+  },
+  "benchmark_contract": {
+    "target_pattern_id": "admin_reachability",
+    "expected_counts": {
+      "validated_min": 1,
+      "blocked": 0,
+      "inconclusive": 0
+    },
+    "validated_findings": {
+      "blockers_observed_total": 0
+    }
+  }
+}

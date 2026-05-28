@@ -1,0 +1,104 @@
+{
+  "manifest_type": "benchmark_case_manifest",
+  "schema_version": "0.1",
+  "case_id": "deg04_missing_edge_constraints",
+  "family": "degradation_missing_evidence",
+  "tier": "tier0_synthetic_degradation",
+  "purpose": "Prove an Env14-like conditioned AssumeRole path is not promoted when permission-condition evidence is missing or stripped.",
+  "claim_surface": [
+    "The benchmark scorer can require condition evidence on an AssumeRole permission edge.",
+    "A structurally present permission and trust path must not be treated as clean proof when the intended permission condition evidence is absent.",
+    "A false validated admin_reachability finding for this degraded path blocks promotion."
+  ],
+  "benchmark_proves": [
+    "The synthetic scenario contains the expected clean sts:AssumeRole trust edge for Alice to the admin role.",
+    "The synthetic scenario must contain an sts:AssumeRole permission edge with aws:MultiFactorAuthPresent condition evidence.",
+    "The synthetic findings contain zero validated admin_reachability findings for the degraded target path."
+  ],
+  "benchmark_does_not_prove": [
+    "It does not prove live AWS collection behavior.",
+    "It does not prove IAMScope reasoner behavior beyond the frozen artifact scoring contract.",
+    "It does not prove every missing-condition or missing-edge-constraint shape."
+  ],
+  "unknowns_remaining": [
+    "Whether future condition-binding gaps should become inconclusive rather than semantic_mismatch remains outside DEG04.",
+    "How richer condition operators or runtime context evidence should be represented remains future work."
+  ],
+  "environment": {
+    "acceptance_env": "synthetic/deg04_missing_edge_constraints",
+    "benchmark_family": "synthetic_degradation",
+    "notes": "Synthetic evaluated artifact fixture only. No live AWS resources."
+  },
+  "ground_truth": {
+    "reachable": false,
+    "admin_equivalent": true,
+    "reason": "The intended caller-side AssumeRole permission is conditioned on aws:MultiFactorAuthPresent, but the degraded fixture strips the condition evidence that would justify treating the path as guarded rather than clean."
+  },
+  "honesty_ground_truth": {
+    "directly_proven_if_pass": [
+      "The degraded fixture contains the clean trust edge.",
+      "The benchmark requires explicit permission-side condition evidence before treating the conditioned path as evidence-sufficient.",
+      "The degraded fixture is not falsely scored as validated admin reachability."
+    ],
+    "strongly_supported_if_pass": [
+      "The benchmark gate catches missing condition evidence instead of silently promoting a clean-looking admin path."
+    ],
+    "only_implied_even_if_pass": [
+      "Broader missing-condition behavior outside this exact synthetic fixture remains only implied."
+    ]
+  },
+  "semantic_assertions": [
+    {
+      "assertion_id": "conditioned_assumerole_permission_edge_present",
+      "type": "scenario_edge_count",
+      "edge_type": "sts:AssumeRole_permission",
+      "feature_has_conditions": true,
+      "feature_condition_key_contains": "aws:MultiFactorAuthPresent",
+      "op": "gte",
+      "expected_value": 1,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "synthetic"
+    },
+    {
+      "assertion_id": "clean_assumerole_trust_edge_present",
+      "type": "scenario_edge_count",
+      "edge_type": "sts:AssumeRole_trust",
+      "op": "gte",
+      "expected_value": 1,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "synthetic"
+    },
+    {
+      "assertion_id": "validated_admin_absent",
+      "type": "finding_count",
+      "pattern_id": "admin_reachability",
+      "verdict": "validated",
+      "op": "eq",
+      "expected_value": 0,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "false_admin_claim",
+      "confidence": "high",
+      "authority": "synthetic"
+    }
+  ],
+  "artifacts_required": [
+    "scenario_json",
+    "findings_json"
+  ],
+  "scoring_expectations": {
+    "required_scenario_validation": "pass",
+    "blocking_defect_classes": [
+      "artifact_insufficient",
+      "false_admin_claim",
+      "semantic_mismatch"
+    ],
+    "human_review_required_if_any_defects": true
+  }
+}

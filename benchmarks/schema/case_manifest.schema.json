@@ -1,0 +1,47 @@
+{
+  "allowed_authorities": [
+    "fixture",
+    "live_aws",
+    "manual",
+    "synthetic"
+  ],
+  "allowed_confidence": [
+    "high",
+    "low",
+    "medium"
+  ],
+  "allowed_defect_classes": [
+    "artifact_insufficient",
+    "dishonest_degradation",
+    "false_admin_claim",
+    "semantic_mismatch"
+  ],
+  "manifest_type": "benchmark_case_manifest",
+  "required": [
+    "manifest_type",
+    "schema_version",
+    "case_id",
+    "family",
+    "tier",
+    "purpose",
+    "claim_surface",
+    "benchmark_proves",
+    "benchmark_does_not_prove",
+    "unknowns_remaining",
+    "environment",
+    "ground_truth",
+    "honesty_ground_truth",
+    "semantic_assertions",
+    "artifacts_required",
+    "scoring_expectations"
+  ],
+  "schema_version": "0.1",
+  "semantic_assertion_types": [
+    "finding_count",
+    "blocker_present",
+    "check_state_present",
+    "scenario_edge_count",
+    "scenario_constraint_count",
+    "scenario_edge_constraint_count"
+  ]
+}

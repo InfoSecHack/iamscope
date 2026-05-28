@@ -1,0 +1,33 @@
+{
+  "artifact_status": {
+    "artifact_retention": "complete",
+    "scenario_validation": "pass"
+  },
+  "artifacts": {
+    "binding_metadata_json": "/tmp/iamscope-benchmark-env25-20260508T210637Z/collect/binding_metadata.json",
+    "expected_findings_json": "/tmp/iamscope-benchmark-env25-20260508T210637Z/expected_findings.json",
+    "findings_json": "/tmp/iamscope-benchmark-env25-20260508T210637Z/collect/findings.json",
+    "run_log": "/tmp/iamscope-benchmark-env25-20260508T210637Z/run.log",
+    "scenario_json": "/tmp/iamscope-benchmark-env25-20260508T210637Z/collect/scenario.json",
+    "scenario_validate_txt": "/tmp/iamscope-benchmark-env25-20260508T210637Z/scenario_validate.txt"
+  },
+  "authority": "live_aws",
+  "benchmark_date": "2026-05-08",
+  "case_id": "env25_s3_resource_policy_allow_scoped_away_nonvalidated",
+  "confidence": "high",
+  "context": {
+    "account_id": "516525145310",
+    "decoy_provider_id": "arn:aws:iam::516525145310:user/iamscope-test/env25-decoy",
+    "source_provider_id": "arn:aws:iam::516525145310:user/iamscope-test/env25-reader",
+    "target_provider_id": "arn:aws:s3:::env25-rp-scoped-away-516525145310-52e0863b"
+  },
+  "ended_at": "2026-05-08T21:07:50.926771Z",
+  "environment": "acceptance/env25_env24_resource_policy_allow_scoped_away",
+  "git_sha": "feca70bd413f8f6e1b164495e504de2dad2dc11d",
+  "manifest_type": "benchmark_run_manifest",
+  "run_id": "iamscope-benchmark-env25-20260508T210637Z",
+  "schema_version": "0.1",
+  "started_at": "2026-05-08T21:06:37Z",
+  "tool_claims": [],
+  "tool_name": "iamscope"
+}

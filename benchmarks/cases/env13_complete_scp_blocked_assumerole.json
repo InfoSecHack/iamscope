@@ -1,0 +1,194 @@
+{
+  "manifest_type": "benchmark_case_manifest",
+  "schema_version": "0.1",
+  "case_id": "env13_complete_scp_blocked_assumerole",
+  "family": "scp_complete_block",
+  "tier": "tier1_live_aws",
+  "purpose": "Prove IAMScope can emit blocked admin reachability when an IAM-allowed AssumeRole admin path is governed by a complete SCP Deny while collection-role access is preserved by a supported principal carveout.",
+  "claim_surface": [
+    "IAMScope can collect live Organizations SCP evidence while a broad sts:AssumeRole SCP is attached to the member account.",
+    "IAMScope can bind a complete SCP deny on sts:AssumeRole to the relevant AssumeRole trust edge.",
+    "IAMScope can emit blocked admin_reachability for the Env13 alice->admin path without validating it."
+  ],
+  "benchmark_proves": [
+    "For Env13, scenario.json contains the expected sts:AssumeRole permission edge from alice to admin.",
+    "For Env13, scenario.json contains the expected sts:AssumeRole trust edge from alice to admin.",
+    "Scenario.json contains an SCP constraint denying sts:AssumeRole.",
+    "The Env13 target trust edge is bound to an SCP constraint.",
+    "For the same source and target, IAMScope emits at least one blocked admin_reachability finding with SCP blocker evidence.",
+    "For the same source and target, IAMScope emits zero validated admin_reachability findings."
+  ],
+  "benchmark_does_not_prove": [
+    "It does not prove NotAction SCP handling live.",
+    "It does not prove resource-scoped SCP precise blocking; Env12 covers that as partial/inconclusive.",
+    "It does not prove every aws:PrincipalArn carveout shape.",
+    "It does not prove root or OU inherited SCP behavior beyond the selected direct member-account attachment.",
+    "It does not prove broad Organizations safety outside the dedicated test account."
+  ],
+  "unknowns_remaining": [
+    "Whether other SCP condition and exception forms produce the intended truth states remains outside this case.",
+    "Whether multi-account cross-account AssumeRole paths interact with SCPs the same way remains outside this case.",
+    "Whether the management caller PrincipalArn carveout works for every credential sourcing shape remains outside this case."
+  ],
+  "environment": {
+    "acceptance_env": "acceptance/env13_complete_scp_blocked_assumerole",
+    "benchmark_family": "controlled_live_aws_org_scp",
+    "notes": "Existing management account and existing dedicated member account. Terraform creates only member IAM fixture; run.sh creates one Env13-specific SCP with Resource * and a PrincipalArn carveout for collection, then attaches it directly to the member account."
+  },
+  "ground_truth": {
+    "reachable": false,
+    "admin_equivalent": true,
+    "reason": "Alice has IAM permission and trust to assume env13-admin, and env13-admin is admin-equivalent, but the attached Env13 SCP denies sts:AssumeRole with Resource * for non-excepted principals."
+  },
+  "honesty_ground_truth": {
+    "directly_proven_if_pass": [
+      "The exact Env13 alice->admin permission edge exists structurally.",
+      "The exact Env13 alice->admin trust edge exists structurally.",
+      "A live Organizations SCP denying sts:AssumeRole with wildcard Resource is present in scenario.json.",
+      "The Env13 trust edge is bound to an SCP constraint.",
+      "The exact Env13 alice->admin path is emitted as blocked admin reachability with SCP blocker evidence.",
+      "The exact Env13 alice->admin path is not falsely emitted as validated admin reachability."
+    ],
+    "strongly_supported_if_pass": [
+      "IAMScope can distinguish partial/resource-scoped SCP evidence from complete wildcard-resource SCP blocking in this benchmark family."
+    ],
+    "only_implied_even_if_pass": [
+      "Broader SCP family correctness remains only implied."
+    ]
+  },
+  "semantic_assertions": [
+    {
+      "assertion_id": "assumerole_permission_edge_present",
+      "type": "scenario_edge_count",
+      "edge_type": "sts:AssumeRole_permission",
+      "op": "gte",
+      "expected_value": 1,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "assumerole_trust_edge_present",
+      "type": "scenario_edge_count",
+      "edge_type": "sts:AssumeRole_trust",
+      "op": "gte",
+      "expected_value": 1,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "scp_deny_assumerole_constraint_present",
+      "type": "scenario_constraint_count",
+      "constraint_type": "SCP",
+      "condition_key_contains": "sts:AssumeRole",
+      "op": "gte",
+      "expected_value": 1,
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "trust_edge_bound_to_scp",
+      "type": "scenario_edge_constraint_count",
+      "edge_type": "sts:AssumeRole_trust",
+      "constraint_type": "SCP",
+      "condition_key_contains": "sts:AssumeRole",
+      "op": "gte",
+      "expected_value": 1,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "blocked_admin_present",
+      "type": "finding_count",
+      "pattern_id": "admin_reachability",
+      "verdict": "blocked",
+      "op": "gte",
+      "expected_value": 1,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "scp_blocker_present",
+      "type": "blocker_present",
+      "pattern_id": "admin_reachability",
+      "verdict": "blocked",
+      "kind": "scp",
+      "require_string_constraint_id": true,
+      "require_string_edge_id": true,
+      "op": "gte",
+      "expected_value": 1,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "validated_admin_absent",
+      "type": "finding_count",
+      "pattern_id": "admin_reachability",
+      "verdict": "validated",
+      "op": "eq",
+      "expected_value": 0,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "false_admin_claim",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "inconclusive_admin_absent",
+      "type": "finding_count",
+      "pattern_id": "admin_reachability",
+      "verdict": "inconclusive",
+      "op": "eq",
+      "expected_value": 0,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "validated_assume_role_chain_absent",
+      "type": "finding_count",
+      "pattern_id": "assume_role_chain",
+      "verdict": "validated",
+      "op": "eq",
+      "expected_value": 0,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "false_admin_claim",
+      "confidence": "medium",
+      "authority": "live_aws"
+    }
+  ],
+  "artifacts_required": [
+    "scenario_json",
+    "findings_json",
+    "binding_metadata_json",
+    "run_log",
+    "scenario_validate_txt"
+  ],
+  "scoring_expectations": {
+    "required_scenario_validation": "pass",
+    "blocking_defect_classes": [
+      "artifact_insufficient",
+      "semantic_mismatch",
+      "false_admin_claim"
+    ],
+    "human_review_required_if_any_defects": true
+  }
+}

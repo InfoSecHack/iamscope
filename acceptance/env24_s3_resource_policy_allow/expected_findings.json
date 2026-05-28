@@ -1,0 +1,24 @@
+{
+  "environment": "env24_s3_resource_policy_allow",
+  "expected_behavior": {
+    "scenario_validation": "pass",
+    "benchmark_level": "scenario_edge",
+    "finding_level_claim_required": false
+  },
+  "benchmark_contract": {
+    "resource_policy_allow_edge": {
+      "edge_type": "s3:GetObject_resource_policy",
+      "min_count": 1,
+      "permission_source": "resource_policy",
+      "layer": "resource_policy",
+      "has_conditions": false
+    },
+    "identity_permission_edge": {
+      "edge_type": "s3:GetObject_permission",
+      "expected_count": 0
+    },
+    "resource_policy_condition_constraints": 0,
+    "resource_policy_deny_constraints": 0
+  },
+  "deny_boundary": "Env24 does not test or claim generic RESOURCE_POLICY_DENY support."
+}

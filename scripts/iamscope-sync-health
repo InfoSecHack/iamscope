@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PRIMARY_CLONE="${IAMSCOPE_PRIMARY_CLONE:-$HOME/src/iamscope}"
+
+if [[ ! -d "$PRIMARY_CLONE/.git" ]]; then
+  echo "ERROR: primary IAMScope clone not found at $PRIMARY_CLONE" >&2
+  exit 2
+fi
+
+CURRENT_DIR="$(pwd -P)"
+PRIMARY_DIR="$(cd "$PRIMARY_CLONE" && pwd -P)"
+
+if [[ "$CURRENT_DIR" == /tmp/iamscope-* ]]; then
+  echo "ERROR: run sync health from the primary clone, not a temporary /tmp worktree" >&2
+  echo "Run: cd $PRIMARY_DIR && scripts/iamscope-sync-health" >&2
+  exit 2
+fi
+
+cd "$PRIMARY_DIR"
+
+if [[ "$(git status --short)" != "" ]]; then
+  echo "ERROR: primary clone has uncommitted changes; resolve them before sync health" >&2
+  git status --short >&2
+  exit 2
+fi
+
+git fetch origin
+git switch main
+git merge --ff-only origin/main
+
+source "$PRIMARY_DIR/.venv/bin/activate"
+
+echo "HEAD: $(git rev-parse --short HEAD)"
+echo "Branch: $(git branch --show-current)"
+
+./scripts/check.sh
+./scripts/test_fast.sh
+
+echo "STATUS:"
+git status --short
+
+echo "WORKTREES:"
+git worktree list

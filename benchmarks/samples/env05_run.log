@@ -1,0 +1,7 @@
+Resources deployed:
+  alice_arn  : arn:aws:iam::516525145310:user/iamscope-test/env05-alice
+  admin_arn  : arn:aws:iam::516525145310:role/iamscope-test/env05-admin
+  account_id : 516525145310
+scenario validation: PASS
+semantic assertion counts: assume_role_chain.blocked=1 admin_reachability.blocked=1 assume_role_chain.validated=0 admin_reachability.validated=0
+benchmark semantic assertion: PASS

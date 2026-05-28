@@ -1,0 +1,14 @@
+# Terraform state — contains secrets (account IDs, resource IDs), never commit
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+
+# Terraform working directory — contains provider binaries (700 MB+)
+.terraform/
+
+# Plan files may contain sensitive data
+*.tfplan
+
+# Terraform var files may contain secrets
+terraform.tfvars
+*.auto.tfvars

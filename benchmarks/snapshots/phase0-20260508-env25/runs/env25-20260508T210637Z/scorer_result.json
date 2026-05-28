@@ -1,0 +1,72 @@
+{
+  "assertion_results": [
+    {
+      "actual_value": 1,
+      "assertion_id": "reader_node_present",
+      "expected_value": 1,
+      "op": "gte",
+      "passed": true,
+      "type": "scenario_node_count"
+    },
+    {
+      "actual_value": 1,
+      "assertion_id": "decoy_node_present",
+      "expected_value": 1,
+      "op": "gte",
+      "passed": true,
+      "type": "scenario_node_count"
+    },
+    {
+      "actual_value": 1,
+      "assertion_id": "bucket_node_present",
+      "expected_value": 1,
+      "op": "gte",
+      "passed": true,
+      "type": "scenario_node_count"
+    },
+    {
+      "actual_value": 1,
+      "assertion_id": "decoy_s3_getobject_resource_policy_edge_present",
+      "expected_value": 1,
+      "op": "gte",
+      "passed": true,
+      "type": "scenario_edge_count"
+    },
+    {
+      "actual_value": 0,
+      "assertion_id": "reader_s3_getobject_resource_policy_edge_absent",
+      "expected_value": 0,
+      "op": "eq",
+      "passed": true,
+      "type": "scenario_edge_count"
+    },
+    {
+      "actual_value": 0,
+      "assertion_id": "reader_identity_s3_getobject_permission_edge_absent",
+      "expected_value": 0,
+      "op": "eq",
+      "passed": true,
+      "type": "scenario_edge_count"
+    },
+    {
+      "actual_value": 0,
+      "assertion_id": "resource_policy_condition_constraint_absent",
+      "expected_value": 0,
+      "op": "eq",
+      "passed": true,
+      "type": "scenario_constraint_count"
+    },
+    {
+      "actual_value": 0,
+      "assertion_id": "resource_policy_deny_constraint_absent",
+      "expected_value": 0,
+      "op": "eq",
+      "passed": true,
+      "type": "scenario_constraint_count"
+    }
+  ],
+  "case_id": "env25_s3_resource_policy_allow_scoped_away_nonvalidated",
+  "defects": [],
+  "passed": true,
+  "run_id": "iamscope-benchmark-env25-20260508T210637Z"
+}

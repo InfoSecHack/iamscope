@@ -1,0 +1,40 @@
+{
+  "assertion_results": [
+    {
+      "actual_value": 1,
+      "assertion_id": "conditioned_assumerole_permission_edge_present",
+      "expected_value": 1,
+      "op": "gte",
+      "passed": true,
+      "type": "scenario_edge_count"
+    },
+    {
+      "actual_value": 1,
+      "assertion_id": "clean_assumerole_trust_edge_present",
+      "expected_value": 1,
+      "op": "gte",
+      "passed": true,
+      "type": "scenario_edge_count"
+    },
+    {
+      "actual_value": 0,
+      "assertion_id": "validated_admin_absent",
+      "expected_value": 0,
+      "op": "eq",
+      "passed": true,
+      "type": "finding_count"
+    },
+    {
+      "actual_value": 1,
+      "assertion_id": "inconclusive_admin_present",
+      "expected_value": 1,
+      "op": "gte",
+      "passed": true,
+      "type": "finding_count"
+    }
+  ],
+  "case_id": "env14_permission_condition_blocked_admin",
+  "defects": [],
+  "passed": true,
+  "run_id": "iamscope-benchmark-env14-24940398230"
+}

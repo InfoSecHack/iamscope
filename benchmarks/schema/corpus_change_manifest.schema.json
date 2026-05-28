@@ -1,0 +1,5 @@
+{
+  "manifest_type": "benchmark_corpus_change_manifest",
+  "required": ["manifest_type", "schema_version", "change_id", "summary", "cases_added", "cases_changed", "cases_removed", "reason"],
+  "schema_version": "0.1"
+}

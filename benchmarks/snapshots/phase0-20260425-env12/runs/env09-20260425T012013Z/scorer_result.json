@@ -1,0 +1,32 @@
+{
+  "assertion_results": [
+    {
+      "actual_value": 1,
+      "assertion_id": "validated_admin_present",
+      "expected_value": 1,
+      "op": "gte",
+      "passed": true,
+      "type": "finding_count"
+    },
+    {
+      "actual_value": 0,
+      "assertion_id": "blocked_admin_absent",
+      "expected_value": 0,
+      "op": "eq",
+      "passed": true,
+      "type": "finding_count"
+    },
+    {
+      "actual_value": 0,
+      "assertion_id": "inconclusive_admin_absent",
+      "expected_value": 0,
+      "op": "eq",
+      "passed": true,
+      "type": "finding_count"
+    }
+  ],
+  "case_id": "env09_boundary_removed_validated_admin",
+  "defects": [],
+  "passed": true,
+  "run_id": "iamscope-benchmark-env09-20260425T012013Z"
+}

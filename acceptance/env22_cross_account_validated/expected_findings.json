@@ -1,0 +1,31 @@
+{
+  "environment": "env22_cross_account_validated",
+  "benchmark_contract": {
+    "target_pattern_ids": [
+      "admin_reachability",
+      "cross_account_trust"
+    ],
+    "required_scenario_edges": {
+      "permission_edge_type": "sts:AssumeRole_permission",
+      "trust_edge_type": "sts:AssumeRole_trust",
+      "min_count_each": 1
+    },
+    "admin_reachability": {
+      "validated_min": 1,
+      "blocked": 0,
+      "inconclusive": 0,
+      "validated_with_blockers": 0
+    },
+    "cross_account_trust": {
+      "validated_min": 1,
+      "blocked": 0,
+      "inconclusive": 0
+    }
+  },
+  "notes": [
+    "Env22 is a positive cross-account AssumeRole benchmark.",
+    "The caller-side permission and target-side trust are both unconditioned.",
+    "The target role is admin-equivalent through AdministratorAccess.",
+    "No SCPs or Organizations mutations are part of this benchmark."
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "artifact_status": {
+    "artifact_retention": "complete",
+    "scenario_validation": "pass"
+  },
+  "artifacts": {
+    "binding_metadata_json": "/tmp/iamscope-benchmark-env12-20260425T032022Z/collect/binding_metadata.json",
+    "expected_findings_json": "/tmp/iamscope-benchmark-env12-20260425T032022Z/expected_findings.json",
+    "findings_json": "/tmp/iamscope-benchmark-env12-20260425T032022Z/collect/findings.json",
+    "run_log": "/tmp/iamscope-benchmark-env12-20260425T032022Z/run.log",
+    "scenario_json": "/tmp/iamscope-benchmark-env12-20260425T032022Z/collect/scenario.json",
+    "scenario_validate_txt": "/tmp/iamscope-benchmark-env12-20260425T032022Z/scenario_validate.txt"
+  },
+  "authority": "live_aws",
+  "benchmark_date": "2026-04-25",
+  "case_id": "env12_scp_blocked_assumerole",
+  "confidence": "high",
+  "context": {
+    "source_provider_id": "arn:aws:iam::377114445031:user/iamscope-test/env12-alice",
+    "target_provider_id": "arn:aws:iam::377114445031:role/iamscope-test/env12-admin"
+  },
+  "ended_at": "2026-04-25T03:22:24.580857Z",
+  "environment": "acceptance/env12_scp_blocked_assumerole",
+  "git_sha": "2a14565f8e999b3ba5b18ef4275e7b9a803bf54c",
+  "manifest_type": "benchmark_run_manifest",
+  "run_id": "iamscope-benchmark-env12-20260425T032022Z",
+  "schema_version": "0.1",
+  "started_at": "2026-04-25T03:20:22Z",
+  "tool_claims": [],
+  "tool_name": "iamscope"
+}

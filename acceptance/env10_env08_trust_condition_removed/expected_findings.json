@@ -1,0 +1,52 @@
+{
+  "environment": "env10_env08_trust_condition_removed",
+  "purpose": "Mutation of Env08 with the MFA trust condition removed",
+  "description": "Alice can assume an AdministratorAccess-backed role whose trust policy allows Alice without the Env08 MFA condition. IAMScope should now emit validated admin reachability for alice -> admin.",
+  "mutation_of": "env08_trust_condition_blocked_admin",
+  "expected_semantic_delta": {
+    "base_case": {
+      "trust_condition_constraints_min": 1,
+      "trust_condition_bindings_min": 1,
+      "admin_reachability.validated": 0,
+      "admin_reachability.inconclusive_min": 1
+    },
+    "mutated_case": {
+      "trust_condition_constraints": 0,
+      "trust_condition_bindings": 0,
+      "admin_reachability.validated_min": 1,
+      "admin_reachability.blocked": 0,
+      "admin_reachability.inconclusive": 0
+    },
+    "intended_local_change": "Remove only the MFA trust condition from the Env08 target role trust policy."
+  },
+  "ground_truth": {
+    "attack_path_reachable_via_iam": true,
+    "reasoning": "Alice has an identity policy allowing sts:AssumeRole on env10-admin, and env10-admin's trust policy explicitly allows Alice without the Env08 MFA condition. The target role has AdministratorAccess."
+  },
+  "benchmark_contract": {
+    "required_scenario_edges": {
+      "permission_edge_type": "sts:AssumeRole_permission",
+      "trust_edge_type": "sts:AssumeRole_trust",
+      "min_count_each": 1
+    },
+    "trust_condition": {
+      "constraint_type": "TRUST_CONDITION",
+      "condition_key": "aws:MultiFactorAuthPresent",
+      "expected_constraints": 0,
+      "expected_edge_bindings": 0
+    },
+    "target_pattern_id": "admin_reachability",
+    "expected_counts": {
+      "validated_min": 1,
+      "blocked": 0,
+      "inconclusive": 0
+    },
+    "validated_findings": {
+      "blockers_observed_total": 0
+    }
+  },
+  "benchmark_does_not_prove": [
+    "It does not yet machine-score the pairwise delta versus Env08.",
+    "It does not prove broader condition-removal behavior beyond this narrow trust-policy mutation."
+  ]
+}

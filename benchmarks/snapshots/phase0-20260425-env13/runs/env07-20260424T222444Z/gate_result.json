@@ -1,0 +1,32 @@
+{
+  "artifact_sufficient": true,
+  "defects": [],
+  "gate_results": [
+    {
+      "description": "Required artifacts and scenario validation must be present.",
+      "gate_id": "artifact_sufficient",
+      "status": "pass",
+      "triggered_by": []
+    },
+    {
+      "description": "False validated admin claims block promotion.",
+      "gate_id": "false_admin_claim",
+      "status": "pass",
+      "triggered_by": []
+    },
+    {
+      "description": "Truth-degrading regressions block promotion.",
+      "gate_id": "dishonest_degradation",
+      "status": "pass",
+      "triggered_by": []
+    },
+    {
+      "description": "Target-case semantic mismatches block promotion.",
+      "gate_id": "semantic_mismatch",
+      "status": "pass",
+      "triggered_by": []
+    }
+  ],
+  "human_review_required": true,
+  "promotion_blocked": false
+}

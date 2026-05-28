@@ -1,0 +1,9 @@
+{
+  "artifact_insufficient_count": 0,
+  "blocked_promotions": 0,
+  "decision": "hold_review",
+  "human_review_required_count": 22,
+  "reasons": [
+    "human_review_required_for_one_or_more_cases"
+  ]
+}

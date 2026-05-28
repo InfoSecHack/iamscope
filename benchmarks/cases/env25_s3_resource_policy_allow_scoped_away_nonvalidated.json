@@ -1,0 +1,178 @@
+{
+  "manifest_type": "benchmark_case_manifest",
+  "schema_version": "0.1",
+  "case_id": "env25_s3_resource_policy_allow_scoped_away_nonvalidated",
+  "family": "resource_policy_allow_s3_scoped_away_mutation",
+  "tier": "tier1_live_aws",
+  "purpose": "Prove the Env24 S3 resource-policy Allow edge is scoped to the policy principal and does not appear for an unrelated reader principal.",
+  "claim_surface": [
+    "IAMScope can collect the Env25 S3 bucket policy.",
+    "IAMScope can parse the exact unconditioned Allow from env25-decoy to the Env25 bucket.",
+    "IAMScope can emit a s3:GetObject_resource_policy edge for the decoy principal.",
+    "IAMScope does not emit the same resource-policy edge for env25-reader when the bucket policy names only env25-decoy.",
+    "IAMScope does not need or claim generic resource-policy Deny support for this scoped-away Allow evidence."
+  ],
+  "benchmark_proves": [
+    "The Env25 reader IAM user node exists in scenario.json.",
+    "The Env25 decoy IAM user node exists in scenario.json.",
+    "The Env25 S3 bucket node exists in scenario.json.",
+    "The exact Env25 decoy->bucket s3:GetObject_resource_policy edge exists in scenario.json.",
+    "The exact Env25 reader->bucket s3:GetObject_resource_policy edge is absent.",
+    "The Env25 reader path is not accidentally witnessed by an identity-policy s3:GetObject edge.",
+    "No generic RESOURCE_POLICY_DENY constraint is emitted."
+  ],
+  "benchmark_does_not_prove": [
+    "It does not prove a finding-level resource-policy Allow reasoner.",
+    "It does not prove runtime S3 object readability.",
+    "It does not prove S3 PutBucketPolicy takeover through resource-policy Allow.",
+    "It does not prove Secrets Manager, KMS, or Lambda resource-policy Allow behavior.",
+    "It does not prove generic resource-policy Deny support.",
+    "It does not prove production readiness."
+  ],
+  "unknowns_remaining": [
+    "Finding-level resource-policy Allow semantics remain outside this case.",
+    "Conditioned resource-policy Allow statements remain outside this case.",
+    "Generic resource-policy Deny remains explicitly de-scoped."
+  ],
+  "environment": {
+    "acceptance_env": "acceptance/env25_env24_resource_policy_allow_scoped_away",
+    "benchmark_family": "controlled_live_aws",
+    "notes": "Single-account IAM/S3 resource-policy Allow scoped-away mutation benchmark. No S3 objects are required."
+  },
+  "ground_truth": {
+    "reachable": "scenario_edge_only_for_decoy",
+    "resource_policy_allow": true,
+    "reader_resource_policy_allow": false,
+    "finding_level_claim": false,
+    "reason": "The bucket policy allows exact env25-decoy, not env25-reader, to perform s3:GetObject on the benchmark bucket objects."
+  },
+  "honesty_ground_truth": {
+    "directly_proven_if_pass": [
+      "The exact Env25 decoy resource-policy Allow edge exists structurally.",
+      "The exact Env25 reader resource-policy Allow edge is absent.",
+      "The Env25 decoy edge is unconditioned and has resource-policy provenance.",
+      "The Env25 reader path is not accidentally witnessed by an identity-policy s3:GetObject edge.",
+      "No generic RESOURCE_POLICY_DENY constraint is emitted."
+    ],
+    "strongly_supported_if_pass": [
+      "IAMScope's S3 resource-policy Allow parser/binder/export path respects exact principal scoping on one controlled live AWS fixture."
+    ],
+    "only_implied_even_if_pass": [
+      "Broader resource-policy Allow correctness remains only implied."
+    ]
+  },
+  "semantic_assertions": [
+    {
+      "assertion_id": "reader_node_present",
+      "type": "scenario_node_count",
+      "node_type": "IAMUser",
+      "op": "gte",
+      "expected_value": 1,
+      "provider_id_from_context": "source_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "decoy_node_present",
+      "type": "scenario_node_count",
+      "node_type": "IAMUser",
+      "op": "gte",
+      "expected_value": 1,
+      "provider_id_from_context": "decoy_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "bucket_node_present",
+      "type": "scenario_node_count",
+      "node_type": "S3Bucket",
+      "op": "gte",
+      "expected_value": 1,
+      "provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "decoy_s3_getobject_resource_policy_edge_present",
+      "type": "scenario_edge_count",
+      "edge_type": "s3:GetObject_resource_policy",
+      "feature_has_conditions": false,
+      "feature_equals": {
+        "permission_source": "resource_policy",
+        "layer": "resource_policy"
+      },
+      "op": "gte",
+      "expected_value": 1,
+      "source_provider_id_from_context": "decoy_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "reader_s3_getobject_resource_policy_edge_absent",
+      "type": "scenario_edge_count",
+      "edge_type": "s3:GetObject_resource_policy",
+      "op": "eq",
+      "expected_value": 0,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "reader_identity_s3_getobject_permission_edge_absent",
+      "type": "scenario_edge_count",
+      "edge_type": "s3:GetObject_permission",
+      "op": "eq",
+      "expected_value": 0,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "resource_policy_condition_constraint_absent",
+      "type": "scenario_constraint_count",
+      "constraint_type": "RESOURCE_POLICY_CONDITION",
+      "op": "eq",
+      "expected_value": 0,
+      "condition_key_contains": "env25",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "resource_policy_deny_constraint_absent",
+      "type": "scenario_constraint_count",
+      "constraint_type": "RESOURCE_POLICY_DENY",
+      "op": "eq",
+      "expected_value": 0,
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    }
+  ],
+  "artifacts_required": [
+    "scenario_json",
+    "findings_json",
+    "binding_metadata_json",
+    "run_log",
+    "scenario_validate_txt"
+  ],
+  "scoring_expectations": {
+    "required_scenario_validation": "pass",
+    "blocking_defect_classes": [
+      "artifact_insufficient",
+      "dishonest_degradation",
+      "semantic_mismatch",
+      "false_admin_claim"
+    ],
+    "human_review_required_if_any_defects": true
+  }
+}

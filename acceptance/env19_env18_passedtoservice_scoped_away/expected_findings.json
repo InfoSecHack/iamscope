@@ -1,0 +1,32 @@
+{
+  "environment": "env19_env18_passedtoservice_scoped_away",
+  "purpose": "Negative mutation benchmark for Env18 Lambda PassRole with iam:PassedToService scoped away from Lambda",
+  "description": "Alice can create a Lambda function and has iam:PassRole on a Lambda-trusted admin role, but the PassRole statement is scoped to ec2.amazonaws.com.",
+  "ground_truth": {
+    "attack_path_reachable": false,
+    "reasoning": "The target role trusts Lambda and is admin-equivalent, but Alice's PassRole grant cannot be used with Lambda because iam:PassedToService is scoped to ec2.amazonaws.com."
+  },
+  "benchmark_contract": {
+    "target_pattern_id": "passrole_lambda",
+    "required_scenario_edges": {
+      "lambda_create_edge_type": "lambda:CreateFunction_permission",
+      "passrole_edge_type": "iam:PassRole_permission",
+      "lambda_trust_edge_type": "sts:AssumeRole_trust",
+      "min_count_each": 1
+    },
+    "required_condition": {
+      "condition_key": "iam:PassedToService",
+      "condition_value": "ec2.amazonaws.com",
+      "min_count": 1
+    },
+    "passrole_lambda": {
+      "validated": 0,
+      "blocked": 0,
+      "inconclusive": 0,
+      "precondition_only_min": 1,
+      "passed_to_service_blockers_min": 1,
+      "precondition_severity": "medium"
+    }
+  },
+  "assertion_strategy": "The benchmark wrapper asserts the Lambda CreateFunction edge, exact PassRole edge with iam:PassedToService=ec2.amazonaws.com condition evidence, Lambda service trust edge, zero validated passrole_lambda findings, at least one precondition_only passrole_lambda finding, and a failed passrole_condition_scoped_to_lambda_or_absent check."
+}

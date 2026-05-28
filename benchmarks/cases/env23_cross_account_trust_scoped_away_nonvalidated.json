@@ -1,0 +1,126 @@
+{
+  "manifest_type": "benchmark_case_manifest",
+  "schema_version": "0.1",
+  "case_id": "env23_cross_account_trust_scoped_away_nonvalidated",
+  "family": "cross_account_trust_scoped_away_mutation",
+  "tier": "tier1_live_aws",
+  "purpose": "Prove IAMScope does not validate a cross-account AssumeRole/admin path when the target role trusts a decoy caller rather than the caller with sts:AssumeRole permission.",
+  "claim_surface": [
+    "IAMScope can collect the caller-side sts:AssumeRole permission edge from Env23 Alice to the target account admin role.",
+    "IAMScope does not emit validated admin_reachability when target trust is scoped to a decoy principal.",
+    "IAMScope does not emit validated cross_account_trust for the Env23 Alice target path when no matching trust edge exists."
+  ],
+  "benchmark_proves": [
+    "For the Env23 alice->cross-account-admin path, scenario.json contains the expected sts:AssumeRole permission edge.",
+    "For the Env23 alice->cross-account-admin path, scenario.json contains no matching sts:AssumeRole trust edge.",
+    "For that path, IAMScope emitted zero validated admin_reachability findings.",
+    "For that path, IAMScope emitted zero validated cross_account_trust findings."
+  ],
+  "benchmark_does_not_prove": [
+    "It does not prove every cross-account trust or principal matching shape.",
+    "It does not prove cross-account runtime exploitability.",
+    "It does not prove cross-account SCP, permission-boundary, or condition handling.",
+    "It does not prove production readiness."
+  ],
+  "unknowns_remaining": [
+    "Conditioned cross-account trust paths remain outside this case.",
+    "Longer cross-account chains remain outside this case.",
+    "Resource-policy Allow and generic resource-policy Deny remain outside this case."
+  ],
+  "environment": {
+    "acceptance_env": "acceptance/env23_env22_trust_scoped_away",
+    "benchmark_family": "controlled_live_aws",
+    "notes": "Two-account IAM-only negative cross-account AssumeRole mutation. No SCPs or Organizations mutations are created."
+  },
+  "ground_truth": {
+    "reachable": false,
+    "admin_equivalent": true,
+    "cross_account": true,
+    "reason": "Env23 Alice has sts:AssumeRole permission on env23-cross-account-admin, but the target role trusts env23-decoy rather than Alice."
+  },
+  "honesty_ground_truth": {
+    "directly_proven_if_pass": [
+      "The exact Env23 cross-account permission edge exists structurally.",
+      "The exact Env23 alice->cross-account-admin path has no matching trust edge.",
+      "The exact Env23 alice->cross-account-admin path is not emitted as validated admin_reachability.",
+      "The exact Env23 alice->cross-account-admin path is not emitted as validated cross_account_trust."
+    ],
+    "strongly_supported_if_pass": [
+      "IAMScope's same-organization cross-account trust reasoning does not validate one controlled trust-scoped-away live AWS mutation."
+    ],
+    "only_implied_even_if_pass": [
+      "Broader cross-account trust mutation correctness remains only implied."
+    ]
+  },
+  "semantic_assertions": [
+    {
+      "assertion_id": "assume_role_permission_edge_present",
+      "type": "scenario_edge_count",
+      "edge_type": "sts:AssumeRole_permission",
+      "feature_has_conditions": false,
+      "op": "gte",
+      "expected_value": 1,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "matching_assume_role_trust_edge_absent",
+      "type": "scenario_edge_count",
+      "edge_type": "sts:AssumeRole_trust",
+      "feature_has_conditions": false,
+      "op": "eq",
+      "expected_value": 0,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "validated_admin_absent",
+      "type": "finding_count",
+      "pattern_id": "admin_reachability",
+      "verdict": "validated",
+      "op": "eq",
+      "expected_value": 0,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "false_admin_claim",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "validated_cross_account_trust_absent",
+      "type": "finding_count",
+      "pattern_id": "cross_account_trust",
+      "verdict": "validated",
+      "op": "eq",
+      "expected_value": 0,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    }
+  ],
+  "artifacts_required": [
+    "scenario_json",
+    "findings_json",
+    "binding_metadata_json",
+    "run_log",
+    "scenario_validate_txt"
+  ],
+  "scoring_expectations": {
+    "required_scenario_validation": "pass",
+    "blocking_defect_classes": [
+      "artifact_insufficient",
+      "dishonest_degradation",
+      "semantic_mismatch",
+      "false_admin_claim"
+    ],
+    "human_review_required_if_any_defects": true
+  }
+}

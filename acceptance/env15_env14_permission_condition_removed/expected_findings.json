@@ -1,0 +1,28 @@
+{
+  "environment": "env15_env14_permission_condition_removed",
+  "purpose": "Positive mutation benchmark for removing Env14's permission-side AssumeRole condition",
+  "description": "Alice has an unconditional identity-policy Allow for sts:AssumeRole to an admin role. The target role cleanly trusts Alice and is admin-equivalent.",
+  "ground_truth": {
+    "attack_path_reachable_without_runtime_condition_evidence": true,
+    "reasoning": "The Env14 permission-side aws:MultiFactorAuthPresent condition is removed, while the clean trust and AdministratorAccess target remain."
+  },
+  "benchmark_contract": {
+    "target_pattern_id": "admin_reachability",
+    "required_scenario_edges": {
+      "permission_edge_type": "sts:AssumeRole_permission",
+      "trust_edge_type": "sts:AssumeRole_trust",
+      "min_count_each": 1
+    },
+    "forbidden_permission_condition": {
+      "condition_key": "aws:MultiFactorAuthPresent",
+      "max_edges": 0
+    },
+    "admin_reachability": {
+      "validated_min": 1,
+      "blocked": 0,
+      "inconclusive": 0,
+      "validated_with_blockers": 0
+    }
+  },
+  "assertion_strategy": "The benchmark wrapper asserts that the direct permission and trust edges exist, the permission edge does not carry aws:MultiFactorAuthPresent condition evidence, at least one validated admin_reachability finding exists for alice->admin, no blocked or inconclusive admin_reachability findings exist for that path, and validated findings have no blockers."
+}

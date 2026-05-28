@@ -1,0 +1,9 @@
+{
+  "allowed_authorities": ["fixture", "live_aws", "manual", "synthetic"],
+  "allowed_confidence": ["high", "low", "medium"],
+  "manifest_type": "benchmark_run_manifest",
+  "required": ["manifest_type", "schema_version", "run_id", "case_id", "tool_name", "git_sha", "started_at", "ended_at", "authority", "confidence", "benchmark_date", "environment", "artifacts", "artifact_status", "context", "tool_claims"],
+  "required_artifact_keys": ["findings_json", "run_log", "scenario_json", "scenario_validate_txt"],
+  "optional_artifact_keys": ["binding_metadata_json", "expected_findings_json"],
+  "schema_version": "0.1"
+}

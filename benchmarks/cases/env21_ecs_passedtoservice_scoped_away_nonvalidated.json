@@ -1,0 +1,215 @@
+{
+  "manifest_type": "benchmark_case_manifest",
+  "schema_version": "0.1",
+  "case_id": "env21_ecs_passedtoservice_scoped_away_nonvalidated",
+  "family": "passrole_ecs_passedtoservice_mutation",
+  "tier": "tier1_live_aws",
+  "purpose": "Prove IAMScope does not validate the Env20 ECS PassRole path when iam:PassedToService scopes PassRole away from ECS.",
+  "claim_surface": [
+    "IAMScope can collect the Env21 ECS RegisterTaskDefinition permission edge.",
+    "IAMScope can collect the Env21 ECS RunTask permission edge.",
+    "IAMScope can collect the Env21 iam:PassRole permission edge and preserve iam:PassedToService condition evidence.",
+    "IAMScope can collect ECS task service trust on the target task role.",
+    "IAMScope does not emit a validated ECS PassRole escalation when iam:PassedToService is scoped to ec2.amazonaws.com."
+  ],
+  "benchmark_proves": [
+    "For the Env21 alice->ecs-admin-task path, scenario.json contains the expected ecs:RegisterTaskDefinition permission edge.",
+    "For the Env21 alice->ecs-admin-task path, scenario.json contains the expected ecs:RunTask permission edge.",
+    "For the Env21 alice->ecs-admin-task path, scenario.json contains the expected iam:PassRole permission edge with condition evidence.",
+    "For the Env21 ECS task service->ecs-admin-task path, scenario.json contains the expected sts:AssumeRole trust edge.",
+    "For that path, IAMScope emitted zero validated passrole_ecs findings.",
+    "For that path, IAMScope emitted at least one precondition_only passrole_ecs finding.",
+    "For that path, the PassRole condition check failed rather than validating the ECS escalation."
+  ],
+  "benchmark_does_not_prove": [
+    "It does not prove Lambda PassRole behavior.",
+    "It does not prove every iam:PassedToService condition shape.",
+    "It does not prove wildcard PassRole expansion correctness.",
+    "It does not prove live ECS task execution exploitability.",
+    "It does not prove cross-account PassRole behavior.",
+    "It does not prove production readiness."
+  ],
+  "unknowns_remaining": [
+    "How unsupported iam:PassedToService operators behave remains outside this case.",
+    "How SCP, permission-boundary, and identity-Deny blockers interact with ECS PassRole remains outside this case.",
+    "Whether broader PassRole mutation families behave the same way remains unknown here."
+  ],
+  "environment": {
+    "acceptance_env": "acceptance/env21_env20_passedtoservice_scoped_away",
+    "benchmark_family": "controlled_live_aws",
+    "notes": "Single-account IAM-only mutation of Env20. No ECS task definition, task, service, or cluster is created."
+  },
+  "ground_truth": {
+    "reachable": false,
+    "admin_equivalent": true,
+    "reason": "Alice has the same ECS RegisterTaskDefinition, ECS RunTask, target role, target ECS task trust, and admin-equivalent target as Env20, but the PassRole grant is scoped to ec2.amazonaws.com."
+  },
+  "honesty_ground_truth": {
+    "directly_proven_if_pass": [
+      "The exact Env21 ECS RegisterTaskDefinition permission edge exists structurally.",
+      "The exact Env21 ECS RunTask permission edge exists structurally.",
+      "The exact Env21 iam:PassRole permission edge exists structurally and carries iam:PassedToService condition evidence.",
+      "The exact Env21 ECS task service trust edge exists structurally.",
+      "The exact Env21 alice->ecs-admin-task path is not emitted as validated passrole_ecs.",
+      "The exact Env21 alice->ecs-admin-task path is emitted as precondition_only passrole_ecs under current reasoner semantics."
+    ],
+    "strongly_supported_if_pass": [
+      "IAMScope distinguishes the Env20 positive ECS PassRole path from the Env21 PassedToService-scoped-away mutation."
+    ],
+    "only_implied_even_if_pass": [
+      "Broader ECS PassRole condition handling remains only implied."
+    ]
+  },
+  "semantic_assertions": [
+    {
+      "assertion_id": "ecs_register_permission_edge_present",
+      "type": "scenario_edge_count",
+      "edge_type": "ecs:RegisterTaskDefinition_permission",
+      "feature_has_conditions": false,
+      "feature_is_wildcard_resource": false,
+      "op": "gte",
+      "expected_value": 1,
+      "source_provider_id_from_context": "source_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "ecs_run_permission_edge_present",
+      "type": "scenario_edge_count",
+      "edge_type": "ecs:RunTask_permission",
+      "feature_has_conditions": false,
+      "feature_is_wildcard_resource": false,
+      "op": "gte",
+      "expected_value": 1,
+      "source_provider_id_from_context": "source_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "passrole_permission_edge_conditioned_to_ec2_present",
+      "type": "scenario_edge_count",
+      "edge_type": "iam:PassRole_permission",
+      "feature_has_conditions": true,
+      "feature_condition_key_contains": "iam:PassedToService",
+      "feature_condition_value_contains": "ec2.amazonaws.com",
+      "op": "gte",
+      "expected_value": 1,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "ecs_task_service_trust_edge_present",
+      "type": "scenario_edge_count",
+      "edge_type": "sts:AssumeRole_trust",
+      "op": "gte",
+      "expected_value": 1,
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "validated_passrole_ecs_absent",
+      "type": "finding_count",
+      "pattern_id": "passrole_ecs",
+      "verdict": "validated",
+      "op": "eq",
+      "expected_value": 0,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "false_admin_claim",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "precondition_only_passrole_ecs_present",
+      "type": "finding_count",
+      "pattern_id": "passrole_ecs",
+      "verdict": "precondition_only",
+      "op": "gte",
+      "expected_value": 1,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "blocked_passrole_ecs_absent",
+      "type": "finding_count",
+      "pattern_id": "passrole_ecs",
+      "verdict": "blocked",
+      "op": "eq",
+      "expected_value": 0,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "dishonest_degradation",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "inconclusive_passrole_ecs_absent",
+      "type": "finding_count",
+      "pattern_id": "passrole_ecs",
+      "verdict": "inconclusive",
+      "op": "eq",
+      "expected_value": 0,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "dishonest_degradation",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "passed_to_service_blocker_present",
+      "type": "blocker_present",
+      "pattern_id": "passrole_ecs",
+      "verdict": "precondition_only",
+      "kind": "passed_to_service",
+      "op": "gte",
+      "expected_value": 1,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    },
+    {
+      "assertion_id": "passed_to_service_check_fails",
+      "type": "check_state_present",
+      "pattern_id": "passrole_ecs",
+      "verdict": "precondition_only",
+      "check_name": "passrole_condition_scoped_to_ecs_or_absent",
+      "check_state": "fail",
+      "op": "gte",
+      "expected_value": 1,
+      "source_provider_id_from_context": "source_provider_id",
+      "target_provider_id_from_context": "target_provider_id",
+      "defect_class_on_fail": "semantic_mismatch",
+      "confidence": "high",
+      "authority": "live_aws"
+    }
+  ],
+  "artifacts_required": [
+    "scenario_json",
+    "findings_json",
+    "binding_metadata_json",
+    "run_log",
+    "scenario_validate_txt"
+  ],
+  "scoring_expectations": {
+    "required_scenario_validation": "pass",
+    "blocking_defect_classes": [
+      "artifact_insufficient",
+      "dishonest_degradation",
+      "semantic_mismatch",
+      "false_admin_claim"
+    ],
+    "human_review_required_if_any_defects": true
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "environment": "env20_ecs_passrole_validated",
+  "purpose": "Validated ECS PassRole benchmark",
+  "description": "Alice can register and run a precise ECS task definition, pass an admin-equivalent ECS task role, and the target role trusts ecs-tasks.amazonaws.com.",
+  "ground_truth": {
+    "attack_path_reachable": true,
+    "reasoning": "Alice has ecs:RegisterTaskDefinition, ecs:RunTask, and iam:PassRole permissions; the target role trusts ECS tasks; and the target role has AdministratorAccess."
+  },
+  "benchmark_contract": {
+    "target_pattern_id": "passrole_ecs",
+    "required_scenario_edges": {
+      "ecs_register_edge_type": "ecs:RegisterTaskDefinition_permission",
+      "ecs_run_edge_type": "ecs:RunTask_permission",
+      "passrole_edge_type": "iam:PassRole_permission",
+      "ecs_trust_edge_type": "sts:AssumeRole_trust",
+      "min_count_each": 1
+    },
+    "passrole_ecs": {
+      "validated_min": 1,
+      "blocked": 0,
+      "inconclusive": 0,
+      "precondition_only": 0,
+      "validated_with_blockers": 0,
+      "validated_severity": "critical"
+    }
+  },
+  "assertion_strategy": "The benchmark wrapper asserts clean ECS RegisterTaskDefinition and RunTask edges, exact PassRole edge, ECS task-service trust edge, validated critical passrole_ecs finding, zero blocked/inconclusive/precondition_only target findings, no blockers on the validated target finding, and PASS states for the required ECS PassRole checks."
+}

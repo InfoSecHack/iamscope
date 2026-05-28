@@ -1,0 +1,26 @@
+{
+  "environment": "env08_trust_condition_blocked_admin",
+  "purpose": "Conditioned trust should prevent a confident validated admin claim.",
+  "description": "Alice has sts:AssumeRole permission to an admin-equivalent role, but the role trust requires MFA. The benchmark context does not satisfy the MFA condition.",
+  "ground_truth": {
+    "attack_path_reachable_via_iam": false,
+    "reasoning": "The trust policy requires aws:MultiFactorAuthPresent=true and this benchmark does not create or use an MFA-backed session for env08-alice."
+  },
+  "benchmark_contract": {
+    "required_scenario_edges": {
+      "permission_edge_type": "sts:AssumeRole_permission",
+      "trust_edge_type": "sts:AssumeRole_trust",
+      "min_count_each": 1
+    },
+    "required_trust_condition": {
+      "constraint_type": "TRUST_CONDITION",
+      "condition_key": "aws:MultiFactorAuthPresent",
+      "min_constraints": 1,
+      "min_edge_bindings": 1
+    },
+    "admin_reachability": {
+      "validated_max": 0
+    },
+    "contract_note": "Current repo contract definitely exports conditioned trust structurally. A validated admin_reachability finding for alice -> conditioned-admin is benchmark-failing overclaim. Blocked or inconclusive outcomes are both acceptable benchmark outcomes today."
+  }
+}

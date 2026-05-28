@@ -1,0 +1,40 @@
+{
+  "assertion_results": [
+    {
+      "actual_value": 1,
+      "assertion_id": "blocked_chain_present",
+      "expected_value": 1,
+      "op": "gte",
+      "passed": true,
+      "type": "finding_count"
+    },
+    {
+      "actual_value": 1,
+      "assertion_id": "blocked_admin_reachability_present",
+      "expected_value": 1,
+      "op": "gte",
+      "passed": true,
+      "type": "finding_count"
+    },
+    {
+      "actual_value": 0,
+      "assertion_id": "validated_chain_absent",
+      "expected_value": 0,
+      "op": "eq",
+      "passed": true,
+      "type": "finding_count"
+    },
+    {
+      "actual_value": 0,
+      "assertion_id": "validated_admin_claim_absent",
+      "expected_value": 0,
+      "op": "eq",
+      "passed": true,
+      "type": "finding_count"
+    }
+  ],
+  "case_id": "env05_permission_boundary_blocked_chain",
+  "defects": [],
+  "passed": true,
+  "run_id": "iamscope-benchmark-env05-20260424T203548Z"
+}
