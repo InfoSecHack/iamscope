@@ -50,6 +50,11 @@ esac
 
 mkdir -p "$OUT_ABS"
 
+"$REPO_ROOT/scripts/group_inconclusive_uncertainty.py" \
+  --findings "$FIXTURE_DIR/findings.json" \
+  --expected-groups "$FIXTURE_DIR/expected_uncertainty_groups.json" \
+  --out "$OUT_ABS/uncertainty-groups.json"
+
 python - "$FIXTURE_DIR" "$OUT_ABS" <<'PY'
 from __future__ import annotations
 
@@ -63,7 +68,7 @@ out_dir = Path(sys.argv[2])
 
 naive = json.loads((fixture_dir / "naive_candidates.json").read_text())
 findings_doc = json.loads((fixture_dir / "findings.json").read_text())
-groups_doc = json.loads((fixture_dir / "expected_uncertainty_groups.json").read_text())
+groups_doc = json.loads((out_dir / "uncertainty-groups.json").read_text())
 binding = json.loads((fixture_dir / "binding_metadata.json").read_text())
 
 candidate_count = len(naive["candidate_paths"])
@@ -75,10 +80,7 @@ ordered_verdicts = {
     "precondition_only": verdicts.get("precondition_only", 0),
     "inconclusive": verdicts.get("inconclusive", 0),
 }
-groups = {
-    group["uncertainty_class"]: len(group["finding_ids"])
-    for group in groups_doc["groups"]
-}
+groups = groups_doc["groups"]
 primary_class = "shared_passrole_target_resource_scope_unknown"
 replay_status = findings_doc["replay_equivalence_status"]
 replay_status_human = replay_status.replace("_", " ")
@@ -105,8 +107,11 @@ verdict_summary = {
 uncertainty_summary = {
     "fixture_id": groups_doc["fixture_id"],
     "groups": groups,
-    "top_uncertainty_class": primary_class,
-    "top_uncertainty_count": groups[primary_class],
+    "group_details": groups_doc["group_details"],
+    "report_only": groups_doc["report_only"],
+    "top_uncertainty_class": groups_doc["top_uncertainty_class"],
+    "top_uncertainty_count": groups_doc["top_uncertainty_count"],
+    "non_claims": groups_doc["non_claims"],
     "reviewer_decision": "Do not treat all 23 as independent validated risks. Resolve the primary evidence gap first.",
 }
 

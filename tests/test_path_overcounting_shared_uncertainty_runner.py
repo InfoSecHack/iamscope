@@ -69,6 +69,7 @@ def test_runner_uncertainty_group_counts(tmp_path: Path) -> None:
     assert result.returncode == 0, result.stderr
 
     groups = json.loads((output_dir / "uncertainty-groups.json").read_text())
+    assert groups["report_only"] is True
     assert groups["groups"] == {
         "shared_passrole_target_resource_scope_unknown": 8,
         "shared_boundary_context_unresolved": 2,
@@ -76,6 +77,12 @@ def test_runner_uncertainty_group_counts(tmp_path: Path) -> None:
     }
     assert groups["top_uncertainty_class"] == "shared_passrole_target_resource_scope_unknown"
     assert groups["top_uncertainty_count"] == 8
+    assert {group["uncertainty_class"]: group["count"] for group in groups["group_details"]} == groups["groups"]
+    assert groups["non_claims"]["does_not_mutate_findings"] is True
+    assert groups["non_claims"]["does_not_change_verdicts"] is True
+    assert groups["non_claims"]["does_not_infer_exploitability"] is True
+    assert groups["non_claims"]["does_not_claim_replay_equivalence"] is True
+    assert groups["non_claims"]["requires_aws_credentials"] is False
 
 
 def test_runner_summary_preserves_safety_and_replay_boundary(tmp_path: Path) -> None:
