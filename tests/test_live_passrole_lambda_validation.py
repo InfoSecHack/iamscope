@@ -1,0 +1,151 @@
+from __future__ import annotations
+
+import importlib.util
+import json
+import sys
+from pathlib import Path
+from types import ModuleType
+
+import pytest
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+LIVE_DIR = REPO_ROOT / "tests" / "live" / "aws" / "passrole_lambda_validation"
+RUNNER = LIVE_DIR / "run_live_validation.py"
+TERRAFORM_DIR = LIVE_DIR / "terraform"
+ACK_VALUE = "I_UNDERSTAND_THIS_CREATES_AND_DELETES_TEST_AWS_RESOURCES"
+
+
+def _load_runner() -> ModuleType:
+    spec = importlib.util.spec_from_file_location("passrole_lambda_live_validation", RUNNER)
+    assert spec is not None
+    assert spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+@pytest.fixture()
+def runner() -> ModuleType:
+    return _load_runner()
+
+
+def _set_required_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("IAMSCOPE_LIVE_AWS_ACK", ACK_VALUE)
+    monkeypatch.setenv("AWS_PROFILE", "iamscope-test-profile")
+    monkeypatch.setenv("AWS_REGION", "us-east-1")
+    monkeypatch.setenv("IAMSCOPE_EXPECTED_AWS_ACCOUNT_ID", "123456789012")
+
+
+def test_runner_refuses_without_acknowledgement(
+    monkeypatch: pytest.MonkeyPatch, runner: ModuleType, tmp_path: Path
+) -> None:
+    monkeypatch.delenv("IAMSCOPE_LIVE_AWS_ACK", raising=False)
+    monkeypatch.setenv("AWS_PROFILE", "iamscope-test-profile")
+    monkeypatch.setenv("AWS_REGION", "us-east-1")
+    monkeypatch.setenv("IAMSCOPE_EXPECTED_AWS_ACCOUNT_ID", "123456789012")
+
+    with pytest.raises(runner.ConfigError, match="IAMSCOPE_LIVE_AWS_ACK"):
+        runner.load_config(["--role-arn", "arn:aws:iam::123456789012:role/test", "--out", str(tmp_path)])
+
+
+def test_runner_refuses_without_expected_account_id(
+    monkeypatch: pytest.MonkeyPatch, runner: ModuleType, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("IAMSCOPE_LIVE_AWS_ACK", ACK_VALUE)
+    monkeypatch.setenv("AWS_PROFILE", "iamscope-test-profile")
+    monkeypatch.setenv("AWS_REGION", "us-east-1")
+    monkeypatch.delenv("IAMSCOPE_EXPECTED_AWS_ACCOUNT_ID", raising=False)
+
+    with pytest.raises(runner.ConfigError, match="IAMSCOPE_EXPECTED_AWS_ACCOUNT_ID"):
+        runner.load_config(["--role-arn", "arn:aws:iam::123456789012:role/test", "--out", str(tmp_path)])
+
+
+def test_runner_refuses_repository_output_path(monkeypatch: pytest.MonkeyPatch, runner: ModuleType) -> None:
+    _set_required_env(monkeypatch)
+
+    with pytest.raises(runner.ConfigError, match="repository tree"):
+        runner.load_config(["--role-arn", "arn:aws:iam::123456789012:role/test", "--out", str(REPO_ROOT)])
+
+
+def test_config_parsing_uses_terraform_outputs_without_aws_credentials(
+    monkeypatch: pytest.MonkeyPatch, runner: ModuleType, tmp_path: Path
+) -> None:
+    _set_required_env(monkeypatch)
+    terraform_outputs = tmp_path / "terraform-outputs.json"
+    terraform_outputs.write_text(
+        json.dumps(
+            {
+                "lambda_execution_role_arn": {
+                    "value": "arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-lambda-exec-role"
+                }
+            }
+        )
+    )
+
+    config = runner.load_config(["--terraform-outputs", str(terraform_outputs), "--out", str(tmp_path / "out")])
+
+    assert config.aws_profile == "iamscope-test-profile"
+    assert config.aws_region == "us-east-1"
+    assert config.expected_account_id == "123456789012"
+    assert config.role_arn.endswith("iamscope-live-passrole-lambda-test-lambda-exec-role")
+
+
+def test_result_shape_preserves_non_claims_and_redaction(runner: ModuleType, tmp_path: Path) -> None:
+    config = runner.LiveValidationConfig(
+        aws_profile="iamscope-test-profile",
+        aws_region="us-east-1",
+        expected_account_id="123456789012",
+        role_arn="arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-lambda-exec-role",
+        output_dir=tmp_path,
+        function_name="iamscope-live-passrole-lambda-test-20260602000000",
+        expected_iamscope_verdict="validated",
+        source_principal_arn="arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-source",
+    )
+
+    result = runner.build_result(
+        config=config,
+        observed_result="create_function_succeeded",
+        cleanup_status="deleted_not_found_verified",
+        function_created=True,
+    )
+
+    assert result["attempted_action"] == "lambda:CreateFunction"
+    assert result["account_id"] == "123456789012"
+    assert result["observed_aws_result"] == "create_function_succeeded"
+    assert result["safety"]["lambda_invoke_function_called"] is False
+    assert result["safety"]["triggers_created"] is False
+    assert result["safety"]["downstream_actions_tested"] is False
+    assert result["non_claims"] == {
+        "not_production_readiness": True,
+        "not_broad_iamscope_correctness": True,
+        "not_broad_passrole_correctness": True,
+        "not_exploitability_proof": True,
+        "not_downstream_authorization_proof": True,
+        "function_was_not_invoked": True,
+    }
+
+
+def test_no_generated_live_outputs_or_terraform_artifacts_committed() -> None:
+    forbidden_names = {
+        ".terraform",
+        ".terraform.lock.hcl",
+        "terraform.tfstate",
+        "terraform.tfstate.backup",
+        "result.json",
+        "terraform.tfvars",
+    }
+    tracked_like_files = {path.name for path in LIVE_DIR.rglob("*") if path.is_file()}
+    assert forbidden_names.isdisjoint(tracked_like_files)
+    assert not any(path.suffix == ".tfplan" for path in LIVE_DIR.rglob("*"))
+
+
+def test_terraform_fixture_uses_test_prefix_and_required_tags() -> None:
+    terraform_text = "\n".join(path.read_text() for path in TERRAFORM_DIR.glob("*.tf"))
+    assert "iamscope-live-passrole-lambda-test" in terraform_text
+    assert "Project" in terraform_text
+    assert "IAMScope" in terraform_text
+    assert "Purpose" in terraform_text
+    assert "ControlledLiveValidation" in terraform_text
+    assert "Owner" in terraform_text
+    assert "TestOnly" in terraform_text
