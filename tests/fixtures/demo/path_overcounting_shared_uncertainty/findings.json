@@ -1333,6 +1333,8 @@
     "reasoners_skipped": {},
     "reasoning_duration_seconds": 0.0,
     "reasoning_timestamp": "2026-06-02T00:00:00Z",
+    "replay_equivalence_status": "not_proven",
+    "stronger_demo_claims_allowed": false,
     "verdict_breakdown": {
       "blocked": 5,
       "inconclusive": 11,
@@ -1341,6 +1343,8 @@
     }
   },
   "replay_equivalence_follow_up_required": true,
+  "replay_equivalence_gap": "Existing run_reasoners_on_frozen_artifacts expects binding_metadata.json to be an edge-constraint binding list produced by IAMScope emit_binding_metadata. This synthetic teaching fixture currently uses descriptive demo metadata, so local replay stops before reasoner equivalence. Replay-equivalence follow-up must either build replay-compatible binding metadata and scenario edges, or keep the fixture as static teaching material.",
+  "replay_equivalence_status": "not_proven",
   "schema_version": "demo-fixture-v1",
   "source_tool": "static_fixture_authoring",
   "source_tool_version": "demo-fixture-v1"

@@ -134,6 +134,19 @@ def test_findings_are_labeled_as_frozen_expected_output() -> None:
     assert metadata["aws_calls_made"] is False
 
 
+def test_replay_equivalence_gap_is_documented() -> None:
+    findings = _load("findings.json")
+    metadata = _load("binding_metadata.json")["findings_generation"]
+    assert findings["replay_equivalence_status"] == "not_proven"
+    assert findings["metadata"]["replay_equivalence_status"] == "not_proven"
+    assert findings["metadata"]["stronger_demo_claims_allowed"] is False
+    assert metadata["replay_equivalence_status"] == "not_proven"
+    assert metadata["existing_replay_failure_category"] == "fixture_shape_not_replay_compatible"
+    assert metadata["stronger_demo_claims_allowed"] is False
+    assert "run_reasoners_on_frozen_artifacts" in metadata["replay_equivalence_gap"]
+    assert "edge-constraint binding list" in metadata["replay_equivalence_gap"]
+
+
 def test_generated_outputs_are_not_committed_in_fixture_dir() -> None:
     committed_names = {path.name for path in FIXTURE_DIR.iterdir() if path.is_file()}
     assert committed_names.isdisjoint(GENERATED_OUTPUT_NAMES)
