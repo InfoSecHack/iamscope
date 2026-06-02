@@ -1,0 +1,1347 @@
+{
+  "findings": [
+    {
+      "assumptions": [],
+      "blockers_observed": [],
+      "evidence": {
+        "credentials_included": false,
+        "edge_refs": [
+          "demo-edge-001"
+        ],
+        "fixture_id": "path_overcounting_shared_uncertainty",
+        "node_refs": [
+          "demo-source-1",
+          "demo-target-1"
+        ],
+        "raw_logs_included": false,
+        "statement_digests": [
+          "demo-digest-001"
+        ]
+      },
+      "finding_id": "demo-finding-001",
+      "naive_candidate_id": "naive-001",
+      "pattern_id": "passrole_lambda",
+      "pattern_title": "Synthetic passrole_lambda path",
+      "pattern_version": "demo-fixture-v1",
+      "reasoner_exit_reason": "all modeled checks supported by synthetic fixture evidence",
+      "required_checks": [
+        {
+          "name": "structural_path_present",
+          "reason": "synthetic fixture includes a source-action-target row",
+          "state": "pass"
+        },
+        {
+          "name": "allow_evidence_present",
+          "reason": "synthetic fixture includes scoped allow evidence",
+          "state": "pass"
+        },
+        {
+          "name": "required_context_present",
+          "reason": "synthetic fixture includes required context",
+          "state": "pass"
+        }
+      ],
+      "scenario_hash": "synthetic-fixture-hash-not-live-evidence",
+      "severity": "high",
+      "source": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystA"
+      },
+      "target": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoLambdaExecutionRole"
+      },
+      "title": "Synthetic validated path 001",
+      "uncertainty_class": null,
+      "verdict": "validated"
+    },
+    {
+      "assumptions": [],
+      "blockers_observed": [],
+      "evidence": {
+        "credentials_included": false,
+        "edge_refs": [
+          "demo-edge-002"
+        ],
+        "fixture_id": "path_overcounting_shared_uncertainty",
+        "node_refs": [
+          "demo-source-2",
+          "demo-target-2"
+        ],
+        "raw_logs_included": false,
+        "statement_digests": [
+          "demo-digest-002"
+        ]
+      },
+      "finding_id": "demo-finding-002",
+      "naive_candidate_id": "naive-002",
+      "pattern_id": "admin_reachability",
+      "pattern_title": "Synthetic admin_reachability path",
+      "pattern_version": "demo-fixture-v1",
+      "reasoner_exit_reason": "all modeled checks supported by synthetic fixture evidence",
+      "required_checks": [
+        {
+          "name": "structural_path_present",
+          "reason": "synthetic fixture includes a source-action-target row",
+          "state": "pass"
+        },
+        {
+          "name": "allow_evidence_present",
+          "reason": "synthetic fixture includes scoped allow evidence",
+          "state": "pass"
+        },
+        {
+          "name": "required_context_present",
+          "reason": "synthetic fixture includes required context",
+          "state": "pass"
+        }
+      ],
+      "scenario_hash": "synthetic-fixture-hash-not-live-evidence",
+      "severity": "high",
+      "source": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystB"
+      },
+      "target": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoEcsTaskRole"
+      },
+      "title": "Synthetic validated path 002",
+      "uncertainty_class": null,
+      "verdict": "validated"
+    },
+    {
+      "assumptions": [],
+      "blockers_observed": [],
+      "evidence": {
+        "credentials_included": false,
+        "edge_refs": [
+          "demo-edge-003"
+        ],
+        "fixture_id": "path_overcounting_shared_uncertainty",
+        "node_refs": [
+          "demo-source-3",
+          "demo-target-3"
+        ],
+        "raw_logs_included": false,
+        "statement_digests": [
+          "demo-digest-003"
+        ]
+      },
+      "finding_id": "demo-finding-003",
+      "naive_candidate_id": "naive-003",
+      "pattern_id": "passrole_ecs",
+      "pattern_title": "Synthetic passrole_ecs path",
+      "pattern_version": "demo-fixture-v1",
+      "reasoner_exit_reason": "all modeled checks supported by synthetic fixture evidence",
+      "required_checks": [
+        {
+          "name": "structural_path_present",
+          "reason": "synthetic fixture includes a source-action-target row",
+          "state": "pass"
+        },
+        {
+          "name": "allow_evidence_present",
+          "reason": "synthetic fixture includes scoped allow evidence",
+          "state": "pass"
+        },
+        {
+          "name": "required_context_present",
+          "reason": "synthetic fixture includes required context",
+          "state": "pass"
+        }
+      ],
+      "scenario_hash": "synthetic-fixture-hash-not-live-evidence",
+      "severity": "high",
+      "source": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoBuildRole"
+      },
+      "target": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoBoundarySensitiveRole"
+      },
+      "title": "Synthetic validated path 003",
+      "uncertainty_class": null,
+      "verdict": "validated"
+    },
+    {
+      "assumptions": [],
+      "blockers_observed": [
+        {
+          "detail": "local fixture blocker prevents promotion",
+          "kind": "synthetic_blocker",
+          "source": "binding_metadata.json"
+        }
+      ],
+      "evidence": {
+        "credentials_included": false,
+        "edge_refs": [
+          "demo-edge-004"
+        ],
+        "fixture_id": "path_overcounting_shared_uncertainty",
+        "node_refs": [
+          "demo-source-1",
+          "demo-target-4"
+        ],
+        "raw_logs_included": false,
+        "statement_digests": [
+          "demo-digest-004"
+        ]
+      },
+      "finding_id": "demo-finding-004",
+      "naive_candidate_id": "naive-004",
+      "pattern_id": "admin_reachability",
+      "pattern_title": "Synthetic admin_reachability path",
+      "pattern_version": "demo-fixture-v1",
+      "reasoner_exit_reason": "blocked by explicit synthetic fixture evidence",
+      "required_checks": [
+        {
+          "name": "structural_path_present",
+          "reason": "synthetic fixture includes a source-action-target row",
+          "state": "pass"
+        },
+        {
+          "name": "blocking_evidence_present",
+          "reason": "synthetic fixture includes blocker evidence",
+          "state": "fail"
+        }
+      ],
+      "scenario_hash": "synthetic-fixture-hash-not-live-evidence",
+      "severity": "medium",
+      "source": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystA"
+      },
+      "target": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoSessionScopedRole"
+      },
+      "title": "Synthetic blocked path 004",
+      "uncertainty_class": null,
+      "verdict": "blocked"
+    },
+    {
+      "assumptions": [],
+      "blockers_observed": [
+        {
+          "detail": "local fixture blocker prevents promotion",
+          "kind": "synthetic_blocker",
+          "source": "binding_metadata.json"
+        }
+      ],
+      "evidence": {
+        "credentials_included": false,
+        "edge_refs": [
+          "demo-edge-005"
+        ],
+        "fixture_id": "path_overcounting_shared_uncertainty",
+        "node_refs": [
+          "demo-source-2",
+          "demo-target-1"
+        ],
+        "raw_logs_included": false,
+        "statement_digests": [
+          "demo-digest-005"
+        ]
+      },
+      "finding_id": "demo-finding-005",
+      "naive_candidate_id": "naive-005",
+      "pattern_id": "passrole_lambda",
+      "pattern_title": "Synthetic passrole_lambda path",
+      "pattern_version": "demo-fixture-v1",
+      "reasoner_exit_reason": "blocked by explicit synthetic fixture evidence",
+      "required_checks": [
+        {
+          "name": "structural_path_present",
+          "reason": "synthetic fixture includes a source-action-target row",
+          "state": "pass"
+        },
+        {
+          "name": "blocking_evidence_present",
+          "reason": "synthetic fixture includes blocker evidence",
+          "state": "fail"
+        }
+      ],
+      "scenario_hash": "synthetic-fixture-hash-not-live-evidence",
+      "severity": "medium",
+      "source": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystB"
+      },
+      "target": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoLambdaExecutionRole"
+      },
+      "title": "Synthetic blocked path 005",
+      "uncertainty_class": null,
+      "verdict": "blocked"
+    },
+    {
+      "assumptions": [],
+      "blockers_observed": [
+        {
+          "detail": "local fixture blocker prevents promotion",
+          "kind": "synthetic_blocker",
+          "source": "binding_metadata.json"
+        }
+      ],
+      "evidence": {
+        "credentials_included": false,
+        "edge_refs": [
+          "demo-edge-006"
+        ],
+        "fixture_id": "path_overcounting_shared_uncertainty",
+        "node_refs": [
+          "demo-source-3",
+          "demo-target-2"
+        ],
+        "raw_logs_included": false,
+        "statement_digests": [
+          "demo-digest-006"
+        ]
+      },
+      "finding_id": "demo-finding-006",
+      "naive_candidate_id": "naive-006",
+      "pattern_id": "passrole_ecs",
+      "pattern_title": "Synthetic passrole_ecs path",
+      "pattern_version": "demo-fixture-v1",
+      "reasoner_exit_reason": "blocked by explicit synthetic fixture evidence",
+      "required_checks": [
+        {
+          "name": "structural_path_present",
+          "reason": "synthetic fixture includes a source-action-target row",
+          "state": "pass"
+        },
+        {
+          "name": "blocking_evidence_present",
+          "reason": "synthetic fixture includes blocker evidence",
+          "state": "fail"
+        }
+      ],
+      "scenario_hash": "synthetic-fixture-hash-not-live-evidence",
+      "severity": "medium",
+      "source": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoBuildRole"
+      },
+      "target": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoEcsTaskRole"
+      },
+      "title": "Synthetic blocked path 006",
+      "uncertainty_class": null,
+      "verdict": "blocked"
+    },
+    {
+      "assumptions": [],
+      "blockers_observed": [
+        {
+          "detail": "local fixture blocker prevents promotion",
+          "kind": "synthetic_blocker",
+          "source": "binding_metadata.json"
+        }
+      ],
+      "evidence": {
+        "credentials_included": false,
+        "edge_refs": [
+          "demo-edge-007"
+        ],
+        "fixture_id": "path_overcounting_shared_uncertainty",
+        "node_refs": [
+          "demo-source-1",
+          "demo-target-3"
+        ],
+        "raw_logs_included": false,
+        "statement_digests": [
+          "demo-digest-007"
+        ]
+      },
+      "finding_id": "demo-finding-007",
+      "naive_candidate_id": "naive-007",
+      "pattern_id": "passrole_lambda",
+      "pattern_title": "Synthetic passrole_lambda path",
+      "pattern_version": "demo-fixture-v1",
+      "reasoner_exit_reason": "blocked by explicit synthetic fixture evidence",
+      "required_checks": [
+        {
+          "name": "structural_path_present",
+          "reason": "synthetic fixture includes a source-action-target row",
+          "state": "pass"
+        },
+        {
+          "name": "blocking_evidence_present",
+          "reason": "synthetic fixture includes blocker evidence",
+          "state": "fail"
+        }
+      ],
+      "scenario_hash": "synthetic-fixture-hash-not-live-evidence",
+      "severity": "medium",
+      "source": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystA"
+      },
+      "target": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoBoundarySensitiveRole"
+      },
+      "title": "Synthetic blocked path 007",
+      "uncertainty_class": null,
+      "verdict": "blocked"
+    },
+    {
+      "assumptions": [],
+      "blockers_observed": [
+        {
+          "detail": "local fixture blocker prevents promotion",
+          "kind": "synthetic_blocker",
+          "source": "binding_metadata.json"
+        }
+      ],
+      "evidence": {
+        "credentials_included": false,
+        "edge_refs": [
+          "demo-edge-008"
+        ],
+        "fixture_id": "path_overcounting_shared_uncertainty",
+        "node_refs": [
+          "demo-source-2",
+          "demo-target-4"
+        ],
+        "raw_logs_included": false,
+        "statement_digests": [
+          "demo-digest-008"
+        ]
+      },
+      "finding_id": "demo-finding-008",
+      "naive_candidate_id": "naive-008",
+      "pattern_id": "admin_reachability",
+      "pattern_title": "Synthetic admin_reachability path",
+      "pattern_version": "demo-fixture-v1",
+      "reasoner_exit_reason": "blocked by explicit synthetic fixture evidence",
+      "required_checks": [
+        {
+          "name": "structural_path_present",
+          "reason": "synthetic fixture includes a source-action-target row",
+          "state": "pass"
+        },
+        {
+          "name": "blocking_evidence_present",
+          "reason": "synthetic fixture includes blocker evidence",
+          "state": "fail"
+        }
+      ],
+      "scenario_hash": "synthetic-fixture-hash-not-live-evidence",
+      "severity": "medium",
+      "source": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystB"
+      },
+      "target": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoSessionScopedRole"
+      },
+      "title": "Synthetic blocked path 008",
+      "uncertainty_class": null,
+      "verdict": "blocked"
+    },
+    {
+      "assumptions": [
+        {
+          "detail": "path shape remains visible but is not promoted",
+          "kind": "precondition_gap"
+        }
+      ],
+      "blockers_observed": [],
+      "evidence": {
+        "credentials_included": false,
+        "edge_refs": [
+          "demo-edge-009"
+        ],
+        "fixture_id": "path_overcounting_shared_uncertainty",
+        "node_refs": [
+          "demo-source-3",
+          "demo-target-1"
+        ],
+        "raw_logs_included": false,
+        "statement_digests": [
+          "demo-digest-009"
+        ]
+      },
+      "finding_id": "demo-finding-009",
+      "naive_candidate_id": "naive-009",
+      "pattern_id": "passrole_ecs",
+      "pattern_title": "Synthetic passrole_ecs path",
+      "pattern_version": "demo-fixture-v1",
+      "reasoner_exit_reason": "required precondition not satisfied in synthetic fixture",
+      "required_checks": [
+        {
+          "name": "structural_path_present",
+          "reason": "synthetic fixture includes a source-action-target row",
+          "state": "pass"
+        },
+        {
+          "name": "required_precondition_satisfied",
+          "reason": "synthetic fixture leaves one service precondition unsatisfied",
+          "state": "fail"
+        }
+      ],
+      "scenario_hash": "synthetic-fixture-hash-not-live-evidence",
+      "severity": "medium",
+      "source": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoBuildRole"
+      },
+      "target": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoLambdaExecutionRole"
+      },
+      "title": "Synthetic precondition_only path 009",
+      "uncertainty_class": null,
+      "verdict": "precondition_only"
+    },
+    {
+      "assumptions": [
+        {
+          "detail": "path shape remains visible but is not promoted",
+          "kind": "precondition_gap"
+        }
+      ],
+      "blockers_observed": [],
+      "evidence": {
+        "credentials_included": false,
+        "edge_refs": [
+          "demo-edge-010"
+        ],
+        "fixture_id": "path_overcounting_shared_uncertainty",
+        "node_refs": [
+          "demo-source-1",
+          "demo-target-2"
+        ],
+        "raw_logs_included": false,
+        "statement_digests": [
+          "demo-digest-010"
+        ]
+      },
+      "finding_id": "demo-finding-010",
+      "naive_candidate_id": "naive-010",
+      "pattern_id": "admin_reachability",
+      "pattern_title": "Synthetic admin_reachability path",
+      "pattern_version": "demo-fixture-v1",
+      "reasoner_exit_reason": "required precondition not satisfied in synthetic fixture",
+      "required_checks": [
+        {
+          "name": "structural_path_present",
+          "reason": "synthetic fixture includes a source-action-target row",
+          "state": "pass"
+        },
+        {
+          "name": "required_precondition_satisfied",
+          "reason": "synthetic fixture leaves one service precondition unsatisfied",
+          "state": "fail"
+        }
+      ],
+      "scenario_hash": "synthetic-fixture-hash-not-live-evidence",
+      "severity": "medium",
+      "source": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystA"
+      },
+      "target": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoEcsTaskRole"
+      },
+      "title": "Synthetic precondition_only path 010",
+      "uncertainty_class": null,
+      "verdict": "precondition_only"
+    },
+    {
+      "assumptions": [
+        {
+          "detail": "path shape remains visible but is not promoted",
+          "kind": "precondition_gap"
+        }
+      ],
+      "blockers_observed": [],
+      "evidence": {
+        "credentials_included": false,
+        "edge_refs": [
+          "demo-edge-011"
+        ],
+        "fixture_id": "path_overcounting_shared_uncertainty",
+        "node_refs": [
+          "demo-source-2",
+          "demo-target-3"
+        ],
+        "raw_logs_included": false,
+        "statement_digests": [
+          "demo-digest-011"
+        ]
+      },
+      "finding_id": "demo-finding-011",
+      "naive_candidate_id": "naive-011",
+      "pattern_id": "passrole_lambda",
+      "pattern_title": "Synthetic passrole_lambda path",
+      "pattern_version": "demo-fixture-v1",
+      "reasoner_exit_reason": "required precondition not satisfied in synthetic fixture",
+      "required_checks": [
+        {
+          "name": "structural_path_present",
+          "reason": "synthetic fixture includes a source-action-target row",
+          "state": "pass"
+        },
+        {
+          "name": "required_precondition_satisfied",
+          "reason": "synthetic fixture leaves one service precondition unsatisfied",
+          "state": "fail"
+        }
+      ],
+      "scenario_hash": "synthetic-fixture-hash-not-live-evidence",
+      "severity": "medium",
+      "source": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystB"
+      },
+      "target": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoBoundarySensitiveRole"
+      },
+      "title": "Synthetic precondition_only path 011",
+      "uncertainty_class": null,
+      "verdict": "precondition_only"
+    },
+    {
+      "assumptions": [
+        {
+          "detail": "path shape remains visible but is not promoted",
+          "kind": "precondition_gap"
+        }
+      ],
+      "blockers_observed": [],
+      "evidence": {
+        "credentials_included": false,
+        "edge_refs": [
+          "demo-edge-012"
+        ],
+        "fixture_id": "path_overcounting_shared_uncertainty",
+        "node_refs": [
+          "demo-source-3",
+          "demo-target-4"
+        ],
+        "raw_logs_included": false,
+        "statement_digests": [
+          "demo-digest-012"
+        ]
+      },
+      "finding_id": "demo-finding-012",
+      "naive_candidate_id": "naive-012",
+      "pattern_id": "passrole_ecs",
+      "pattern_title": "Synthetic passrole_ecs path",
+      "pattern_version": "demo-fixture-v1",
+      "reasoner_exit_reason": "required precondition not satisfied in synthetic fixture",
+      "required_checks": [
+        {
+          "name": "structural_path_present",
+          "reason": "synthetic fixture includes a source-action-target row",
+          "state": "pass"
+        },
+        {
+          "name": "required_precondition_satisfied",
+          "reason": "synthetic fixture leaves one service precondition unsatisfied",
+          "state": "fail"
+        }
+      ],
+      "scenario_hash": "synthetic-fixture-hash-not-live-evidence",
+      "severity": "medium",
+      "source": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoBuildRole"
+      },
+      "target": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoSessionScopedRole"
+      },
+      "title": "Synthetic precondition_only path 012",
+      "uncertainty_class": null,
+      "verdict": "precondition_only"
+    },
+    {
+      "assumptions": [
+        {
+          "detail": "shared_passrole_target_resource_scope_unknown",
+          "kind": "shared_uncertainty"
+        }
+      ],
+      "blockers_observed": [],
+      "evidence": {
+        "credentials_included": false,
+        "edge_refs": [
+          "demo-edge-013"
+        ],
+        "fixture_id": "path_overcounting_shared_uncertainty",
+        "node_refs": [
+          "demo-source-1",
+          "demo-target-1"
+        ],
+        "raw_logs_included": false,
+        "statement_digests": [
+          "demo-digest-013"
+        ]
+      },
+      "finding_id": "demo-finding-013",
+      "naive_candidate_id": "naive-013",
+      "pattern_id": "passrole_lambda",
+      "pattern_title": "Synthetic passrole_lambda path",
+      "pattern_version": "demo-fixture-v1",
+      "reasoner_exit_reason": "required modeled evidence is unresolved in synthetic fixture",
+      "required_checks": [
+        {
+          "name": "structural_path_present",
+          "reason": "synthetic fixture includes a source-action-target row",
+          "state": "pass"
+        },
+        {
+          "name": "shared_passrole_target_resource_scope_unknown",
+          "reason": "synthetic fixture intentionally leaves this evidence unresolved",
+          "state": "unknown"
+        }
+      ],
+      "scenario_hash": "synthetic-fixture-hash-not-live-evidence",
+      "severity": "high",
+      "source": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystA"
+      },
+      "target": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoLambdaExecutionRole"
+      },
+      "title": "Synthetic inconclusive path 013",
+      "uncertainty_class": "shared_passrole_target_resource_scope_unknown",
+      "verdict": "inconclusive"
+    },
+    {
+      "assumptions": [
+        {
+          "detail": "shared_passrole_target_resource_scope_unknown",
+          "kind": "shared_uncertainty"
+        }
+      ],
+      "blockers_observed": [],
+      "evidence": {
+        "credentials_included": false,
+        "edge_refs": [
+          "demo-edge-014"
+        ],
+        "fixture_id": "path_overcounting_shared_uncertainty",
+        "node_refs": [
+          "demo-source-2",
+          "demo-target-2"
+        ],
+        "raw_logs_included": false,
+        "statement_digests": [
+          "demo-digest-014"
+        ]
+      },
+      "finding_id": "demo-finding-014",
+      "naive_candidate_id": "naive-014",
+      "pattern_id": "admin_reachability",
+      "pattern_title": "Synthetic admin_reachability path",
+      "pattern_version": "demo-fixture-v1",
+      "reasoner_exit_reason": "required modeled evidence is unresolved in synthetic fixture",
+      "required_checks": [
+        {
+          "name": "structural_path_present",
+          "reason": "synthetic fixture includes a source-action-target row",
+          "state": "pass"
+        },
+        {
+          "name": "shared_passrole_target_resource_scope_unknown",
+          "reason": "synthetic fixture intentionally leaves this evidence unresolved",
+          "state": "unknown"
+        }
+      ],
+      "scenario_hash": "synthetic-fixture-hash-not-live-evidence",
+      "severity": "high",
+      "source": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystB"
+      },
+      "target": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoEcsTaskRole"
+      },
+      "title": "Synthetic inconclusive path 014",
+      "uncertainty_class": "shared_passrole_target_resource_scope_unknown",
+      "verdict": "inconclusive"
+    },
+    {
+      "assumptions": [
+        {
+          "detail": "shared_passrole_target_resource_scope_unknown",
+          "kind": "shared_uncertainty"
+        }
+      ],
+      "blockers_observed": [],
+      "evidence": {
+        "credentials_included": false,
+        "edge_refs": [
+          "demo-edge-015"
+        ],
+        "fixture_id": "path_overcounting_shared_uncertainty",
+        "node_refs": [
+          "demo-source-3",
+          "demo-target-3"
+        ],
+        "raw_logs_included": false,
+        "statement_digests": [
+          "demo-digest-015"
+        ]
+      },
+      "finding_id": "demo-finding-015",
+      "naive_candidate_id": "naive-015",
+      "pattern_id": "passrole_ecs",
+      "pattern_title": "Synthetic passrole_ecs path",
+      "pattern_version": "demo-fixture-v1",
+      "reasoner_exit_reason": "required modeled evidence is unresolved in synthetic fixture",
+      "required_checks": [
+        {
+          "name": "structural_path_present",
+          "reason": "synthetic fixture includes a source-action-target row",
+          "state": "pass"
+        },
+        {
+          "name": "shared_passrole_target_resource_scope_unknown",
+          "reason": "synthetic fixture intentionally leaves this evidence unresolved",
+          "state": "unknown"
+        }
+      ],
+      "scenario_hash": "synthetic-fixture-hash-not-live-evidence",
+      "severity": "high",
+      "source": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoBuildRole"
+      },
+      "target": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoBoundarySensitiveRole"
+      },
+      "title": "Synthetic inconclusive path 015",
+      "uncertainty_class": "shared_passrole_target_resource_scope_unknown",
+      "verdict": "inconclusive"
+    },
+    {
+      "assumptions": [
+        {
+          "detail": "shared_passrole_target_resource_scope_unknown",
+          "kind": "shared_uncertainty"
+        }
+      ],
+      "blockers_observed": [],
+      "evidence": {
+        "credentials_included": false,
+        "edge_refs": [
+          "demo-edge-016"
+        ],
+        "fixture_id": "path_overcounting_shared_uncertainty",
+        "node_refs": [
+          "demo-source-1",
+          "demo-target-4"
+        ],
+        "raw_logs_included": false,
+        "statement_digests": [
+          "demo-digest-016"
+        ]
+      },
+      "finding_id": "demo-finding-016",
+      "naive_candidate_id": "naive-016",
+      "pattern_id": "admin_reachability",
+      "pattern_title": "Synthetic admin_reachability path",
+      "pattern_version": "demo-fixture-v1",
+      "reasoner_exit_reason": "required modeled evidence is unresolved in synthetic fixture",
+      "required_checks": [
+        {
+          "name": "structural_path_present",
+          "reason": "synthetic fixture includes a source-action-target row",
+          "state": "pass"
+        },
+        {
+          "name": "shared_passrole_target_resource_scope_unknown",
+          "reason": "synthetic fixture intentionally leaves this evidence unresolved",
+          "state": "unknown"
+        }
+      ],
+      "scenario_hash": "synthetic-fixture-hash-not-live-evidence",
+      "severity": "high",
+      "source": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystA"
+      },
+      "target": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoSessionScopedRole"
+      },
+      "title": "Synthetic inconclusive path 016",
+      "uncertainty_class": "shared_passrole_target_resource_scope_unknown",
+      "verdict": "inconclusive"
+    },
+    {
+      "assumptions": [
+        {
+          "detail": "shared_passrole_target_resource_scope_unknown",
+          "kind": "shared_uncertainty"
+        }
+      ],
+      "blockers_observed": [],
+      "evidence": {
+        "credentials_included": false,
+        "edge_refs": [
+          "demo-edge-017"
+        ],
+        "fixture_id": "path_overcounting_shared_uncertainty",
+        "node_refs": [
+          "demo-source-2",
+          "demo-target-1"
+        ],
+        "raw_logs_included": false,
+        "statement_digests": [
+          "demo-digest-017"
+        ]
+      },
+      "finding_id": "demo-finding-017",
+      "naive_candidate_id": "naive-017",
+      "pattern_id": "passrole_lambda",
+      "pattern_title": "Synthetic passrole_lambda path",
+      "pattern_version": "demo-fixture-v1",
+      "reasoner_exit_reason": "required modeled evidence is unresolved in synthetic fixture",
+      "required_checks": [
+        {
+          "name": "structural_path_present",
+          "reason": "synthetic fixture includes a source-action-target row",
+          "state": "pass"
+        },
+        {
+          "name": "shared_passrole_target_resource_scope_unknown",
+          "reason": "synthetic fixture intentionally leaves this evidence unresolved",
+          "state": "unknown"
+        }
+      ],
+      "scenario_hash": "synthetic-fixture-hash-not-live-evidence",
+      "severity": "high",
+      "source": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystB"
+      },
+      "target": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoLambdaExecutionRole"
+      },
+      "title": "Synthetic inconclusive path 017",
+      "uncertainty_class": "shared_passrole_target_resource_scope_unknown",
+      "verdict": "inconclusive"
+    },
+    {
+      "assumptions": [
+        {
+          "detail": "shared_passrole_target_resource_scope_unknown",
+          "kind": "shared_uncertainty"
+        }
+      ],
+      "blockers_observed": [],
+      "evidence": {
+        "credentials_included": false,
+        "edge_refs": [
+          "demo-edge-018"
+        ],
+        "fixture_id": "path_overcounting_shared_uncertainty",
+        "node_refs": [
+          "demo-source-3",
+          "demo-target-2"
+        ],
+        "raw_logs_included": false,
+        "statement_digests": [
+          "demo-digest-018"
+        ]
+      },
+      "finding_id": "demo-finding-018",
+      "naive_candidate_id": "naive-018",
+      "pattern_id": "passrole_ecs",
+      "pattern_title": "Synthetic passrole_ecs path",
+      "pattern_version": "demo-fixture-v1",
+      "reasoner_exit_reason": "required modeled evidence is unresolved in synthetic fixture",
+      "required_checks": [
+        {
+          "name": "structural_path_present",
+          "reason": "synthetic fixture includes a source-action-target row",
+          "state": "pass"
+        },
+        {
+          "name": "shared_passrole_target_resource_scope_unknown",
+          "reason": "synthetic fixture intentionally leaves this evidence unresolved",
+          "state": "unknown"
+        }
+      ],
+      "scenario_hash": "synthetic-fixture-hash-not-live-evidence",
+      "severity": "high",
+      "source": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoBuildRole"
+      },
+      "target": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoEcsTaskRole"
+      },
+      "title": "Synthetic inconclusive path 018",
+      "uncertainty_class": "shared_passrole_target_resource_scope_unknown",
+      "verdict": "inconclusive"
+    },
+    {
+      "assumptions": [
+        {
+          "detail": "shared_passrole_target_resource_scope_unknown",
+          "kind": "shared_uncertainty"
+        }
+      ],
+      "blockers_observed": [],
+      "evidence": {
+        "credentials_included": false,
+        "edge_refs": [
+          "demo-edge-019"
+        ],
+        "fixture_id": "path_overcounting_shared_uncertainty",
+        "node_refs": [
+          "demo-source-1",
+          "demo-target-3"
+        ],
+        "raw_logs_included": false,
+        "statement_digests": [
+          "demo-digest-019"
+        ]
+      },
+      "finding_id": "demo-finding-019",
+      "naive_candidate_id": "naive-019",
+      "pattern_id": "passrole_lambda",
+      "pattern_title": "Synthetic passrole_lambda path",
+      "pattern_version": "demo-fixture-v1",
+      "reasoner_exit_reason": "required modeled evidence is unresolved in synthetic fixture",
+      "required_checks": [
+        {
+          "name": "structural_path_present",
+          "reason": "synthetic fixture includes a source-action-target row",
+          "state": "pass"
+        },
+        {
+          "name": "shared_passrole_target_resource_scope_unknown",
+          "reason": "synthetic fixture intentionally leaves this evidence unresolved",
+          "state": "unknown"
+        }
+      ],
+      "scenario_hash": "synthetic-fixture-hash-not-live-evidence",
+      "severity": "high",
+      "source": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystA"
+      },
+      "target": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoBoundarySensitiveRole"
+      },
+      "title": "Synthetic inconclusive path 019",
+      "uncertainty_class": "shared_passrole_target_resource_scope_unknown",
+      "verdict": "inconclusive"
+    },
+    {
+      "assumptions": [
+        {
+          "detail": "shared_passrole_target_resource_scope_unknown",
+          "kind": "shared_uncertainty"
+        }
+      ],
+      "blockers_observed": [],
+      "evidence": {
+        "credentials_included": false,
+        "edge_refs": [
+          "demo-edge-020"
+        ],
+        "fixture_id": "path_overcounting_shared_uncertainty",
+        "node_refs": [
+          "demo-source-2",
+          "demo-target-4"
+        ],
+        "raw_logs_included": false,
+        "statement_digests": [
+          "demo-digest-020"
+        ]
+      },
+      "finding_id": "demo-finding-020",
+      "naive_candidate_id": "naive-020",
+      "pattern_id": "admin_reachability",
+      "pattern_title": "Synthetic admin_reachability path",
+      "pattern_version": "demo-fixture-v1",
+      "reasoner_exit_reason": "required modeled evidence is unresolved in synthetic fixture",
+      "required_checks": [
+        {
+          "name": "structural_path_present",
+          "reason": "synthetic fixture includes a source-action-target row",
+          "state": "pass"
+        },
+        {
+          "name": "shared_passrole_target_resource_scope_unknown",
+          "reason": "synthetic fixture intentionally leaves this evidence unresolved",
+          "state": "unknown"
+        }
+      ],
+      "scenario_hash": "synthetic-fixture-hash-not-live-evidence",
+      "severity": "high",
+      "source": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystB"
+      },
+      "target": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoSessionScopedRole"
+      },
+      "title": "Synthetic inconclusive path 020",
+      "uncertainty_class": "shared_passrole_target_resource_scope_unknown",
+      "verdict": "inconclusive"
+    },
+    {
+      "assumptions": [
+        {
+          "detail": "shared_boundary_context_unresolved",
+          "kind": "shared_uncertainty"
+        }
+      ],
+      "blockers_observed": [],
+      "evidence": {
+        "credentials_included": false,
+        "edge_refs": [
+          "demo-edge-021"
+        ],
+        "fixture_id": "path_overcounting_shared_uncertainty",
+        "node_refs": [
+          "demo-source-3",
+          "demo-target-1"
+        ],
+        "raw_logs_included": false,
+        "statement_digests": [
+          "demo-digest-021"
+        ]
+      },
+      "finding_id": "demo-finding-021",
+      "naive_candidate_id": "naive-021",
+      "pattern_id": "passrole_ecs",
+      "pattern_title": "Synthetic passrole_ecs path",
+      "pattern_version": "demo-fixture-v1",
+      "reasoner_exit_reason": "required modeled evidence is unresolved in synthetic fixture",
+      "required_checks": [
+        {
+          "name": "structural_path_present",
+          "reason": "synthetic fixture includes a source-action-target row",
+          "state": "pass"
+        },
+        {
+          "name": "shared_boundary_context_unresolved",
+          "reason": "synthetic fixture intentionally leaves this evidence unresolved",
+          "state": "unknown"
+        }
+      ],
+      "scenario_hash": "synthetic-fixture-hash-not-live-evidence",
+      "severity": "high",
+      "source": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoBuildRole"
+      },
+      "target": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoLambdaExecutionRole"
+      },
+      "title": "Synthetic inconclusive path 021",
+      "uncertainty_class": "shared_boundary_context_unresolved",
+      "verdict": "inconclusive"
+    },
+    {
+      "assumptions": [
+        {
+          "detail": "shared_boundary_context_unresolved",
+          "kind": "shared_uncertainty"
+        }
+      ],
+      "blockers_observed": [],
+      "evidence": {
+        "credentials_included": false,
+        "edge_refs": [
+          "demo-edge-022"
+        ],
+        "fixture_id": "path_overcounting_shared_uncertainty",
+        "node_refs": [
+          "demo-source-1",
+          "demo-target-2"
+        ],
+        "raw_logs_included": false,
+        "statement_digests": [
+          "demo-digest-022"
+        ]
+      },
+      "finding_id": "demo-finding-022",
+      "naive_candidate_id": "naive-022",
+      "pattern_id": "admin_reachability",
+      "pattern_title": "Synthetic admin_reachability path",
+      "pattern_version": "demo-fixture-v1",
+      "reasoner_exit_reason": "required modeled evidence is unresolved in synthetic fixture",
+      "required_checks": [
+        {
+          "name": "structural_path_present",
+          "reason": "synthetic fixture includes a source-action-target row",
+          "state": "pass"
+        },
+        {
+          "name": "shared_boundary_context_unresolved",
+          "reason": "synthetic fixture intentionally leaves this evidence unresolved",
+          "state": "unknown"
+        }
+      ],
+      "scenario_hash": "synthetic-fixture-hash-not-live-evidence",
+      "severity": "high",
+      "source": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystA"
+      },
+      "target": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoEcsTaskRole"
+      },
+      "title": "Synthetic inconclusive path 022",
+      "uncertainty_class": "shared_boundary_context_unresolved",
+      "verdict": "inconclusive"
+    },
+    {
+      "assumptions": [
+        {
+          "detail": "session_policy_context_missing",
+          "kind": "shared_uncertainty"
+        }
+      ],
+      "blockers_observed": [],
+      "evidence": {
+        "credentials_included": false,
+        "edge_refs": [
+          "demo-edge-023"
+        ],
+        "fixture_id": "path_overcounting_shared_uncertainty",
+        "node_refs": [
+          "demo-source-2",
+          "demo-target-3"
+        ],
+        "raw_logs_included": false,
+        "statement_digests": [
+          "demo-digest-023"
+        ]
+      },
+      "finding_id": "demo-finding-023",
+      "naive_candidate_id": "naive-023",
+      "pattern_id": "passrole_lambda",
+      "pattern_title": "Synthetic passrole_lambda path",
+      "pattern_version": "demo-fixture-v1",
+      "reasoner_exit_reason": "required modeled evidence is unresolved in synthetic fixture",
+      "required_checks": [
+        {
+          "name": "structural_path_present",
+          "reason": "synthetic fixture includes a source-action-target row",
+          "state": "pass"
+        },
+        {
+          "name": "session_policy_context_missing",
+          "reason": "synthetic fixture intentionally leaves this evidence unresolved",
+          "state": "unknown"
+        }
+      ],
+      "scenario_hash": "synthetic-fixture-hash-not-live-evidence",
+      "severity": "high",
+      "source": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystB"
+      },
+      "target": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoBoundarySensitiveRole"
+      },
+      "title": "Synthetic inconclusive path 023",
+      "uncertainty_class": "session_policy_context_missing",
+      "verdict": "inconclusive"
+    }
+  ],
+  "fixture_id": "path_overcounting_shared_uncertainty",
+  "generation_mode": "frozen_expected_output",
+  "live_aws_evidence": false,
+  "metadata": {
+    "canonical_hash": "synthetic-fixture-hash-not-live-evidence",
+    "credentials_included": false,
+    "findings_count": 23,
+    "raw_logs_included": false,
+    "reasoners_run": [
+      "admin_reachability",
+      "passrole_ecs",
+      "passrole_lambda"
+    ],
+    "reasoners_skipped": {},
+    "reasoning_duration_seconds": 0.0,
+    "reasoning_timestamp": "2026-06-02T00:00:00Z",
+    "verdict_breakdown": {
+      "blocked": 5,
+      "inconclusive": 11,
+      "precondition_only": 4,
+      "validated": 3
+    }
+  },
+  "replay_equivalence_follow_up_required": true,
+  "schema_version": "demo-fixture-v1",
+  "source_tool": "iamscope",
+  "source_tool_version": "synthetic-demo-fixture"
+}

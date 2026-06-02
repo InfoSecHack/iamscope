@@ -1,0 +1,38 @@
+{
+  "findings_generation": {
+    "aws_calls_made": false,
+    "live_aws_used": false,
+    "mode": "frozen_expected_output",
+    "reason": "Existing local replay/reasoner machinery was not used in this slice because this slice only introduces fixture files and contract tests.",
+    "replay_equivalence_follow_up": "add replay-equivalence slice before presenting the fixture as stronger than a static teaching fixture",
+    "replay_equivalence_follow_up_required": true
+  },
+  "fixture_id": "path_overcounting_shared_uncertainty",
+  "local_only": true,
+  "non_claims": [
+    "not live AWS evidence",
+    "not production readiness",
+    "not broad IAMScope correctness",
+    "not broad exploitability",
+    "not real-world scalability"
+  ],
+  "schema_version": "demo-fixture-v1",
+  "synthetic": true,
+  "uncertainty_sources": [
+    {
+      "intended_inconclusive_count": 8,
+      "meaning": "specific target-role resource coverage cannot be proven for a repeated PassRole-like path family",
+      "uncertainty_class": "shared_passrole_target_resource_scope_unknown"
+    },
+    {
+      "intended_inconclusive_count": 2,
+      "meaning": "permission-boundary or SCP context is unresolved for this fixture family",
+      "uncertainty_class": "shared_boundary_context_unresolved"
+    },
+    {
+      "intended_inconclusive_count": 1,
+      "meaning": "session-policy context is absent from the local fixture",
+      "uncertainty_class": "session_policy_context_missing"
+    }
+  ]
+}

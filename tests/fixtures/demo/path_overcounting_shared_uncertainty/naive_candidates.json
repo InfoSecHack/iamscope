@@ -1,0 +1,446 @@
+{
+  "candidate_paths": [
+    {
+      "action_or_precondition": "lambda:CreateFunction + iam:PassRole",
+      "candidate_id": "naive-001",
+      "candidate_rule": "source -> action/precondition -> target without blocker, precondition, or uncertainty evaluation",
+      "is_iamscope_output": false,
+      "maps_to": {
+        "finding_id": "demo-finding-001",
+        "type": "finding"
+      },
+      "reachability_evidence": false,
+      "source_principal": "arn:aws:iam::000000000000:user/DemoAnalystA",
+      "structural_path": [
+        "arn:aws:iam::000000000000:user/DemoAnalystA",
+        "lambda:CreateFunction + iam:PassRole",
+        "lambda_create_and_role_trust",
+        "arn:aws:iam::000000000000:role/DemoLambdaExecutionRole"
+      ],
+      "target_resource": "arn:aws:iam::000000000000:role/DemoLambdaExecutionRole"
+    },
+    {
+      "action_or_precondition": "sts:AssumeRole + iam:*",
+      "candidate_id": "naive-002",
+      "candidate_rule": "source -> action/precondition -> target without blocker, precondition, or uncertainty evaluation",
+      "is_iamscope_output": false,
+      "maps_to": {
+        "finding_id": "demo-finding-002",
+        "type": "finding"
+      },
+      "reachability_evidence": false,
+      "source_principal": "arn:aws:iam::000000000000:user/DemoAnalystB",
+      "structural_path": [
+        "arn:aws:iam::000000000000:user/DemoAnalystB",
+        "sts:AssumeRole + iam:*",
+        "trust_and_boundary_context",
+        "arn:aws:iam::000000000000:role/DemoEcsTaskRole"
+      ],
+      "target_resource": "arn:aws:iam::000000000000:role/DemoEcsTaskRole"
+    },
+    {
+      "action_or_precondition": "ecs:RegisterTaskDefinition + ecs:RunTask + iam:PassRole",
+      "candidate_id": "naive-003",
+      "candidate_rule": "source -> action/precondition -> target without blocker, precondition, or uncertainty evaluation",
+      "is_iamscope_output": false,
+      "maps_to": {
+        "finding_id": "demo-finding-003",
+        "type": "finding"
+      },
+      "reachability_evidence": false,
+      "source_principal": "arn:aws:iam::000000000000:role/DemoBuildRole",
+      "structural_path": [
+        "arn:aws:iam::000000000000:role/DemoBuildRole",
+        "ecs:RegisterTaskDefinition + ecs:RunTask + iam:PassRole",
+        "ecs_task_launch_preconditions",
+        "arn:aws:iam::000000000000:role/DemoBoundarySensitiveRole"
+      ],
+      "target_resource": "arn:aws:iam::000000000000:role/DemoBoundarySensitiveRole"
+    },
+    {
+      "action_or_precondition": "sts:AssumeRole + iam:*",
+      "candidate_id": "naive-004",
+      "candidate_rule": "source -> action/precondition -> target without blocker, precondition, or uncertainty evaluation",
+      "is_iamscope_output": false,
+      "maps_to": {
+        "finding_id": "demo-finding-004",
+        "type": "finding"
+      },
+      "reachability_evidence": false,
+      "source_principal": "arn:aws:iam::000000000000:user/DemoAnalystA",
+      "structural_path": [
+        "arn:aws:iam::000000000000:user/DemoAnalystA",
+        "sts:AssumeRole + iam:*",
+        "trust_and_boundary_context",
+        "arn:aws:iam::000000000000:role/DemoSessionScopedRole"
+      ],
+      "target_resource": "arn:aws:iam::000000000000:role/DemoSessionScopedRole"
+    },
+    {
+      "action_or_precondition": "lambda:CreateFunction + iam:PassRole",
+      "candidate_id": "naive-005",
+      "candidate_rule": "source -> action/precondition -> target without blocker, precondition, or uncertainty evaluation",
+      "is_iamscope_output": false,
+      "maps_to": {
+        "finding_id": "demo-finding-005",
+        "type": "finding"
+      },
+      "reachability_evidence": false,
+      "source_principal": "arn:aws:iam::000000000000:user/DemoAnalystB",
+      "structural_path": [
+        "arn:aws:iam::000000000000:user/DemoAnalystB",
+        "lambda:CreateFunction + iam:PassRole",
+        "lambda_create_and_role_trust",
+        "arn:aws:iam::000000000000:role/DemoLambdaExecutionRole"
+      ],
+      "target_resource": "arn:aws:iam::000000000000:role/DemoLambdaExecutionRole"
+    },
+    {
+      "action_or_precondition": "ecs:RegisterTaskDefinition + ecs:RunTask + iam:PassRole",
+      "candidate_id": "naive-006",
+      "candidate_rule": "source -> action/precondition -> target without blocker, precondition, or uncertainty evaluation",
+      "is_iamscope_output": false,
+      "maps_to": {
+        "finding_id": "demo-finding-006",
+        "type": "finding"
+      },
+      "reachability_evidence": false,
+      "source_principal": "arn:aws:iam::000000000000:role/DemoBuildRole",
+      "structural_path": [
+        "arn:aws:iam::000000000000:role/DemoBuildRole",
+        "ecs:RegisterTaskDefinition + ecs:RunTask + iam:PassRole",
+        "ecs_task_launch_preconditions",
+        "arn:aws:iam::000000000000:role/DemoEcsTaskRole"
+      ],
+      "target_resource": "arn:aws:iam::000000000000:role/DemoEcsTaskRole"
+    },
+    {
+      "action_or_precondition": "lambda:CreateFunction + iam:PassRole",
+      "candidate_id": "naive-007",
+      "candidate_rule": "source -> action/precondition -> target without blocker, precondition, or uncertainty evaluation",
+      "is_iamscope_output": false,
+      "maps_to": {
+        "finding_id": "demo-finding-007",
+        "type": "finding"
+      },
+      "reachability_evidence": false,
+      "source_principal": "arn:aws:iam::000000000000:user/DemoAnalystA",
+      "structural_path": [
+        "arn:aws:iam::000000000000:user/DemoAnalystA",
+        "lambda:CreateFunction + iam:PassRole",
+        "lambda_create_and_role_trust",
+        "arn:aws:iam::000000000000:role/DemoBoundarySensitiveRole"
+      ],
+      "target_resource": "arn:aws:iam::000000000000:role/DemoBoundarySensitiveRole"
+    },
+    {
+      "action_or_precondition": "sts:AssumeRole + iam:*",
+      "candidate_id": "naive-008",
+      "candidate_rule": "source -> action/precondition -> target without blocker, precondition, or uncertainty evaluation",
+      "is_iamscope_output": false,
+      "maps_to": {
+        "finding_id": "demo-finding-008",
+        "type": "finding"
+      },
+      "reachability_evidence": false,
+      "source_principal": "arn:aws:iam::000000000000:user/DemoAnalystB",
+      "structural_path": [
+        "arn:aws:iam::000000000000:user/DemoAnalystB",
+        "sts:AssumeRole + iam:*",
+        "trust_and_boundary_context",
+        "arn:aws:iam::000000000000:role/DemoSessionScopedRole"
+      ],
+      "target_resource": "arn:aws:iam::000000000000:role/DemoSessionScopedRole"
+    },
+    {
+      "action_or_precondition": "ecs:RegisterTaskDefinition + ecs:RunTask + iam:PassRole",
+      "candidate_id": "naive-009",
+      "candidate_rule": "source -> action/precondition -> target without blocker, precondition, or uncertainty evaluation",
+      "is_iamscope_output": false,
+      "maps_to": {
+        "finding_id": "demo-finding-009",
+        "type": "finding"
+      },
+      "reachability_evidence": false,
+      "source_principal": "arn:aws:iam::000000000000:role/DemoBuildRole",
+      "structural_path": [
+        "arn:aws:iam::000000000000:role/DemoBuildRole",
+        "ecs:RegisterTaskDefinition + ecs:RunTask + iam:PassRole",
+        "ecs_task_launch_preconditions",
+        "arn:aws:iam::000000000000:role/DemoLambdaExecutionRole"
+      ],
+      "target_resource": "arn:aws:iam::000000000000:role/DemoLambdaExecutionRole"
+    },
+    {
+      "action_or_precondition": "sts:AssumeRole + iam:*",
+      "candidate_id": "naive-010",
+      "candidate_rule": "source -> action/precondition -> target without blocker, precondition, or uncertainty evaluation",
+      "is_iamscope_output": false,
+      "maps_to": {
+        "finding_id": "demo-finding-010",
+        "type": "finding"
+      },
+      "reachability_evidence": false,
+      "source_principal": "arn:aws:iam::000000000000:user/DemoAnalystA",
+      "structural_path": [
+        "arn:aws:iam::000000000000:user/DemoAnalystA",
+        "sts:AssumeRole + iam:*",
+        "trust_and_boundary_context",
+        "arn:aws:iam::000000000000:role/DemoEcsTaskRole"
+      ],
+      "target_resource": "arn:aws:iam::000000000000:role/DemoEcsTaskRole"
+    },
+    {
+      "action_or_precondition": "lambda:CreateFunction + iam:PassRole",
+      "candidate_id": "naive-011",
+      "candidate_rule": "source -> action/precondition -> target without blocker, precondition, or uncertainty evaluation",
+      "is_iamscope_output": false,
+      "maps_to": {
+        "finding_id": "demo-finding-011",
+        "type": "finding"
+      },
+      "reachability_evidence": false,
+      "source_principal": "arn:aws:iam::000000000000:user/DemoAnalystB",
+      "structural_path": [
+        "arn:aws:iam::000000000000:user/DemoAnalystB",
+        "lambda:CreateFunction + iam:PassRole",
+        "lambda_create_and_role_trust",
+        "arn:aws:iam::000000000000:role/DemoBoundarySensitiveRole"
+      ],
+      "target_resource": "arn:aws:iam::000000000000:role/DemoBoundarySensitiveRole"
+    },
+    {
+      "action_or_precondition": "ecs:RegisterTaskDefinition + ecs:RunTask + iam:PassRole",
+      "candidate_id": "naive-012",
+      "candidate_rule": "source -> action/precondition -> target without blocker, precondition, or uncertainty evaluation",
+      "is_iamscope_output": false,
+      "maps_to": {
+        "finding_id": "demo-finding-012",
+        "type": "finding"
+      },
+      "reachability_evidence": false,
+      "source_principal": "arn:aws:iam::000000000000:role/DemoBuildRole",
+      "structural_path": [
+        "arn:aws:iam::000000000000:role/DemoBuildRole",
+        "ecs:RegisterTaskDefinition + ecs:RunTask + iam:PassRole",
+        "ecs_task_launch_preconditions",
+        "arn:aws:iam::000000000000:role/DemoSessionScopedRole"
+      ],
+      "target_resource": "arn:aws:iam::000000000000:role/DemoSessionScopedRole"
+    },
+    {
+      "action_or_precondition": "lambda:CreateFunction + iam:PassRole",
+      "candidate_id": "naive-013",
+      "candidate_rule": "source -> action/precondition -> target without blocker, precondition, or uncertainty evaluation",
+      "is_iamscope_output": false,
+      "maps_to": {
+        "finding_id": "demo-finding-013",
+        "type": "finding"
+      },
+      "reachability_evidence": false,
+      "source_principal": "arn:aws:iam::000000000000:user/DemoAnalystA",
+      "structural_path": [
+        "arn:aws:iam::000000000000:user/DemoAnalystA",
+        "lambda:CreateFunction + iam:PassRole",
+        "lambda_create_and_role_trust",
+        "arn:aws:iam::000000000000:role/DemoLambdaExecutionRole"
+      ],
+      "target_resource": "arn:aws:iam::000000000000:role/DemoLambdaExecutionRole"
+    },
+    {
+      "action_or_precondition": "sts:AssumeRole + iam:*",
+      "candidate_id": "naive-014",
+      "candidate_rule": "source -> action/precondition -> target without blocker, precondition, or uncertainty evaluation",
+      "is_iamscope_output": false,
+      "maps_to": {
+        "finding_id": "demo-finding-014",
+        "type": "finding"
+      },
+      "reachability_evidence": false,
+      "source_principal": "arn:aws:iam::000000000000:user/DemoAnalystB",
+      "structural_path": [
+        "arn:aws:iam::000000000000:user/DemoAnalystB",
+        "sts:AssumeRole + iam:*",
+        "trust_and_boundary_context",
+        "arn:aws:iam::000000000000:role/DemoEcsTaskRole"
+      ],
+      "target_resource": "arn:aws:iam::000000000000:role/DemoEcsTaskRole"
+    },
+    {
+      "action_or_precondition": "ecs:RegisterTaskDefinition + ecs:RunTask + iam:PassRole",
+      "candidate_id": "naive-015",
+      "candidate_rule": "source -> action/precondition -> target without blocker, precondition, or uncertainty evaluation",
+      "is_iamscope_output": false,
+      "maps_to": {
+        "finding_id": "demo-finding-015",
+        "type": "finding"
+      },
+      "reachability_evidence": false,
+      "source_principal": "arn:aws:iam::000000000000:role/DemoBuildRole",
+      "structural_path": [
+        "arn:aws:iam::000000000000:role/DemoBuildRole",
+        "ecs:RegisterTaskDefinition + ecs:RunTask + iam:PassRole",
+        "ecs_task_launch_preconditions",
+        "arn:aws:iam::000000000000:role/DemoBoundarySensitiveRole"
+      ],
+      "target_resource": "arn:aws:iam::000000000000:role/DemoBoundarySensitiveRole"
+    },
+    {
+      "action_or_precondition": "sts:AssumeRole + iam:*",
+      "candidate_id": "naive-016",
+      "candidate_rule": "source -> action/precondition -> target without blocker, precondition, or uncertainty evaluation",
+      "is_iamscope_output": false,
+      "maps_to": {
+        "finding_id": "demo-finding-016",
+        "type": "finding"
+      },
+      "reachability_evidence": false,
+      "source_principal": "arn:aws:iam::000000000000:user/DemoAnalystA",
+      "structural_path": [
+        "arn:aws:iam::000000000000:user/DemoAnalystA",
+        "sts:AssumeRole + iam:*",
+        "trust_and_boundary_context",
+        "arn:aws:iam::000000000000:role/DemoSessionScopedRole"
+      ],
+      "target_resource": "arn:aws:iam::000000000000:role/DemoSessionScopedRole"
+    },
+    {
+      "action_or_precondition": "lambda:CreateFunction + iam:PassRole",
+      "candidate_id": "naive-017",
+      "candidate_rule": "source -> action/precondition -> target without blocker, precondition, or uncertainty evaluation",
+      "is_iamscope_output": false,
+      "maps_to": {
+        "finding_id": "demo-finding-017",
+        "type": "finding"
+      },
+      "reachability_evidence": false,
+      "source_principal": "arn:aws:iam::000000000000:user/DemoAnalystB",
+      "structural_path": [
+        "arn:aws:iam::000000000000:user/DemoAnalystB",
+        "lambda:CreateFunction + iam:PassRole",
+        "lambda_create_and_role_trust",
+        "arn:aws:iam::000000000000:role/DemoLambdaExecutionRole"
+      ],
+      "target_resource": "arn:aws:iam::000000000000:role/DemoLambdaExecutionRole"
+    },
+    {
+      "action_or_precondition": "ecs:RegisterTaskDefinition + ecs:RunTask + iam:PassRole",
+      "candidate_id": "naive-018",
+      "candidate_rule": "source -> action/precondition -> target without blocker, precondition, or uncertainty evaluation",
+      "is_iamscope_output": false,
+      "maps_to": {
+        "finding_id": "demo-finding-018",
+        "type": "finding"
+      },
+      "reachability_evidence": false,
+      "source_principal": "arn:aws:iam::000000000000:role/DemoBuildRole",
+      "structural_path": [
+        "arn:aws:iam::000000000000:role/DemoBuildRole",
+        "ecs:RegisterTaskDefinition + ecs:RunTask + iam:PassRole",
+        "ecs_task_launch_preconditions",
+        "arn:aws:iam::000000000000:role/DemoEcsTaskRole"
+      ],
+      "target_resource": "arn:aws:iam::000000000000:role/DemoEcsTaskRole"
+    },
+    {
+      "action_or_precondition": "lambda:CreateFunction + iam:PassRole",
+      "candidate_id": "naive-019",
+      "candidate_rule": "source -> action/precondition -> target without blocker, precondition, or uncertainty evaluation",
+      "is_iamscope_output": false,
+      "maps_to": {
+        "finding_id": "demo-finding-019",
+        "type": "finding"
+      },
+      "reachability_evidence": false,
+      "source_principal": "arn:aws:iam::000000000000:user/DemoAnalystA",
+      "structural_path": [
+        "arn:aws:iam::000000000000:user/DemoAnalystA",
+        "lambda:CreateFunction + iam:PassRole",
+        "lambda_create_and_role_trust",
+        "arn:aws:iam::000000000000:role/DemoBoundarySensitiveRole"
+      ],
+      "target_resource": "arn:aws:iam::000000000000:role/DemoBoundarySensitiveRole"
+    },
+    {
+      "action_or_precondition": "sts:AssumeRole + iam:*",
+      "candidate_id": "naive-020",
+      "candidate_rule": "source -> action/precondition -> target without blocker, precondition, or uncertainty evaluation",
+      "is_iamscope_output": false,
+      "maps_to": {
+        "finding_id": "demo-finding-020",
+        "type": "finding"
+      },
+      "reachability_evidence": false,
+      "source_principal": "arn:aws:iam::000000000000:user/DemoAnalystB",
+      "structural_path": [
+        "arn:aws:iam::000000000000:user/DemoAnalystB",
+        "sts:AssumeRole + iam:*",
+        "trust_and_boundary_context",
+        "arn:aws:iam::000000000000:role/DemoSessionScopedRole"
+      ],
+      "target_resource": "arn:aws:iam::000000000000:role/DemoSessionScopedRole"
+    },
+    {
+      "action_or_precondition": "ecs:RegisterTaskDefinition + ecs:RunTask + iam:PassRole",
+      "candidate_id": "naive-021",
+      "candidate_rule": "source -> action/precondition -> target without blocker, precondition, or uncertainty evaluation",
+      "is_iamscope_output": false,
+      "maps_to": {
+        "finding_id": "demo-finding-021",
+        "type": "finding"
+      },
+      "reachability_evidence": false,
+      "source_principal": "arn:aws:iam::000000000000:role/DemoBuildRole",
+      "structural_path": [
+        "arn:aws:iam::000000000000:role/DemoBuildRole",
+        "ecs:RegisterTaskDefinition + ecs:RunTask + iam:PassRole",
+        "ecs_task_launch_preconditions",
+        "arn:aws:iam::000000000000:role/DemoLambdaExecutionRole"
+      ],
+      "target_resource": "arn:aws:iam::000000000000:role/DemoLambdaExecutionRole"
+    },
+    {
+      "action_or_precondition": "sts:AssumeRole + iam:*",
+      "candidate_id": "naive-022",
+      "candidate_rule": "source -> action/precondition -> target without blocker, precondition, or uncertainty evaluation",
+      "is_iamscope_output": false,
+      "maps_to": {
+        "finding_id": "demo-finding-022",
+        "type": "finding"
+      },
+      "reachability_evidence": false,
+      "source_principal": "arn:aws:iam::000000000000:user/DemoAnalystA",
+      "structural_path": [
+        "arn:aws:iam::000000000000:user/DemoAnalystA",
+        "sts:AssumeRole + iam:*",
+        "trust_and_boundary_context",
+        "arn:aws:iam::000000000000:role/DemoEcsTaskRole"
+      ],
+      "target_resource": "arn:aws:iam::000000000000:role/DemoEcsTaskRole"
+    },
+    {
+      "action_or_precondition": "lambda:CreateFunction + iam:PassRole",
+      "candidate_id": "naive-023",
+      "candidate_rule": "source -> action/precondition -> target without blocker, precondition, or uncertainty evaluation",
+      "is_iamscope_output": false,
+      "maps_to": {
+        "finding_id": "demo-finding-023",
+        "type": "finding"
+      },
+      "reachability_evidence": false,
+      "source_principal": "arn:aws:iam::000000000000:user/DemoAnalystB",
+      "structural_path": [
+        "arn:aws:iam::000000000000:user/DemoAnalystB",
+        "lambda:CreateFunction + iam:PassRole",
+        "lambda_create_and_role_trust",
+        "arn:aws:iam::000000000000:role/DemoBoundarySensitiveRole"
+      ],
+      "target_resource": "arn:aws:iam::000000000000:role/DemoBoundarySensitiveRole"
+    }
+  ],
+  "candidate_rule": "A naive candidate is any structurally path-shaped source -> action/precondition -> target row produced by the demo fixture without evaluating blocker, precondition, or uncertainty checks.",
+  "fixture_id": "path_overcounting_shared_uncertainty",
+  "is_iamscope_output": false,
+  "reachability_evidence": false,
+  "schema_version": "demo-fixture-v1"
+}
