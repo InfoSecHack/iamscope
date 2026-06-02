@@ -23,7 +23,7 @@ IAMScope:
 11 inconclusive
 
 Top uncertainty class:
-8 paths depend on the same unresolved permission-boundary/SCP/trust-condition evidence.
+8 paths depend on the same unresolved PassRole target-role resource-scope evidence.
 
 Reviewer decision:
 Do not treat all 23 as independent validated risks.
@@ -62,6 +62,15 @@ The naive interpretation should show `23` possible escalation paths.
 
 This naive count should be represented by a local `naive_candidates.json` file in the future fixture. It should be clear that the naive count is a teaching comparison, not IAMScope's validated finding count.
 
+Naive candidate rule:
+
+A naive candidate is any structurally path-shaped source -> action/precondition -> target row produced by the demo fixture without evaluating blocker, precondition, or uncertainty checks. The naive list is deterministic and fixture-defined. It is not IAMScope output and is not treated as evidence of reachability.
+
+Future tests should assert:
+
+- `len(naive_candidates) == 23`.
+- Each naive candidate maps to exactly one IAMScope finding or one documented non-finding reason.
+
 ## Intended IAMScope Verdict Breakdown
 
 The future fixture should produce or include findings with this exact breakdown:
@@ -81,16 +90,16 @@ The fixture should include repeated uncertainty causes so the demo can group inc
 
 Primary class:
 
-- `permission_boundary_scp_trust_condition_unresolved`
+- `shared_passrole_target_resource_scope_unknown`
   - Intended count: `8` inconclusive paths.
-  - Meaning: these paths depend on one unresolved evidence bundle involving permission-boundary, SCP, or trust-condition context.
+  - Meaning: IAMScope cannot prove specific target-role resource coverage for a repeated PassRole-like path family.
   - Reviewer lesson: resolve this one evidence gap first instead of treating eight rows as eight independent validated risks.
 
 Secondary classes:
 
-- `target_role_resource_scope_unknown`
+- `shared_boundary_context_unresolved`
   - Intended count: `2` inconclusive paths.
-  - Meaning: PassRole-like target-role resource coverage is ambiguous in the local fixture.
+  - Meaning: permission-boundary or SCP context needed by the modeled path family is unresolved.
 
 - `session_policy_context_missing`
   - Intended count: `1` inconclusive path.
@@ -161,9 +170,18 @@ Proposed file roles:
 
 - `expected_uncertainty_groups.json`
   - Local expected grouping output.
-  - Should include `permission_boundary_scp_trust_condition_unresolved` with `8` inconclusive paths.
+  - Should include `shared_passrole_target_resource_scope_unknown` with `8` inconclusive paths.
 
 No generated outputs should be committed by default.
+
+## Findings Generation And Replay Legitimacy
+
+The future fixture slice should either:
+
+1. generate or replay `findings.json` from `scenario.json` plus `binding_metadata.json` using existing local IAMScope replay/reasoner machinery, then pin it as expected output; or
+2. clearly label `findings.json` as a frozen expected output and include a follow-on replay-equivalence slice before promoting the demo as stronger than a static teaching fixture.
+
+Prefer generate/replay first if existing tooling supports it without new reasoners or benchmark semantic changes.
 
 ## Expected Generated Outputs
 
@@ -196,7 +214,7 @@ IAMScope:
   inconclusive: 11
 
 Top uncertainty class:
-  permission_boundary_scp_trust_condition_unresolved: 8 inconclusive paths
+  shared_passrole_target_resource_scope_unknown: 8 inconclusive paths
 
 Reviewer decision:
   Do not treat all 23 as independent validated risks.
@@ -233,6 +251,15 @@ The fixture may claim:
 - The local demo helps reviewers decide which evidence gap to resolve first.
 - The local demo makes no AWS calls when run as designed.
 
+The public narrative should remain centered on:
+
+1. naive paths;
+2. IAMScope verdict split;
+3. shared inconclusive cause;
+4. reviewer decision.
+
+The fixture may include all four verdicts, but the story should not become a broad benchmark or completeness claim.
+
 ## What The Fixture Must Not Claim
 
 The fixture must not claim:
@@ -254,12 +281,17 @@ The fixture must not claim:
 Future implementation should add tests that verify:
 
 - `naive_candidates.json` contains exactly `23` candidate paths.
+- Each naive candidate maps to exactly one IAMScope finding or one documented non-finding reason.
 - `findings.json` has exactly:
   - `3` `validated`;
   - `5` `blocked`;
   - `4` `precondition_only`;
   - `11` `inconclusive`.
-- `expected_uncertainty_groups.json` includes `permission_boundary_scp_trust_condition_unresolved` with `8` inconclusive paths.
+- `expected_uncertainty_groups.json` includes:
+  - `shared_passrole_target_resource_scope_unknown` with `8` inconclusive paths;
+  - `shared_boundary_context_unresolved` with `2` inconclusive paths;
+  - `session_policy_context_missing` with `1` inconclusive path.
+- `findings.json` is either generated/replayed from `scenario.json` plus `binding_metadata.json` with existing local IAMScope tooling, or is clearly labeled as frozen expected output with a follow-on replay-equivalence slice.
 - Local validation/report commands can consume the fixture without AWS credentials.
 - The uncertainty grouping output does not mutate verdicts or findings.
 - The future demo runner writes generated files under `/tmp` or a caller-provided scratch path.
