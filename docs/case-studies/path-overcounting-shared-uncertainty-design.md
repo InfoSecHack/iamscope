@@ -191,6 +191,10 @@ The future runner should write to `/tmp/iamscope-path-overcounting-demo/` by def
 
 ## Recommended Implementation Slices
 
+Recommended next slice: fixture design slice.
+
+The remaining items are sequenced follow-ons, not parallel recommendations.
+
 1. **Fixture design slice**
    - Add a small synthetic fixture under `tests/fixtures/demo/`.
    - Include `scenario.json`, `binding_metadata.json`, `findings.json`, and `naive_candidates.json`.
