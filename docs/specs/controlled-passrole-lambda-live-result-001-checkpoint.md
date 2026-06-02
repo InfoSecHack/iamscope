@@ -106,10 +106,10 @@ This checkpoint records only sanitized summary fields. The raw `/tmp/iamscope-li
 This checkpoint does not claim:
 
 - Production readiness.
-- Not broad IAMScope correctness.
+- Broad IAMScope correctness.
 - Broad PassRole correctness.
 - Broad runtime exploitability.
-- Not exploitability proof.
+- Exploitability proof.
 - Downstream authorization proof.
 - Lambda invocation behavior.
 - That any trigger, function URL, event source mapping, alias, version, or downstream action was created or tested.
