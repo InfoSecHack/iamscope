@@ -1,0 +1,38 @@
+{
+  "fixture_id": "path_overcounting_shared_uncertainty",
+  "groups": [
+    {
+      "count": 8,
+      "finding_ids": [
+        "demo-finding-013",
+        "demo-finding-014",
+        "demo-finding-015",
+        "demo-finding-016",
+        "demo-finding-017",
+        "demo-finding-018",
+        "demo-finding-019",
+        "demo-finding-020"
+      ],
+      "reviewer_action": "resolve specific target-role resource coverage for the repeated PassRole-like family first",
+      "uncertainty_class": "shared_passrole_target_resource_scope_unknown"
+    },
+    {
+      "count": 2,
+      "finding_ids": [
+        "demo-finding-021",
+        "demo-finding-022"
+      ],
+      "reviewer_action": "provide scoped permission-boundary or SCP context before promoting these paths",
+      "uncertainty_class": "shared_boundary_context_unresolved"
+    },
+    {
+      "count": 1,
+      "finding_ids": [
+        "demo-finding-023"
+      ],
+      "reviewer_action": "provide session-policy context before treating this path as validated",
+      "uncertainty_class": "session_policy_context_missing"
+    }
+  ],
+  "schema_version": "demo-fixture-v1"
+}

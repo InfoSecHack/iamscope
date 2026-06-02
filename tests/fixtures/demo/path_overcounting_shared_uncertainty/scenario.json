@@ -1,0 +1,535 @@
+{
+  "accounts": [
+    {
+      "account_id": "000000000000",
+      "label": "synthetic-demo-account",
+      "synthetic": true
+    }
+  ],
+  "description": "Synthetic local scenario for demonstrating path overcounting and shared uncertainty.",
+  "edges": [
+    {
+      "dst": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoLambdaExecutionRole"
+      },
+      "edge_id": "demo-edge-001",
+      "edge_type": "passrole_lambda",
+      "features": {
+        "synthetic": true,
+        "uncertainty_class": null,
+        "verdict_contract": "validated"
+      },
+      "src": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystA"
+      }
+    },
+    {
+      "dst": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoEcsTaskRole"
+      },
+      "edge_id": "demo-edge-002",
+      "edge_type": "admin_reachability",
+      "features": {
+        "synthetic": true,
+        "uncertainty_class": null,
+        "verdict_contract": "validated"
+      },
+      "src": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystB"
+      }
+    },
+    {
+      "dst": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoBoundarySensitiveRole"
+      },
+      "edge_id": "demo-edge-003",
+      "edge_type": "passrole_ecs",
+      "features": {
+        "synthetic": true,
+        "uncertainty_class": null,
+        "verdict_contract": "validated"
+      },
+      "src": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoBuildRole"
+      }
+    },
+    {
+      "dst": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoSessionScopedRole"
+      },
+      "edge_id": "demo-edge-004",
+      "edge_type": "admin_reachability",
+      "features": {
+        "synthetic": true,
+        "uncertainty_class": null,
+        "verdict_contract": "blocked"
+      },
+      "src": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystA"
+      }
+    },
+    {
+      "dst": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoLambdaExecutionRole"
+      },
+      "edge_id": "demo-edge-005",
+      "edge_type": "passrole_lambda",
+      "features": {
+        "synthetic": true,
+        "uncertainty_class": null,
+        "verdict_contract": "blocked"
+      },
+      "src": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystB"
+      }
+    },
+    {
+      "dst": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoEcsTaskRole"
+      },
+      "edge_id": "demo-edge-006",
+      "edge_type": "passrole_ecs",
+      "features": {
+        "synthetic": true,
+        "uncertainty_class": null,
+        "verdict_contract": "blocked"
+      },
+      "src": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoBuildRole"
+      }
+    },
+    {
+      "dst": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoBoundarySensitiveRole"
+      },
+      "edge_id": "demo-edge-007",
+      "edge_type": "passrole_lambda",
+      "features": {
+        "synthetic": true,
+        "uncertainty_class": null,
+        "verdict_contract": "blocked"
+      },
+      "src": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystA"
+      }
+    },
+    {
+      "dst": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoSessionScopedRole"
+      },
+      "edge_id": "demo-edge-008",
+      "edge_type": "admin_reachability",
+      "features": {
+        "synthetic": true,
+        "uncertainty_class": null,
+        "verdict_contract": "blocked"
+      },
+      "src": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystB"
+      }
+    },
+    {
+      "dst": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoLambdaExecutionRole"
+      },
+      "edge_id": "demo-edge-009",
+      "edge_type": "passrole_ecs",
+      "features": {
+        "synthetic": true,
+        "uncertainty_class": null,
+        "verdict_contract": "precondition_only"
+      },
+      "src": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoBuildRole"
+      }
+    },
+    {
+      "dst": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoEcsTaskRole"
+      },
+      "edge_id": "demo-edge-010",
+      "edge_type": "admin_reachability",
+      "features": {
+        "synthetic": true,
+        "uncertainty_class": null,
+        "verdict_contract": "precondition_only"
+      },
+      "src": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystA"
+      }
+    },
+    {
+      "dst": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoBoundarySensitiveRole"
+      },
+      "edge_id": "demo-edge-011",
+      "edge_type": "passrole_lambda",
+      "features": {
+        "synthetic": true,
+        "uncertainty_class": null,
+        "verdict_contract": "precondition_only"
+      },
+      "src": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystB"
+      }
+    },
+    {
+      "dst": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoSessionScopedRole"
+      },
+      "edge_id": "demo-edge-012",
+      "edge_type": "passrole_ecs",
+      "features": {
+        "synthetic": true,
+        "uncertainty_class": null,
+        "verdict_contract": "precondition_only"
+      },
+      "src": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoBuildRole"
+      }
+    },
+    {
+      "dst": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoLambdaExecutionRole"
+      },
+      "edge_id": "demo-edge-013",
+      "edge_type": "passrole_lambda",
+      "features": {
+        "synthetic": true,
+        "uncertainty_class": "shared_passrole_target_resource_scope_unknown",
+        "verdict_contract": "inconclusive"
+      },
+      "src": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystA"
+      }
+    },
+    {
+      "dst": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoEcsTaskRole"
+      },
+      "edge_id": "demo-edge-014",
+      "edge_type": "passrole_lambda",
+      "features": {
+        "pattern_family": "passrole_lambda",
+        "synthetic": true,
+        "uncertainty_class": "shared_passrole_target_resource_scope_unknown",
+        "verdict_contract": "inconclusive"
+      },
+      "src": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystB"
+      }
+    },
+    {
+      "dst": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoBoundarySensitiveRole"
+      },
+      "edge_id": "demo-edge-015",
+      "edge_type": "passrole_ecs",
+      "features": {
+        "synthetic": true,
+        "uncertainty_class": "shared_passrole_target_resource_scope_unknown",
+        "verdict_contract": "inconclusive"
+      },
+      "src": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoBuildRole"
+      }
+    },
+    {
+      "dst": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoSessionScopedRole"
+      },
+      "edge_id": "demo-edge-016",
+      "edge_type": "passrole_ecs",
+      "features": {
+        "pattern_family": "passrole_ecs",
+        "synthetic": true,
+        "uncertainty_class": "shared_passrole_target_resource_scope_unknown",
+        "verdict_contract": "inconclusive"
+      },
+      "src": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystA"
+      }
+    },
+    {
+      "dst": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoLambdaExecutionRole"
+      },
+      "edge_id": "demo-edge-017",
+      "edge_type": "passrole_lambda",
+      "features": {
+        "synthetic": true,
+        "uncertainty_class": "shared_passrole_target_resource_scope_unknown",
+        "verdict_contract": "inconclusive"
+      },
+      "src": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystB"
+      }
+    },
+    {
+      "dst": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoEcsTaskRole"
+      },
+      "edge_id": "demo-edge-018",
+      "edge_type": "passrole_ecs",
+      "features": {
+        "synthetic": true,
+        "uncertainty_class": "shared_passrole_target_resource_scope_unknown",
+        "verdict_contract": "inconclusive"
+      },
+      "src": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoBuildRole"
+      }
+    },
+    {
+      "dst": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoBoundarySensitiveRole"
+      },
+      "edge_id": "demo-edge-019",
+      "edge_type": "passrole_lambda",
+      "features": {
+        "synthetic": true,
+        "uncertainty_class": "shared_passrole_target_resource_scope_unknown",
+        "verdict_contract": "inconclusive"
+      },
+      "src": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystA"
+      }
+    },
+    {
+      "dst": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoSessionScopedRole"
+      },
+      "edge_id": "demo-edge-020",
+      "edge_type": "passrole_lambda",
+      "features": {
+        "pattern_family": "passrole_lambda",
+        "synthetic": true,
+        "uncertainty_class": "shared_passrole_target_resource_scope_unknown",
+        "verdict_contract": "inconclusive"
+      },
+      "src": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystB"
+      }
+    },
+    {
+      "dst": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoLambdaExecutionRole"
+      },
+      "edge_id": "demo-edge-021",
+      "edge_type": "passrole_ecs",
+      "features": {
+        "synthetic": true,
+        "uncertainty_class": "shared_boundary_context_unresolved",
+        "verdict_contract": "inconclusive"
+      },
+      "src": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoBuildRole"
+      }
+    },
+    {
+      "dst": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoEcsTaskRole"
+      },
+      "edge_id": "demo-edge-022",
+      "edge_type": "admin_reachability",
+      "features": {
+        "synthetic": true,
+        "uncertainty_class": "shared_boundary_context_unresolved",
+        "verdict_contract": "inconclusive"
+      },
+      "src": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystA"
+      }
+    },
+    {
+      "dst": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/DemoBoundarySensitiveRole"
+      },
+      "edge_id": "demo-edge-023",
+      "edge_type": "passrole_lambda",
+      "features": {
+        "synthetic": true,
+        "uncertainty_class": "session_policy_context_missing",
+        "verdict_contract": "inconclusive"
+      },
+      "src": {
+        "node_type": "IAMPrincipal",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystB"
+      }
+    }
+  ],
+  "fixture_id": "path_overcounting_shared_uncertainty",
+  "fixture_kind": "synthetic_local_demo",
+  "live_aws_evidence": false,
+  "local_only": true,
+  "metadata": {
+    "aws_calls_made": false,
+    "canonical_hash": "synthetic-fixture-hash-not-live-evidence",
+    "collection_timestamp": "2026-06-02T00:00:00Z",
+    "collector": "synthetic-fixture",
+    "collector_version": "demo-fixture-v1",
+    "credentials_included": false,
+    "live_aws_used": false,
+    "raw_logs_included": false
+  },
+  "nodes": [
+    {
+      "node_id": "demo-source-1",
+      "node_type": "IAMPrincipal",
+      "properties": {
+        "synthetic": true
+      },
+      "provider": "aws",
+      "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystA"
+    },
+    {
+      "node_id": "demo-source-2",
+      "node_type": "IAMPrincipal",
+      "properties": {
+        "synthetic": true
+      },
+      "provider": "aws",
+      "provider_id": "arn:aws:iam::000000000000:user/DemoAnalystB"
+    },
+    {
+      "node_id": "demo-source-3",
+      "node_type": "IAMPrincipal",
+      "properties": {
+        "synthetic": true
+      },
+      "provider": "aws",
+      "provider_id": "arn:aws:iam::000000000000:role/DemoBuildRole"
+    },
+    {
+      "node_id": "demo-target-1",
+      "node_type": "IAMRole",
+      "properties": {
+        "synthetic": true
+      },
+      "provider": "aws",
+      "provider_id": "arn:aws:iam::000000000000:role/DemoLambdaExecutionRole"
+    },
+    {
+      "node_id": "demo-target-2",
+      "node_type": "IAMRole",
+      "properties": {
+        "synthetic": true
+      },
+      "provider": "aws",
+      "provider_id": "arn:aws:iam::000000000000:role/DemoEcsTaskRole"
+    },
+    {
+      "node_id": "demo-target-3",
+      "node_type": "IAMRole",
+      "properties": {
+        "synthetic": true
+      },
+      "provider": "aws",
+      "provider_id": "arn:aws:iam::000000000000:role/DemoBoundarySensitiveRole"
+    },
+    {
+      "node_id": "demo-target-4",
+      "node_type": "IAMRole",
+      "properties": {
+        "synthetic": true
+      },
+      "provider": "aws",
+      "provider_id": "arn:aws:iam::000000000000:role/DemoSessionScopedRole"
+    }
+  ],
+  "objectives": [],
+  "observations": [],
+  "schema_version": "demo-fixture-v1",
+  "synthetic": true
+}
