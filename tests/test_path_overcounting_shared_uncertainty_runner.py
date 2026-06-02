@@ -42,7 +42,7 @@ def test_runner_defaults_output_under_tmp() -> None:
         shutil.rmtree(DEFAULT_OUT, ignore_errors=True)
 
 
-def test_runner_writes_to_temp_output_directory(tmp_path: Path) -> None:
+def test_documented_runner_command_smoke_writes_expected_outputs(tmp_path: Path) -> None:
     output_dir = tmp_path / "demo-output"
     result = _run_runner("--out", str(output_dir))
     assert result.returncode == 0, result.stderr
@@ -61,6 +61,19 @@ def test_runner_writes_to_temp_output_directory(tmp_path: Path) -> None:
     assert verdict_summary["stronger_demo_claims_allowed"] is False
     assert verdict_summary["aws_calls_made"] == 0
     assert verdict_summary["live_aws_used"] is False
+
+    groups = json.loads((output_dir / "uncertainty-groups.json").read_text())
+    assert groups["report_only"] is True
+    assert groups["groups"] == {
+        "shared_passrole_target_resource_scope_unknown": 8,
+        "shared_boundary_context_unresolved": 2,
+        "session_policy_context_missing": 1,
+    }
+    assert groups["non_claims"]["does_not_mutate_findings"] is True
+    assert groups["non_claims"]["does_not_change_verdicts"] is True
+    assert groups["non_claims"]["does_not_infer_exploitability"] is True
+    assert groups["non_claims"]["does_not_claim_replay_equivalence"] is True
+    assert groups["non_claims"]["requires_aws_credentials"] is False
 
 
 def test_runner_uncertainty_group_counts(tmp_path: Path) -> None:
