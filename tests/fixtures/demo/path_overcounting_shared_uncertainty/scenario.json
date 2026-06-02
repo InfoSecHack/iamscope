@@ -262,8 +262,9 @@
         "provider_id": "arn:aws:iam::000000000000:role/DemoEcsTaskRole"
       },
       "edge_id": "demo-edge-014",
-      "edge_type": "admin_reachability",
+      "edge_type": "passrole_lambda",
       "features": {
+        "pattern_family": "passrole_lambda",
         "synthetic": true,
         "uncertainty_class": "shared_passrole_target_resource_scope_unknown",
         "verdict_contract": "inconclusive"
@@ -300,8 +301,9 @@
         "provider_id": "arn:aws:iam::000000000000:role/DemoSessionScopedRole"
       },
       "edge_id": "demo-edge-016",
-      "edge_type": "admin_reachability",
+      "edge_type": "passrole_ecs",
       "features": {
+        "pattern_family": "passrole_ecs",
         "synthetic": true,
         "uncertainty_class": "shared_passrole_target_resource_scope_unknown",
         "verdict_contract": "inconclusive"
@@ -376,8 +378,9 @@
         "provider_id": "arn:aws:iam::000000000000:role/DemoSessionScopedRole"
       },
       "edge_id": "demo-edge-020",
-      "edge_type": "admin_reachability",
+      "edge_type": "passrole_lambda",
       "features": {
+        "pattern_family": "passrole_lambda",
         "synthetic": true,
         "uncertainty_class": "shared_passrole_target_resource_scope_unknown",
         "verdict_contract": "inconclusive"

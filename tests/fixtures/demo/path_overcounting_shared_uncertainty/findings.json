@@ -771,8 +771,8 @@
       },
       "finding_id": "demo-finding-014",
       "naive_candidate_id": "naive-014",
-      "pattern_id": "admin_reachability",
-      "pattern_title": "Synthetic admin_reachability path",
+      "pattern_id": "passrole_lambda",
+      "pattern_title": "Synthetic passrole_lambda path",
       "pattern_version": "demo-fixture-v1",
       "reasoner_exit_reason": "required modeled evidence is unresolved in synthetic fixture",
       "required_checks": [
@@ -885,8 +885,8 @@
       },
       "finding_id": "demo-finding-016",
       "naive_candidate_id": "naive-016",
-      "pattern_id": "admin_reachability",
-      "pattern_title": "Synthetic admin_reachability path",
+      "pattern_id": "passrole_ecs",
+      "pattern_title": "Synthetic passrole_ecs path",
       "pattern_version": "demo-fixture-v1",
       "reasoner_exit_reason": "required modeled evidence is unresolved in synthetic fixture",
       "required_checks": [
@@ -1113,8 +1113,8 @@
       },
       "finding_id": "demo-finding-020",
       "naive_candidate_id": "naive-020",
-      "pattern_id": "admin_reachability",
-      "pattern_title": "Synthetic admin_reachability path",
+      "pattern_id": "passrole_lambda",
+      "pattern_title": "Synthetic passrole_lambda path",
       "pattern_version": "demo-fixture-v1",
       "reasoner_exit_reason": "required modeled evidence is unresolved in synthetic fixture",
       "required_checks": [
@@ -1321,15 +1321,15 @@
   "generation_mode": "frozen_expected_output",
   "live_aws_evidence": false,
   "metadata": {
+    "aws_calls_made": false,
     "canonical_hash": "synthetic-fixture-hash-not-live-evidence",
     "credentials_included": false,
+    "findings_authoring_note": "Frozen expected output authored for a local synthetic teaching fixture; not generated or replayed by IAMScope reasoners in this slice.",
     "findings_count": 23,
+    "generated_or_replayed_by_iamscope": false,
+    "live_aws_used": false,
     "raw_logs_included": false,
-    "reasoners_run": [
-      "admin_reachability",
-      "passrole_ecs",
-      "passrole_lambda"
-    ],
+    "reasoners_run": [],
     "reasoners_skipped": {},
     "reasoning_duration_seconds": 0.0,
     "reasoning_timestamp": "2026-06-02T00:00:00Z",
@@ -1342,6 +1342,6 @@
   },
   "replay_equivalence_follow_up_required": true,
   "schema_version": "demo-fixture-v1",
-  "source_tool": "iamscope",
-  "source_tool_version": "synthetic-demo-fixture"
+  "source_tool": "static_fixture_authoring",
+  "source_tool_version": "demo-fixture-v1"
 }

@@ -91,6 +91,23 @@ def test_uncertainty_groups_reference_inconclusive_findings() -> None:
     assert referenced_ids == inconclusive_ids
 
 
+def test_primary_uncertainty_class_is_passrole_like() -> None:
+    findings = _load("findings.json")["findings"]
+    naive_by_id = {
+        candidate["candidate_id"]: candidate for candidate in _load("naive_candidates.json")["candidate_paths"]
+    }
+    primary_findings = [
+        finding
+        for finding in findings
+        if finding.get("uncertainty_class") == "shared_passrole_target_resource_scope_unknown"
+    ]
+    assert len(primary_findings) == 8
+
+    for finding in primary_findings:
+        candidate = naive_by_id[finding["naive_candidate_id"]]
+        assert "passrole" in finding["pattern_id"].lower() or "iam:PassRole" in candidate["action_or_precondition"]
+
+
 def test_each_naive_candidate_maps_once() -> None:
     finding_ids = {finding["finding_id"] for finding in _load("findings.json")["findings"]}
     for candidate in _load("naive_candidates.json")["candidate_paths"]:
@@ -106,7 +123,11 @@ def test_findings_are_labeled_as_frozen_expected_output() -> None:
     findings = _load("findings.json")
     metadata = _load("binding_metadata.json")["findings_generation"]
     assert findings["generation_mode"] == "frozen_expected_output"
+    assert findings["source_tool"] == "static_fixture_authoring"
+    assert findings["source_tool"] != "iamscope"
     assert findings["replay_equivalence_follow_up_required"] is True
+    assert findings["metadata"]["reasoners_run"] == []
+    assert findings["metadata"]["generated_or_replayed_by_iamscope"] is False
     assert metadata["mode"] == "frozen_expected_output"
     assert metadata["replay_equivalence_follow_up_required"] is True
     assert metadata["live_aws_used"] is False

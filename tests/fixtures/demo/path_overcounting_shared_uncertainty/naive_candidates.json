@@ -248,7 +248,7 @@
       "target_resource": "arn:aws:iam::000000000000:role/DemoLambdaExecutionRole"
     },
     {
-      "action_or_precondition": "sts:AssumeRole + iam:*",
+      "action_or_precondition": "lambda:CreateFunction + iam:PassRole",
       "candidate_id": "naive-014",
       "candidate_rule": "source -> action/precondition -> target without blocker, precondition, or uncertainty evaluation",
       "is_iamscope_output": false,
@@ -260,8 +260,8 @@
       "source_principal": "arn:aws:iam::000000000000:user/DemoAnalystB",
       "structural_path": [
         "arn:aws:iam::000000000000:user/DemoAnalystB",
-        "sts:AssumeRole + iam:*",
-        "trust_and_boundary_context",
+        "lambda:CreateFunction + iam:PassRole",
+        "lambda_create_and_role_trust",
         "arn:aws:iam::000000000000:role/DemoEcsTaskRole"
       ],
       "target_resource": "arn:aws:iam::000000000000:role/DemoEcsTaskRole"
@@ -286,7 +286,7 @@
       "target_resource": "arn:aws:iam::000000000000:role/DemoBoundarySensitiveRole"
     },
     {
-      "action_or_precondition": "sts:AssumeRole + iam:*",
+      "action_or_precondition": "ecs:RegisterTaskDefinition + ecs:RunTask + iam:PassRole",
       "candidate_id": "naive-016",
       "candidate_rule": "source -> action/precondition -> target without blocker, precondition, or uncertainty evaluation",
       "is_iamscope_output": false,
@@ -298,8 +298,8 @@
       "source_principal": "arn:aws:iam::000000000000:user/DemoAnalystA",
       "structural_path": [
         "arn:aws:iam::000000000000:user/DemoAnalystA",
-        "sts:AssumeRole + iam:*",
-        "trust_and_boundary_context",
+        "ecs:RegisterTaskDefinition + ecs:RunTask + iam:PassRole",
+        "ecs_task_launch_preconditions",
         "arn:aws:iam::000000000000:role/DemoSessionScopedRole"
       ],
       "target_resource": "arn:aws:iam::000000000000:role/DemoSessionScopedRole"
@@ -362,7 +362,7 @@
       "target_resource": "arn:aws:iam::000000000000:role/DemoBoundarySensitiveRole"
     },
     {
-      "action_or_precondition": "sts:AssumeRole + iam:*",
+      "action_or_precondition": "lambda:CreateFunction + iam:PassRole",
       "candidate_id": "naive-020",
       "candidate_rule": "source -> action/precondition -> target without blocker, precondition, or uncertainty evaluation",
       "is_iamscope_output": false,
@@ -374,8 +374,8 @@
       "source_principal": "arn:aws:iam::000000000000:user/DemoAnalystB",
       "structural_path": [
         "arn:aws:iam::000000000000:user/DemoAnalystB",
-        "sts:AssumeRole + iam:*",
-        "trust_and_boundary_context",
+        "lambda:CreateFunction + iam:PassRole",
+        "lambda_create_and_role_trust",
         "arn:aws:iam::000000000000:role/DemoSessionScopedRole"
       ],
       "target_resource": "arn:aws:iam::000000000000:role/DemoSessionScopedRole"
