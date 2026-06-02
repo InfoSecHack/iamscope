@@ -1,11 +1,16 @@
 {
   "findings_generation": {
     "aws_calls_made": false,
+    "existing_replay_failure_category": "fixture_shape_not_replay_compatible",
+    "existing_replay_path_checked": "iamscope replay-findings --scenario scenario.json --binding-metadata binding_metadata.json",
     "live_aws_used": false,
     "mode": "frozen_expected_output",
     "reason": "Existing local replay/reasoner machinery was not used in this slice because this slice only introduces fixture files and contract tests.",
     "replay_equivalence_follow_up": "add replay-equivalence slice before presenting the fixture as stronger than a static teaching fixture",
-    "replay_equivalence_follow_up_required": true
+    "replay_equivalence_follow_up_required": true,
+    "replay_equivalence_gap": "Existing run_reasoners_on_frozen_artifacts expects binding_metadata.json to be an edge-constraint binding list produced by IAMScope emit_binding_metadata. This synthetic teaching fixture currently uses descriptive demo metadata, so local replay stops before reasoner equivalence. Replay-equivalence follow-up must either build replay-compatible binding metadata and scenario edges, or keep the fixture as static teaching material.",
+    "replay_equivalence_status": "not_proven",
+    "stronger_demo_claims_allowed": false
   },
   "fixture_id": "path_overcounting_shared_uncertainty",
   "local_only": true,
