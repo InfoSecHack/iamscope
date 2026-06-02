@@ -140,8 +140,12 @@ def test_no_generated_live_outputs_or_terraform_artifacts_committed() -> None:
     assert not any(path.suffix == ".tfplan" for path in LIVE_DIR.rglob("*"))
 
 
-def test_terraform_fixture_uses_test_prefix_and_required_tags() -> None:
+def test_terraform_fixture_uses_test_prefix_required_tags_and_account_guard() -> None:
     terraform_text = "\n".join(path.read_text() for path in TERRAFORM_DIR.glob("*.tf"))
+    assert "profile = var.aws_profile" in terraform_text
+    assert 'data "aws_caller_identity" "current"' in terraform_text
+    assert "data.aws_caller_identity.current.account_id == var.expected_account_id" in terraform_text
+    assert "depends_on = [terraform_data.expected_account_guard]" in terraform_text
     assert "iamscope-live-passrole-lambda-test" in terraform_text
     assert "Project" in terraform_text
     assert "IAMScope" in terraform_text
@@ -149,3 +153,40 @@ def test_terraform_fixture_uses_test_prefix_and_required_tags() -> None:
     assert "ControlledLiveValidation" in terraform_text
     assert "Owner" in terraform_text
     assert "TestOnly" in terraform_text
+
+
+def test_cleanup_failure_exits_nonzero_after_writing_result(
+    monkeypatch: pytest.MonkeyPatch, runner: ModuleType, tmp_path: Path
+) -> None:
+    config = runner.LiveValidationConfig(
+        aws_profile="iamscope-test-profile",
+        aws_region="us-east-1",
+        expected_account_id="123456789012",
+        role_arn="arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-lambda-exec-role",
+        output_dir=tmp_path,
+        function_name="iamscope-live-passrole-lambda-test-20260602000000",
+        expected_iamscope_verdict="validated",
+        source_principal_arn=None,
+    )
+    result = runner.build_result(
+        config=config,
+        observed_result="create_function_succeeded",
+        cleanup_status="delete_failed:AccessDeniedException",
+        function_created=True,
+    )
+
+    monkeypatch.setattr(runner, "load_config", lambda _argv=None: config)
+    monkeypatch.setattr(runner, "run_live_validation", lambda _config: result)
+
+    assert runner.main([]) == 1
+    written = json.loads((tmp_path / "result.json").read_text())
+    assert written["cleanup_status"] == "delete_failed:AccessDeniedException"
+
+
+def test_cleanup_failure_helper_allows_no_create_or_verified_delete(runner: ModuleType) -> None:
+    assert runner.cleanup_failed_closed({"function_created": False, "cleanup_status": "not_needed"}) is False
+    assert (
+        runner.cleanup_failed_closed({"function_created": True, "cleanup_status": "deleted_not_found_verified"})
+        is False
+    )
+    assert runner.cleanup_failed_closed({"function_created": True, "cleanup_status": "delete_status_unknown"}) is True

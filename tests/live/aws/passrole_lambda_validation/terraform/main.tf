@@ -10,10 +10,24 @@ terraform {
 }
 
 provider "aws" {
-  region = var.aws_region
+  profile = var.aws_profile
+  region  = var.aws_region
 
   default_tags {
     tags = var.tags
+  }
+}
+
+data "aws_caller_identity" "current" {}
+
+resource "terraform_data" "expected_account_guard" {
+  input = data.aws_caller_identity.current.account_id
+
+  lifecycle {
+    precondition {
+      condition     = data.aws_caller_identity.current.account_id == var.expected_account_id
+      error_message = "AWS caller account does not match expected_account_id; aborting test fixture creation."
+    }
   }
 }
 
@@ -40,6 +54,8 @@ data "aws_iam_policy_document" "lambda_basic_logs" {
 }
 
 resource "aws_iam_role" "lambda_execution" {
+  depends_on = [terraform_data.expected_account_guard]
+
   name               = "${var.name_prefix}-lambda-exec-role"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
   description        = "Test-only IAMScope controlled live PassRole-to-Lambda validation role."
@@ -47,6 +63,8 @@ resource "aws_iam_role" "lambda_execution" {
 }
 
 resource "aws_iam_policy" "lambda_basic_logs" {
+  depends_on = [terraform_data.expected_account_guard]
+
   name        = "${var.name_prefix}-lambda-basic-logs"
   description = "Test-only IAMScope controlled live validation Lambda logging policy."
   policy      = data.aws_iam_policy_document.lambda_basic_logs.json

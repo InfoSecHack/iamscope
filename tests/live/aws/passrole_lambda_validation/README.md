@@ -33,13 +33,19 @@ Terraform state, provider cache, plans, and variable files are ignored and must 
 
 ## Manual setup
 
-Use a dedicated test AWS account and a scoped profile. Review the plan before applying.
+Use a dedicated test AWS account and a scoped profile. Terraform is configured with the explicit profile and verifies the caller account id before creating IAM resources. Review the plan before applying.
 
 ```bash
 cd tests/live/aws/passrole_lambda_validation/terraform
 terraform init
-terraform plan -var 'aws_region=<region>'
-terraform apply -var 'aws_region=<region>'
+terraform plan \
+  -var 'aws_profile=<test-profile>' \
+  -var 'aws_region=<region>' \
+  -var 'expected_account_id=<12-digit-test-account-id>'
+terraform apply \
+  -var 'aws_profile=<test-profile>' \
+  -var 'aws_region=<region>' \
+  -var 'expected_account_id=<12-digit-test-account-id>'
 terraform output -json > /tmp/iamscope-live-passrole-lambda-validation/terraform-outputs.json
 ```
 
@@ -78,7 +84,10 @@ Destroy Terraform-managed test resources after the validation window:
 
 ```bash
 cd tests/live/aws/passrole_lambda_validation/terraform
-terraform destroy -var 'aws_region=<region>'
+terraform destroy \
+  -var 'aws_profile=<test-profile>' \
+  -var 'aws_region=<region>' \
+  -var 'expected_account_id=<12-digit-test-account-id>'
 ```
 
 If cleanup fails, inspect only sanitized AWS error categories from the runner result first, then clean up the named test-only function and role manually in the dedicated test account.

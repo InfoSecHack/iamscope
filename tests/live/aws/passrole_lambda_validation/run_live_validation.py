@@ -200,6 +200,10 @@ def _write_result(config: LiveValidationConfig, result: dict[str, Any]) -> Path:
     return path
 
 
+def cleanup_failed_closed(result: dict[str, Any]) -> bool:
+    return bool(result.get("function_created")) and result.get("cleanup_status") != "deleted_not_found_verified"
+
+
 def _client_error_code(exc: Exception) -> str:
     response = getattr(exc, "response", None)
     if isinstance(response, dict):
@@ -293,6 +297,9 @@ def main(argv: list[str] | None = None) -> int:
     print(f"Observed AWS result: {result['observed_aws_result']}")
     print(f"Cleanup status: {result['cleanup_status']}")
     print(f"Result: {path}")
+    if cleanup_failed_closed(result):
+        print("ERROR: cleanup verification failed; sanitized result.json was written", file=sys.stderr)
+        return 1
     return 0
 
 
