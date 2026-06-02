@@ -99,6 +99,10 @@ iamscope why --help
 Examples that operate on scenario, report, or diff files require existing local
 fixture or sanitized scenario files. They should not perform live collection.
 
+### Local Demo
+
+Local demo: [Path Overcounting and Shared Uncertainty](case-studies/path-overcounting-shared-uncertainty.md) shows how IAMScope separates naive path-shaped rows from validated, blocked, precondition-only, and inconclusive fixture verdicts without making live AWS or replay-equivalence claims.
+
 ### Live AWS Collection
 
 Live `iamscope collect` is not the default path. It is advanced/authorized only.
