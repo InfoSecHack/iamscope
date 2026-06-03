@@ -1,0 +1,40 @@
+{
+  "expected_rows": [
+    {
+      "expected_generation": "replayed_by_existing_passrole_lambda_reasoner",
+      "finding_id": "bb1a6460e5e4002f2af318a0d5548ef9556a5908066cf8dfc560de86d6a39346",
+      "finding_key": "c0753d2cd79b37bafa93ea4139cdab85460fca677b89620ebb6d86d1e7bc5d87",
+      "pattern_id": "passrole_lambda",
+      "row_id": "subset-row-allowed-passrole-lambda",
+      "severity": "high",
+      "source": "arn:aws:iam::000000000000:user/ReplaySubsetAllowed",
+      "target": "arn:aws:iam::000000000000:role/ReplaySubsetLambdaExecutionRole",
+      "verdict": "validated"
+    }
+  ],
+  "fixture_id": "complex_replay_subset_passrole_lambda_001",
+  "non_claims": [
+    "no full complex benchmark replay-equivalence",
+    "no broad IAMScope correctness",
+    "no broad PassRole correctness",
+    "no exploitability proof",
+    "no downstream authorization proof",
+    "no Lambda invocation behavior",
+    "no production readiness",
+    "no composite benchmark score",
+    "no pass/fail benchmark label"
+  ],
+  "scenario_hash": "9d8c55160555d53c2864b5adc53922f930ac90215ef7db4f7cd8d5b630a7252f",
+  "schema_version": "complex_passrole_lambda_replay_subset_expected_rows.v1",
+  "static_only_rows": [
+    {
+      "expected_generation": "not_generated_missing_precondition",
+      "pattern_id": "passrole_lambda",
+      "reason": "source lacks iam:PassRole witness to target role; existing reasoner emits no finding",
+      "row_id": "subset-row-missing-passrole-static-only",
+      "source": "arn:aws:iam::000000000000:user/ReplaySubsetMissingPassRole",
+      "target": "arn:aws:iam::000000000000:role/ReplaySubsetLambdaExecutionRole"
+    }
+  ],
+  "unsupported_rows": []
+}
