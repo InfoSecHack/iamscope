@@ -6,6 +6,8 @@ IAMScope is a research-preview IAM reasoning tool and bounded evidence program f
 
 It is not a production-ready oracle. The current repository is best read as a documented evidence trail: selected benchmarks, selected runtime proofs, controlled validation checkpoints, and explicit non-claims.
 
+For the shortest current evidence map, read [`docs/REVIEWER_GUIDE.md`](REVIEWER_GUIDE.md) after this page.
+
 ## What Evidence Exists?
 
 Current evidence is bounded but concrete:
