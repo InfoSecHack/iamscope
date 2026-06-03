@@ -82,41 +82,6 @@
         "provider_id": "arn:aws:iam::000000000000:role/IAMScopeLiveBindingLambdaExecutionRole",
         "region": "-"
       },
-      "edge_id": "cd0dc18ac07b1cb1f9a14e2fc6f7ffa3460aa830155e82be93fff5b97db6311f",
-      "edge_type": "iam:*_permission",
-      "features": {
-        "allow_controls": [
-          {
-            "control_type": "PERMISSION",
-            "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
-            "policy_arn": "arn:aws:iam::000000000000:policy/IAMScopeLiveBindingSanitizedAdminPolicy",
-            "statement_index": 0,
-            "summary": "iam:*"
-          }
-        ],
-        "effect": "Allow",
-        "has_conditions": false,
-        "is_wildcard_resource": true,
-        "layer": "permission",
-        "raw_conditions": {},
-        "resource_pattern": "*",
-        "statement_index": 0
-      },
-      "region": "-",
-      "src": {
-        "node_type": "IAMRole",
-        "provider": "aws",
-        "provider_id": "arn:aws:iam::000000000000:role/IAMScopeLiveBindingLambdaExecutionRole",
-        "region": "-"
-      }
-    },
-    {
-      "dst": {
-        "node_type": "IAMRole",
-        "provider": "aws",
-        "provider_id": "arn:aws:iam::000000000000:role/IAMScopeLiveBindingLambdaExecutionRole",
-        "region": "-"
-      },
       "edge_id": "24ad4d35b4441651fb0a4a321b53addfbdd843dc3653ff54dea29c220c478668",
       "edge_type": "sts:AssumeRole_trust",
       "features": {
@@ -187,9 +152,17 @@
     "raw_tmp_result_committed": false
   },
   "scenario_hash": "facefeedfacefeedfacefeedfacefeedfacefeedfacefeedfacefeedfacefeed",
+  "scope_boundary": {
+    "represents_admin_equivalent_execution_role": false,
+    "represents_downstream_authorization": false,
+    "represents_exploitability": false,
+    "represents_lambda_invocation": false,
+    "represents_service_mediated_create_function": true
+  },
   "selected_path": {
     "attempted_action": "lambda:CreateFunction",
     "candidate_function_arn": "arn:aws:lambda:us-east-1:000000000000:function:iamscope-live-passrole-lambda-test-redacted",
+    "live_behavior_alignment": "service-mediated CreateFunction plus PassRole plus Lambda trust only",
     "service_principal": "lambda.amazonaws.com",
     "source_principal_arn": "arn:aws:iam::000000000000:user/IAMScopeLiveBindingSource",
     "target_role_arn": "arn:aws:iam::000000000000:role/IAMScopeLiveBindingLambdaExecutionRole"

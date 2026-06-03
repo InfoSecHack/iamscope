@@ -82,6 +82,10 @@ def test_selected_passrole_finding_is_generated_by_existing_reasoner() -> None:
     assert finding.verdict is Verdict.VALIDATED
     assert finding.verdict.value == expected["expected_verdict"]
     assert finding.severity == expected["severity"]
+    assert finding.severity == "high"
+    assert "admin-equivalent" not in finding.title.lower()
+    assert "exploit" not in finding.title.lower()
+    assert "downstream" not in finding.title.lower()
     assert finding.source.provider_id == expected["source_principal_arn"]
     assert finding.target.provider_id == expected["target_role_arn"]
     assert {check.name: check.state.value for check in finding.required_checks} == expected["required_check_states"]
@@ -98,9 +102,19 @@ def test_fixture_is_passrole_lambda_specific_and_sanitized() -> None:
     assert selected["pattern_id"] == "passrole_lambda"
     assert selected["source_principal_arn"].startswith(f"arn:aws:iam::{ALLOWED_SYNTHETIC_ACCOUNT}:")
     assert selected["target_role_arn"].startswith(f"arn:aws:iam::{ALLOWED_SYNTHETIC_ACCOUNT}:")
+    assert selected["expected_classification"] == "selected_local_createfunction_passrole_finding"
+    assert selected["live_behavior_alignment"] == "service-mediated CreateFunction plus PassRole plus Lambda trust only"
+    assert scenario["scope_boundary"] == {
+        "represents_admin_equivalent_execution_role": False,
+        "represents_downstream_authorization": False,
+        "represents_exploitability": False,
+        "represents_lambda_invocation": False,
+        "represents_service_mediated_create_function": True,
+    }
     assert any(edge["edge_type"] == "lambda:CreateFunction_permission" for edge in scenario["edges"])
     assert any(edge["edge_type"] == "iam:PassRole_permission" for edge in scenario["edges"])
     assert any(edge["edge_type"] == "sts:AssumeRole_trust" for edge in scenario["edges"])
+    assert not any(edge["edge_type"] == "iam:*_permission" for edge in scenario["edges"])
 
 
 def test_fixture_contains_no_raw_live_ids_or_generated_artifacts() -> None:
@@ -108,7 +122,14 @@ def test_fixture_contains_no_raw_live_ids_or_generated_artifacts() -> None:
     account_ids = set(re.findall(r"\b\d{12}\b", text))
 
     assert account_ids <= {ALLOWED_SYNTHETIC_ACCOUNT}
+    selected = _load_json(EXPECTED)["selected_finding"]
+
     assert "<redacted" not in text.lower()
+    assert "AdministratorAccess" not in text
+    assert "iam:*_permission" not in text
+    assert "admin-equivalent" not in selected["title"].lower()
+    assert "downstream" not in selected["title"].lower()
+    assert "exploit" not in selected["title"].lower()
     assert "/tmp/iamscope-live-passrole-lambda-validation/result.json" not in text
     assert FORBIDDEN_GENERATED_NAMES.isdisjoint({path.name for path in FIXTURE_DIR.iterdir()})
     assert not any(path.suffix == ".tfplan" for path in FIXTURE_DIR.iterdir())
@@ -124,6 +145,8 @@ def test_fixture_documents_boundary_and_next_slice() -> None:
     )
     assert expected["non_claims"] == {
         "no_live_aws": True,
+        "no_lambda_invocation_behavior": True,
+        "no_admin_equivalent_execution_role_claim": True,
         "no_broad_iamscope_correctness": True,
         "no_broad_passrole_correctness": True,
         "no_exploitability_proof": True,
@@ -133,4 +156,6 @@ def test_fixture_documents_boundary_and_next_slice() -> None:
         "no_pass_fail_benchmark_label": True,
     }
     assert "does not run live AWS" in readme
+    assert "does not include an admin-equivalent execution role edge" in readme
+    assert "does not claim Lambda invocation behavior" in readme
     assert "does not claim broad IAMScope correctness" in readme

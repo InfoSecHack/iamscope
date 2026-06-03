@@ -3,11 +3,13 @@
   "fixture_id": "passrole_lambda_selected_live_binding_finding_001",
   "next_slice": "Recommended next slice: bind selected IAMScope PassRole finding to live AWS result.",
   "non_claims": {
+    "no_admin_equivalent_execution_role_claim": true,
     "no_broad_iamscope_correctness": true,
     "no_broad_passrole_correctness": true,
     "no_composite_benchmark_score": true,
     "no_downstream_authorization_proof": true,
     "no_exploitability_proof": true,
+    "no_lambda_invocation_behavior": true,
     "no_live_aws": true,
     "no_pass_fail_benchmark_label": true,
     "no_production_readiness": true
@@ -20,10 +22,11 @@
       }
     ],
     "blockers_observed_count": 0,
-    "expected_classification": "selected_local_iamscope_finding",
+    "expected_classification": "selected_local_createfunction_passrole_finding",
     "expected_verdict": "validated",
-    "finding_id": "5e08bf418146ae29259115f672b8960bf3b38ce07ec5cd57c5638019e126dc50",
+    "finding_id": "dc284c673334e54974e229c9ac006684b3e928d0d03936f857fe93068dc74dc8",
     "finding_key": "e7aa122330b61ce55fdb3cd017139b3c9b8c941fdd95fec676e2c337cde58b1e",
+    "live_behavior_alignment": "service-mediated CreateFunction plus PassRole plus Lambda trust only",
     "pattern_id": "passrole_lambda",
     "pattern_version": "1.0.0",
     "required_check_states": {
@@ -38,9 +41,9 @@
       "source_has_passrole_to_target": "pass",
       "target_trusts_lambda_service": "pass"
     },
-    "severity": "critical",
+    "severity": "high",
     "source_principal_arn": "arn:aws:iam::000000000000:user/IAMScopeLiveBindingSource",
     "target_role_arn": "arn:aws:iam::000000000000:role/IAMScopeLiveBindingLambdaExecutionRole",
-    "title": "arn:aws:iam::000000000000:user/IAMScopeLiveBindingSource can assume admin-equivalent role arn:aws:iam::000000000000:role/IAMScopeLiveBindingLambdaExecutionRole via Lambda PassRole chain"
+    "title": "arn:aws:iam::000000000000:user/IAMScopeLiveBindingSource can assume role arn:aws:iam::000000000000:role/IAMScopeLiveBindingLambdaExecutionRole via Lambda PassRole chain"
   }
 }
