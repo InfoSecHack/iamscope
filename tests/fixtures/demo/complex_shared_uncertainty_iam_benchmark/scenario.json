@@ -1,0 +1,311 @@
+{
+  "account_id": "000000000000",
+  "aws_calls_made": 0,
+  "edges": [
+    {
+      "category": "PassRole-to-Lambda",
+      "dst": "LambdaExecutionScopedRole",
+      "edge_id": "edge-001",
+      "edge_type": "lambda:CreateFunction_permission",
+      "src": "AnalystUser"
+    },
+    {
+      "category": "PassRole-to-Lambda",
+      "dst": "LambdaExecutionScopedRole",
+      "edge_id": "edge-002",
+      "edge_type": "iam:PassRole_permission",
+      "src": "AnalystUser"
+    },
+    {
+      "category": "target_trust",
+      "dst": "LambdaExecutionScopedRole",
+      "edge_id": "edge-003",
+      "edge_type": "sts:AssumeRole_trust",
+      "src": "lambda.amazonaws.com"
+    },
+    {
+      "category": "PassRole-to-Lambda",
+      "dst": "LambdaExecutionAdminLikeRole",
+      "edge_id": "edge-004",
+      "edge_type": "lambda:CreateFunction_permission",
+      "src": "CICDRole"
+    },
+    {
+      "category": "PassRole-to-Lambda",
+      "dst": "LambdaExecutionAdminLikeRole",
+      "edge_id": "edge-005",
+      "edge_type": "iam:PassRole_permission",
+      "src": "CICDRole"
+    },
+    {
+      "category": "target_trust",
+      "dst": "LambdaExecutionAdminLikeRole",
+      "edge_id": "edge-006",
+      "edge_type": "sts:AssumeRole_trust",
+      "src": "lambda.amazonaws.com"
+    },
+    {
+      "category": "PassRole-to-ECS",
+      "dst": "ECSExecutionAdminLikeRole",
+      "edge_id": "edge-007",
+      "edge_type": "ecs:RegisterTaskDefinition_permission",
+      "src": "CICDRole"
+    },
+    {
+      "category": "PassRole-to-ECS",
+      "dst": "ECSExecutionAdminLikeRole",
+      "edge_id": "edge-008",
+      "edge_type": "ecs:RunTask_permission",
+      "src": "CICDRole"
+    },
+    {
+      "category": "PassRole-to-ECS",
+      "dst": "ECSExecutionAdminLikeRole",
+      "edge_id": "edge-009",
+      "edge_type": "iam:PassRole_permission",
+      "src": "CICDRole"
+    },
+    {
+      "category": "target_trust",
+      "dst": "ECSExecutionAdminLikeRole",
+      "edge_id": "edge-010",
+      "edge_type": "sts:AssumeRole_trust",
+      "src": "ecs-tasks.amazonaws.com"
+    },
+    {
+      "category": "AssumeRole chain",
+      "dst": "CrossAccountOpsRole",
+      "edge_id": "edge-011",
+      "edge_type": "sts:AssumeRole_permission",
+      "src": "DeveloperRole"
+    },
+    {
+      "category": "Cross-account trust-shaped path",
+      "dst": "CrossAccountOpsRole",
+      "edge_id": "edge-012",
+      "edge_type": "sts:AssumeRole_trust",
+      "src": "DeveloperRole"
+    },
+    {
+      "category": "permission boundary blocked path",
+      "dst": "BoundaryConstrainedRole",
+      "edge_id": "edge-013",
+      "edge_type": "permission_boundary_blocks",
+      "src": "ReadOnlyAuditRole"
+    },
+    {
+      "category": "SCP blocked path",
+      "dst": "CrossAccountOpsRole",
+      "edge_id": "edge-014",
+      "edge_type": "scp_blocks",
+      "src": "DeveloperRole"
+    },
+    {
+      "category": "identity-Deny suppressed path",
+      "dst": "BoundaryConstrainedRole",
+      "edge_id": "edge-015",
+      "edge_type": "identity_deny_suppresses",
+      "src": "BreakGlassCandidateRole"
+    },
+    {
+      "category": "missing iam:PassRole precondition",
+      "dst": "LambdaExecutionScopedRole",
+      "edge_id": "edge-016",
+      "edge_type": "missing_iam:PassRole",
+      "src": "ReadOnlyAuditRole"
+    },
+    {
+      "category": "missing target trust precondition",
+      "dst": "ECSExecutionAdminLikeRole",
+      "edge_id": "edge-017",
+      "edge_type": "missing_target_trust",
+      "src": "DeveloperRole"
+    },
+    {
+      "category": "shared unknown resource scope",
+      "dst": "UnknownResourceScopeRole",
+      "edge_id": "edge-018",
+      "edge_type": "unknown_resource_scope",
+      "src": "AnalystUser"
+    }
+  ],
+  "fixture_id": "complex_shared_uncertainty_iam_benchmark_001",
+  "generation_mode": "frozen_synthetic_oracle",
+  "live_aws_used": false,
+  "nodes": [
+    {
+      "node_id": "AnalystUser",
+      "node_type": "user",
+      "provider": "aws",
+      "provider_id": "arn:aws:iam::000000000000:user/AnalystUser",
+      "region": "global"
+    },
+    {
+      "node_id": "CICDRole",
+      "node_type": "role",
+      "provider": "aws",
+      "provider_id": "arn:aws:iam::000000000000:role/CICDRole",
+      "region": "global"
+    },
+    {
+      "node_id": "DeveloperRole",
+      "node_type": "role",
+      "provider": "aws",
+      "provider_id": "arn:aws:iam::000000000000:role/DeveloperRole",
+      "region": "global"
+    },
+    {
+      "node_id": "ReadOnlyAuditRole",
+      "node_type": "role",
+      "provider": "aws",
+      "provider_id": "arn:aws:iam::000000000000:role/ReadOnlyAuditRole",
+      "region": "global"
+    },
+    {
+      "node_id": "BreakGlassCandidateRole",
+      "node_type": "role",
+      "provider": "aws",
+      "provider_id": "arn:aws:iam::000000000000:role/BreakGlassCandidateRole",
+      "region": "global"
+    },
+    {
+      "node_id": "LambdaExecutionAdminLikeRole",
+      "node_type": "role",
+      "provider": "aws",
+      "provider_id": "arn:aws:iam::000000000000:role/LambdaExecutionAdminLikeRole",
+      "region": "global"
+    },
+    {
+      "node_id": "LambdaExecutionScopedRole",
+      "node_type": "role",
+      "provider": "aws",
+      "provider_id": "arn:aws:iam::000000000000:role/LambdaExecutionScopedRole",
+      "region": "global"
+    },
+    {
+      "node_id": "ECSExecutionAdminLikeRole",
+      "node_type": "role",
+      "provider": "aws",
+      "provider_id": "arn:aws:iam::000000000000:role/ECSExecutionAdminLikeRole",
+      "region": "global"
+    },
+    {
+      "node_id": "CrossAccountOpsRole",
+      "node_type": "role",
+      "provider": "aws",
+      "provider_id": "arn:aws:iam::000000000000:role/CrossAccountOpsRole",
+      "region": "global"
+    },
+    {
+      "node_id": "BoundaryConstrainedRole",
+      "node_type": "role",
+      "provider": "aws",
+      "provider_id": "arn:aws:iam::000000000000:role/BoundaryConstrainedRole",
+      "region": "global"
+    },
+    {
+      "node_id": "UnknownResourceScopeRole",
+      "node_type": "role",
+      "provider": "aws",
+      "provider_id": "arn:aws:iam::000000000000:role/UnknownResourceScopeRole",
+      "region": "global"
+    },
+    {
+      "node_id": "lambda.amazonaws.com",
+      "node_type": "service_principal",
+      "provider": "aws",
+      "provider_id": "lambda.amazonaws.com",
+      "region": "global"
+    },
+    {
+      "node_id": "ecs-tasks.amazonaws.com",
+      "node_type": "service_principal",
+      "provider": "aws",
+      "provider_id": "ecs-tasks.amazonaws.com",
+      "region": "global"
+    },
+    {
+      "node_id": "lambda-function:synthetic-review-function",
+      "node_type": "synthetic_resource",
+      "provider": "aws",
+      "provider_id": "lambda-function:synthetic-review-function",
+      "region": "us-east-1"
+    },
+    {
+      "node_id": "ecs-service:synthetic-review-service",
+      "node_type": "synthetic_resource",
+      "provider": "aws",
+      "provider_id": "ecs-service:synthetic-review-service",
+      "region": "us-east-1"
+    },
+    {
+      "node_id": "secretsmanager-secret:synthetic-review-secret",
+      "node_type": "synthetic_resource",
+      "provider": "aws",
+      "provider_id": "secretsmanager-secret:synthetic-review-secret",
+      "region": "us-east-1"
+    },
+    {
+      "node_id": "s3-bucket:synthetic-review-bucket",
+      "node_type": "synthetic_resource",
+      "provider": "aws",
+      "provider_id": "s3-bucket:synthetic-review-bucket",
+      "region": "us-east-1"
+    }
+  ],
+  "non_claims": {
+    "no_broad_iamscope_correctness": true,
+    "no_broad_passrole_correctness": true,
+    "no_composite_benchmark_score": true,
+    "no_correctness_for_other_principals_roles_accounts_regions_conditions_boundaries_scps_resource_policies_or_findings": true,
+    "no_correctness_for_real_aws_environments": true,
+    "no_downstream_authorization_proof": true,
+    "no_exploitability_proof": true,
+    "no_generic_deny_correctness": true,
+    "no_lambda_invocation_behavior": true,
+    "no_live_aws": true,
+    "no_pass_fail_benchmark_label": true,
+    "no_production_readiness": true,
+    "no_resource_policy_deny_support": true,
+    "no_scp_deny_support_beyond_selected_synthetic_fixture_behavior": true
+  },
+  "pattern_coverage": [
+    "PassRole-to-Lambda",
+    "PassRole-to-ECS",
+    "AssumeRole chain",
+    "Cross-account trust-shaped path",
+    "permission boundary blocked path",
+    "SCP blocked path",
+    "identity-Deny suppressed path",
+    "missing iam:PassRole precondition",
+    "missing target trust precondition",
+    "shared unknown resource scope"
+  ],
+  "principals": [
+    "AnalystUser",
+    "CICDRole",
+    "DeveloperRole",
+    "ReadOnlyAuditRole",
+    "BreakGlassCandidateRole"
+  ],
+  "schema_version": "complex_synthetic_benchmark_scenario.v1",
+  "service_principals": [
+    "lambda.amazonaws.com",
+    "ecs-tasks.amazonaws.com"
+  ],
+  "source_tool": "static_fixture_authoring",
+  "synthetic_resources": [
+    "lambda-function:synthetic-review-function",
+    "ecs-service:synthetic-review-service",
+    "secretsmanager-secret:synthetic-review-secret",
+    "s3-bucket:synthetic-review-bucket"
+  ],
+  "target_roles": [
+    "LambdaExecutionAdminLikeRole",
+    "LambdaExecutionScopedRole",
+    "ECSExecutionAdminLikeRole",
+    "CrossAccountOpsRole",
+    "BoundaryConstrainedRole",
+    "UnknownResourceScopeRole"
+  ]
+}

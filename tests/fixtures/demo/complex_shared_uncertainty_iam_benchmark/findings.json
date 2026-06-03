@@ -1,0 +1,828 @@
+{
+  "aws_calls_made": 0,
+  "findings": [
+    {
+      "classification": "selected_synthetic_passrole_lambda_validated",
+      "evidence_boundary": {
+        "applies_only_to_fixture_id": "complex_shared_uncertainty_iam_benchmark_001",
+        "aws_calls_made": 0,
+        "frozen_synthetic_oracle": true,
+        "live_aws_used": false,
+        "local_only": true,
+        "synthetic_fixture": true
+      },
+      "finding_id": "complex-finding-001",
+      "naive_candidate_id": "cand-001",
+      "non_claims": {
+        "no_broad_iamscope_correctness": true,
+        "no_broad_passrole_correctness": true,
+        "no_composite_benchmark_score": true,
+        "no_correctness_for_other_principals_roles_accounts_regions_conditions_boundaries_scps_resource_policies_or_findings": true,
+        "no_correctness_for_real_aws_environments": true,
+        "no_downstream_authorization_proof": true,
+        "no_exploitability_proof": true,
+        "no_generic_deny_correctness": true,
+        "no_lambda_invocation_behavior": true,
+        "no_live_aws": true,
+        "no_pass_fail_benchmark_label": true,
+        "no_production_readiness": true,
+        "no_resource_policy_deny_support": true,
+        "no_scp_deny_support_beyond_selected_synthetic_fixture_behavior": true
+      },
+      "pattern_id": "passrole_lambda",
+      "required_checks": [
+        {
+          "name": "required_modeled_evidence_present",
+          "state": "pass"
+        }
+      ],
+      "severity": "high",
+      "source_principal": "AnalystUser",
+      "source_principal_arn": "arn:aws:iam::000000000000:user/AnalystUser",
+      "target": "LambdaExecutionScopedRole",
+      "target_role_arn": "arn:aws:iam::000000000000:role/LambdaExecutionScopedRole",
+      "verdict": "validated"
+    },
+    {
+      "classification": "selected_synthetic_passrole_lambda_validated",
+      "evidence_boundary": {
+        "applies_only_to_fixture_id": "complex_shared_uncertainty_iam_benchmark_001",
+        "aws_calls_made": 0,
+        "frozen_synthetic_oracle": true,
+        "live_aws_used": false,
+        "local_only": true,
+        "synthetic_fixture": true
+      },
+      "finding_id": "complex-finding-002",
+      "naive_candidate_id": "cand-002",
+      "non_claims": {
+        "no_broad_iamscope_correctness": true,
+        "no_broad_passrole_correctness": true,
+        "no_composite_benchmark_score": true,
+        "no_correctness_for_other_principals_roles_accounts_regions_conditions_boundaries_scps_resource_policies_or_findings": true,
+        "no_correctness_for_real_aws_environments": true,
+        "no_downstream_authorization_proof": true,
+        "no_exploitability_proof": true,
+        "no_generic_deny_correctness": true,
+        "no_lambda_invocation_behavior": true,
+        "no_live_aws": true,
+        "no_pass_fail_benchmark_label": true,
+        "no_production_readiness": true,
+        "no_resource_policy_deny_support": true,
+        "no_scp_deny_support_beyond_selected_synthetic_fixture_behavior": true
+      },
+      "pattern_id": "passrole_lambda",
+      "required_checks": [
+        {
+          "name": "required_modeled_evidence_present",
+          "state": "pass"
+        }
+      ],
+      "severity": "high",
+      "source_principal": "CICDRole",
+      "source_principal_arn": "arn:aws:iam::000000000000:role/CICDRole",
+      "target": "LambdaExecutionAdminLikeRole",
+      "target_role_arn": "arn:aws:iam::000000000000:role/LambdaExecutionAdminLikeRole",
+      "verdict": "validated"
+    },
+    {
+      "classification": "selected_synthetic_passrole_ecs_validated",
+      "evidence_boundary": {
+        "applies_only_to_fixture_id": "complex_shared_uncertainty_iam_benchmark_001",
+        "aws_calls_made": 0,
+        "frozen_synthetic_oracle": true,
+        "live_aws_used": false,
+        "local_only": true,
+        "synthetic_fixture": true
+      },
+      "finding_id": "complex-finding-003",
+      "naive_candidate_id": "cand-003",
+      "non_claims": {
+        "no_broad_iamscope_correctness": true,
+        "no_broad_passrole_correctness": true,
+        "no_composite_benchmark_score": true,
+        "no_correctness_for_other_principals_roles_accounts_regions_conditions_boundaries_scps_resource_policies_or_findings": true,
+        "no_correctness_for_real_aws_environments": true,
+        "no_downstream_authorization_proof": true,
+        "no_exploitability_proof": true,
+        "no_generic_deny_correctness": true,
+        "no_lambda_invocation_behavior": true,
+        "no_live_aws": true,
+        "no_pass_fail_benchmark_label": true,
+        "no_production_readiness": true,
+        "no_resource_policy_deny_support": true,
+        "no_scp_deny_support_beyond_selected_synthetic_fixture_behavior": true
+      },
+      "pattern_id": "passrole_ecs",
+      "required_checks": [
+        {
+          "name": "required_modeled_evidence_present",
+          "state": "pass"
+        }
+      ],
+      "severity": "high",
+      "source_principal": "CICDRole",
+      "source_principal_arn": "arn:aws:iam::000000000000:role/CICDRole",
+      "target": "ECSExecutionAdminLikeRole",
+      "target_role_arn": "arn:aws:iam::000000000000:role/ECSExecutionAdminLikeRole",
+      "verdict": "validated"
+    },
+    {
+      "classification": "selected_synthetic_assumerole_chain_validated",
+      "evidence_boundary": {
+        "applies_only_to_fixture_id": "complex_shared_uncertainty_iam_benchmark_001",
+        "aws_calls_made": 0,
+        "frozen_synthetic_oracle": true,
+        "live_aws_used": false,
+        "local_only": true,
+        "synthetic_fixture": true
+      },
+      "finding_id": "complex-finding-004",
+      "naive_candidate_id": "cand-004",
+      "non_claims": {
+        "no_broad_iamscope_correctness": true,
+        "no_broad_passrole_correctness": true,
+        "no_composite_benchmark_score": true,
+        "no_correctness_for_other_principals_roles_accounts_regions_conditions_boundaries_scps_resource_policies_or_findings": true,
+        "no_correctness_for_real_aws_environments": true,
+        "no_downstream_authorization_proof": true,
+        "no_exploitability_proof": true,
+        "no_generic_deny_correctness": true,
+        "no_lambda_invocation_behavior": true,
+        "no_live_aws": true,
+        "no_pass_fail_benchmark_label": true,
+        "no_production_readiness": true,
+        "no_resource_policy_deny_support": true,
+        "no_scp_deny_support_beyond_selected_synthetic_fixture_behavior": true
+      },
+      "pattern_id": "assume_role_chain",
+      "required_checks": [
+        {
+          "name": "required_modeled_evidence_present",
+          "state": "pass"
+        }
+      ],
+      "severity": "medium",
+      "source_principal": "DeveloperRole",
+      "source_principal_arn": "arn:aws:iam::000000000000:role/DeveloperRole",
+      "target": "CrossAccountOpsRole",
+      "target_role_arn": "arn:aws:iam::000000000000:role/CrossAccountOpsRole",
+      "verdict": "validated"
+    },
+    {
+      "classification": "permission_boundary_blocked_path",
+      "evidence_boundary": {
+        "applies_only_to_fixture_id": "complex_shared_uncertainty_iam_benchmark_001",
+        "aws_calls_made": 0,
+        "frozen_synthetic_oracle": true,
+        "live_aws_used": false,
+        "local_only": true,
+        "synthetic_fixture": true
+      },
+      "finding_id": "complex-finding-005",
+      "naive_candidate_id": "cand-005",
+      "non_claims": {
+        "no_broad_iamscope_correctness": true,
+        "no_broad_passrole_correctness": true,
+        "no_composite_benchmark_score": true,
+        "no_correctness_for_other_principals_roles_accounts_regions_conditions_boundaries_scps_resource_policies_or_findings": true,
+        "no_correctness_for_real_aws_environments": true,
+        "no_downstream_authorization_proof": true,
+        "no_exploitability_proof": true,
+        "no_generic_deny_correctness": true,
+        "no_lambda_invocation_behavior": true,
+        "no_live_aws": true,
+        "no_pass_fail_benchmark_label": true,
+        "no_production_readiness": true,
+        "no_resource_policy_deny_support": true,
+        "no_scp_deny_support_beyond_selected_synthetic_fixture_behavior": true
+      },
+      "pattern_id": "passrole_lambda",
+      "required_checks": [
+        {
+          "name": "selected_blocker_present",
+          "state": "fail_closed"
+        }
+      ],
+      "severity": "medium",
+      "source_principal": "ReadOnlyAuditRole",
+      "source_principal_arn": "arn:aws:iam::000000000000:role/ReadOnlyAuditRole",
+      "target": "BoundaryConstrainedRole",
+      "target_role_arn": "arn:aws:iam::000000000000:role/BoundaryConstrainedRole",
+      "verdict": "blocked"
+    },
+    {
+      "classification": "scp_blocked_path",
+      "evidence_boundary": {
+        "applies_only_to_fixture_id": "complex_shared_uncertainty_iam_benchmark_001",
+        "aws_calls_made": 0,
+        "frozen_synthetic_oracle": true,
+        "live_aws_used": false,
+        "local_only": true,
+        "synthetic_fixture": true
+      },
+      "finding_id": "complex-finding-006",
+      "naive_candidate_id": "cand-006",
+      "non_claims": {
+        "no_broad_iamscope_correctness": true,
+        "no_broad_passrole_correctness": true,
+        "no_composite_benchmark_score": true,
+        "no_correctness_for_other_principals_roles_accounts_regions_conditions_boundaries_scps_resource_policies_or_findings": true,
+        "no_correctness_for_real_aws_environments": true,
+        "no_downstream_authorization_proof": true,
+        "no_exploitability_proof": true,
+        "no_generic_deny_correctness": true,
+        "no_lambda_invocation_behavior": true,
+        "no_live_aws": true,
+        "no_pass_fail_benchmark_label": true,
+        "no_production_readiness": true,
+        "no_resource_policy_deny_support": true,
+        "no_scp_deny_support_beyond_selected_synthetic_fixture_behavior": true
+      },
+      "pattern_id": "assume_role_chain",
+      "required_checks": [
+        {
+          "name": "selected_blocker_present",
+          "state": "fail_closed"
+        }
+      ],
+      "severity": "medium",
+      "source_principal": "DeveloperRole",
+      "source_principal_arn": "arn:aws:iam::000000000000:role/DeveloperRole",
+      "target": "CrossAccountOpsRole",
+      "target_role_arn": "arn:aws:iam::000000000000:role/CrossAccountOpsRole",
+      "verdict": "blocked"
+    },
+    {
+      "classification": "identity_deny_suppressed_path",
+      "evidence_boundary": {
+        "applies_only_to_fixture_id": "complex_shared_uncertainty_iam_benchmark_001",
+        "aws_calls_made": 0,
+        "frozen_synthetic_oracle": true,
+        "live_aws_used": false,
+        "local_only": true,
+        "synthetic_fixture": true
+      },
+      "finding_id": "complex-finding-007",
+      "naive_candidate_id": "cand-007",
+      "non_claims": {
+        "no_broad_iamscope_correctness": true,
+        "no_broad_passrole_correctness": true,
+        "no_composite_benchmark_score": true,
+        "no_correctness_for_other_principals_roles_accounts_regions_conditions_boundaries_scps_resource_policies_or_findings": true,
+        "no_correctness_for_real_aws_environments": true,
+        "no_downstream_authorization_proof": true,
+        "no_exploitability_proof": true,
+        "no_generic_deny_correctness": true,
+        "no_lambda_invocation_behavior": true,
+        "no_live_aws": true,
+        "no_pass_fail_benchmark_label": true,
+        "no_production_readiness": true,
+        "no_resource_policy_deny_support": true,
+        "no_scp_deny_support_beyond_selected_synthetic_fixture_behavior": true
+      },
+      "pattern_id": "assume_role_chain",
+      "required_checks": [
+        {
+          "name": "selected_blocker_present",
+          "state": "fail_closed"
+        }
+      ],
+      "severity": "medium",
+      "source_principal": "BreakGlassCandidateRole",
+      "source_principal_arn": "arn:aws:iam::000000000000:role/BreakGlassCandidateRole",
+      "target": "BoundaryConstrainedRole",
+      "target_role_arn": "arn:aws:iam::000000000000:role/BoundaryConstrainedRole",
+      "verdict": "blocked"
+    },
+    {
+      "classification": "permission_boundary_blocked_path",
+      "evidence_boundary": {
+        "applies_only_to_fixture_id": "complex_shared_uncertainty_iam_benchmark_001",
+        "aws_calls_made": 0,
+        "frozen_synthetic_oracle": true,
+        "live_aws_used": false,
+        "local_only": true,
+        "synthetic_fixture": true
+      },
+      "finding_id": "complex-finding-008",
+      "naive_candidate_id": "cand-008",
+      "non_claims": {
+        "no_broad_iamscope_correctness": true,
+        "no_broad_passrole_correctness": true,
+        "no_composite_benchmark_score": true,
+        "no_correctness_for_other_principals_roles_accounts_regions_conditions_boundaries_scps_resource_policies_or_findings": true,
+        "no_correctness_for_real_aws_environments": true,
+        "no_downstream_authorization_proof": true,
+        "no_exploitability_proof": true,
+        "no_generic_deny_correctness": true,
+        "no_lambda_invocation_behavior": true,
+        "no_live_aws": true,
+        "no_pass_fail_benchmark_label": true,
+        "no_production_readiness": true,
+        "no_resource_policy_deny_support": true,
+        "no_scp_deny_support_beyond_selected_synthetic_fixture_behavior": true
+      },
+      "pattern_id": "passrole_ecs",
+      "required_checks": [
+        {
+          "name": "selected_blocker_present",
+          "state": "fail_closed"
+        }
+      ],
+      "severity": "medium",
+      "source_principal": "AnalystUser",
+      "source_principal_arn": "arn:aws:iam::000000000000:user/AnalystUser",
+      "target": "ECSExecutionAdminLikeRole",
+      "target_role_arn": "arn:aws:iam::000000000000:role/ECSExecutionAdminLikeRole",
+      "verdict": "blocked"
+    },
+    {
+      "classification": "scp_blocked_path",
+      "evidence_boundary": {
+        "applies_only_to_fixture_id": "complex_shared_uncertainty_iam_benchmark_001",
+        "aws_calls_made": 0,
+        "frozen_synthetic_oracle": true,
+        "live_aws_used": false,
+        "local_only": true,
+        "synthetic_fixture": true
+      },
+      "finding_id": "complex-finding-009",
+      "naive_candidate_id": "cand-009",
+      "non_claims": {
+        "no_broad_iamscope_correctness": true,
+        "no_broad_passrole_correctness": true,
+        "no_composite_benchmark_score": true,
+        "no_correctness_for_other_principals_roles_accounts_regions_conditions_boundaries_scps_resource_policies_or_findings": true,
+        "no_correctness_for_real_aws_environments": true,
+        "no_downstream_authorization_proof": true,
+        "no_exploitability_proof": true,
+        "no_generic_deny_correctness": true,
+        "no_lambda_invocation_behavior": true,
+        "no_live_aws": true,
+        "no_pass_fail_benchmark_label": true,
+        "no_production_readiness": true,
+        "no_resource_policy_deny_support": true,
+        "no_scp_deny_support_beyond_selected_synthetic_fixture_behavior": true
+      },
+      "pattern_id": "cross_account_trust",
+      "required_checks": [
+        {
+          "name": "selected_blocker_present",
+          "state": "fail_closed"
+        }
+      ],
+      "severity": "medium",
+      "source_principal": "CICDRole",
+      "source_principal_arn": "arn:aws:iam::000000000000:role/CICDRole",
+      "target": "CrossAccountOpsRole",
+      "target_role_arn": "arn:aws:iam::000000000000:role/CrossAccountOpsRole",
+      "verdict": "blocked"
+    },
+    {
+      "classification": "missing_iam_passrole_precondition",
+      "evidence_boundary": {
+        "applies_only_to_fixture_id": "complex_shared_uncertainty_iam_benchmark_001",
+        "aws_calls_made": 0,
+        "frozen_synthetic_oracle": true,
+        "live_aws_used": false,
+        "local_only": true,
+        "synthetic_fixture": true
+      },
+      "finding_id": "complex-finding-010",
+      "naive_candidate_id": "cand-010",
+      "non_claims": {
+        "no_broad_iamscope_correctness": true,
+        "no_broad_passrole_correctness": true,
+        "no_composite_benchmark_score": true,
+        "no_correctness_for_other_principals_roles_accounts_regions_conditions_boundaries_scps_resource_policies_or_findings": true,
+        "no_correctness_for_real_aws_environments": true,
+        "no_downstream_authorization_proof": true,
+        "no_exploitability_proof": true,
+        "no_generic_deny_correctness": true,
+        "no_lambda_invocation_behavior": true,
+        "no_live_aws": true,
+        "no_pass_fail_benchmark_label": true,
+        "no_production_readiness": true,
+        "no_resource_policy_deny_support": true,
+        "no_scp_deny_support_beyond_selected_synthetic_fixture_behavior": true
+      },
+      "pattern_id": "passrole_lambda",
+      "required_checks": [
+        {
+          "name": "required_precondition_missing",
+          "state": "missing"
+        }
+      ],
+      "severity": "low",
+      "source_principal": "ReadOnlyAuditRole",
+      "source_principal_arn": "arn:aws:iam::000000000000:role/ReadOnlyAuditRole",
+      "target": "LambdaExecutionScopedRole",
+      "target_role_arn": "arn:aws:iam::000000000000:role/LambdaExecutionScopedRole",
+      "verdict": "precondition_only"
+    },
+    {
+      "classification": "missing_target_trust_precondition",
+      "evidence_boundary": {
+        "applies_only_to_fixture_id": "complex_shared_uncertainty_iam_benchmark_001",
+        "aws_calls_made": 0,
+        "frozen_synthetic_oracle": true,
+        "live_aws_used": false,
+        "local_only": true,
+        "synthetic_fixture": true
+      },
+      "finding_id": "complex-finding-011",
+      "naive_candidate_id": "cand-011",
+      "non_claims": {
+        "no_broad_iamscope_correctness": true,
+        "no_broad_passrole_correctness": true,
+        "no_composite_benchmark_score": true,
+        "no_correctness_for_other_principals_roles_accounts_regions_conditions_boundaries_scps_resource_policies_or_findings": true,
+        "no_correctness_for_real_aws_environments": true,
+        "no_downstream_authorization_proof": true,
+        "no_exploitability_proof": true,
+        "no_generic_deny_correctness": true,
+        "no_lambda_invocation_behavior": true,
+        "no_live_aws": true,
+        "no_pass_fail_benchmark_label": true,
+        "no_production_readiness": true,
+        "no_resource_policy_deny_support": true,
+        "no_scp_deny_support_beyond_selected_synthetic_fixture_behavior": true
+      },
+      "pattern_id": "passrole_ecs",
+      "required_checks": [
+        {
+          "name": "required_precondition_missing",
+          "state": "missing"
+        }
+      ],
+      "severity": "low",
+      "source_principal": "DeveloperRole",
+      "source_principal_arn": "arn:aws:iam::000000000000:role/DeveloperRole",
+      "target": "ECSExecutionAdminLikeRole",
+      "target_role_arn": "arn:aws:iam::000000000000:role/ECSExecutionAdminLikeRole",
+      "verdict": "precondition_only"
+    },
+    {
+      "classification": "missing_target_trust_precondition",
+      "evidence_boundary": {
+        "applies_only_to_fixture_id": "complex_shared_uncertainty_iam_benchmark_001",
+        "aws_calls_made": 0,
+        "frozen_synthetic_oracle": true,
+        "live_aws_used": false,
+        "local_only": true,
+        "synthetic_fixture": true
+      },
+      "finding_id": "complex-finding-012",
+      "naive_candidate_id": "cand-012",
+      "non_claims": {
+        "no_broad_iamscope_correctness": true,
+        "no_broad_passrole_correctness": true,
+        "no_composite_benchmark_score": true,
+        "no_correctness_for_other_principals_roles_accounts_regions_conditions_boundaries_scps_resource_policies_or_findings": true,
+        "no_correctness_for_real_aws_environments": true,
+        "no_downstream_authorization_proof": true,
+        "no_exploitability_proof": true,
+        "no_generic_deny_correctness": true,
+        "no_lambda_invocation_behavior": true,
+        "no_live_aws": true,
+        "no_pass_fail_benchmark_label": true,
+        "no_production_readiness": true,
+        "no_resource_policy_deny_support": true,
+        "no_scp_deny_support_beyond_selected_synthetic_fixture_behavior": true
+      },
+      "pattern_id": "assume_role_chain",
+      "required_checks": [
+        {
+          "name": "required_precondition_missing",
+          "state": "missing"
+        }
+      ],
+      "severity": "low",
+      "source_principal": "AnalystUser",
+      "source_principal_arn": "arn:aws:iam::000000000000:user/AnalystUser",
+      "target": "CrossAccountOpsRole",
+      "target_role_arn": "arn:aws:iam::000000000000:role/CrossAccountOpsRole",
+      "verdict": "precondition_only"
+    },
+    {
+      "classification": "shared_unknown_resource_scope",
+      "evidence_boundary": {
+        "applies_only_to_fixture_id": "complex_shared_uncertainty_iam_benchmark_001",
+        "aws_calls_made": 0,
+        "frozen_synthetic_oracle": true,
+        "live_aws_used": false,
+        "local_only": true,
+        "synthetic_fixture": true
+      },
+      "finding_id": "complex-finding-013",
+      "naive_candidate_id": "cand-013",
+      "non_claims": {
+        "no_broad_iamscope_correctness": true,
+        "no_broad_passrole_correctness": true,
+        "no_composite_benchmark_score": true,
+        "no_correctness_for_other_principals_roles_accounts_regions_conditions_boundaries_scps_resource_policies_or_findings": true,
+        "no_correctness_for_real_aws_environments": true,
+        "no_downstream_authorization_proof": true,
+        "no_exploitability_proof": true,
+        "no_generic_deny_correctness": true,
+        "no_lambda_invocation_behavior": true,
+        "no_live_aws": true,
+        "no_pass_fail_benchmark_label": true,
+        "no_production_readiness": true,
+        "no_resource_policy_deny_support": true,
+        "no_scp_deny_support_beyond_selected_synthetic_fixture_behavior": true
+      },
+      "pattern_id": "passrole_lambda",
+      "required_checks": [
+        {
+          "name": "shared_uncertainty_unresolved",
+          "state": "unknown"
+        }
+      ],
+      "severity": "medium",
+      "source_principal": "AnalystUser",
+      "source_principal_arn": "arn:aws:iam::000000000000:user/AnalystUser",
+      "target": "UnknownResourceScopeRole",
+      "target_role_arn": "arn:aws:iam::000000000000:role/UnknownResourceScopeRole",
+      "uncertainty_class": "shared_passrole_target_resource_scope_unknown",
+      "verdict": "inconclusive"
+    },
+    {
+      "classification": "shared_unknown_resource_scope",
+      "evidence_boundary": {
+        "applies_only_to_fixture_id": "complex_shared_uncertainty_iam_benchmark_001",
+        "aws_calls_made": 0,
+        "frozen_synthetic_oracle": true,
+        "live_aws_used": false,
+        "local_only": true,
+        "synthetic_fixture": true
+      },
+      "finding_id": "complex-finding-014",
+      "naive_candidate_id": "cand-014",
+      "non_claims": {
+        "no_broad_iamscope_correctness": true,
+        "no_broad_passrole_correctness": true,
+        "no_composite_benchmark_score": true,
+        "no_correctness_for_other_principals_roles_accounts_regions_conditions_boundaries_scps_resource_policies_or_findings": true,
+        "no_correctness_for_real_aws_environments": true,
+        "no_downstream_authorization_proof": true,
+        "no_exploitability_proof": true,
+        "no_generic_deny_correctness": true,
+        "no_lambda_invocation_behavior": true,
+        "no_live_aws": true,
+        "no_pass_fail_benchmark_label": true,
+        "no_production_readiness": true,
+        "no_resource_policy_deny_support": true,
+        "no_scp_deny_support_beyond_selected_synthetic_fixture_behavior": true
+      },
+      "pattern_id": "passrole_lambda",
+      "required_checks": [
+        {
+          "name": "shared_uncertainty_unresolved",
+          "state": "unknown"
+        }
+      ],
+      "severity": "medium",
+      "source_principal": "CICDRole",
+      "source_principal_arn": "arn:aws:iam::000000000000:role/CICDRole",
+      "target": "UnknownResourceScopeRole",
+      "target_role_arn": "arn:aws:iam::000000000000:role/UnknownResourceScopeRole",
+      "uncertainty_class": "shared_passrole_target_resource_scope_unknown",
+      "verdict": "inconclusive"
+    },
+    {
+      "classification": "shared_unknown_resource_scope",
+      "evidence_boundary": {
+        "applies_only_to_fixture_id": "complex_shared_uncertainty_iam_benchmark_001",
+        "aws_calls_made": 0,
+        "frozen_synthetic_oracle": true,
+        "live_aws_used": false,
+        "local_only": true,
+        "synthetic_fixture": true
+      },
+      "finding_id": "complex-finding-015",
+      "naive_candidate_id": "cand-015",
+      "non_claims": {
+        "no_broad_iamscope_correctness": true,
+        "no_broad_passrole_correctness": true,
+        "no_composite_benchmark_score": true,
+        "no_correctness_for_other_principals_roles_accounts_regions_conditions_boundaries_scps_resource_policies_or_findings": true,
+        "no_correctness_for_real_aws_environments": true,
+        "no_downstream_authorization_proof": true,
+        "no_exploitability_proof": true,
+        "no_generic_deny_correctness": true,
+        "no_lambda_invocation_behavior": true,
+        "no_live_aws": true,
+        "no_pass_fail_benchmark_label": true,
+        "no_production_readiness": true,
+        "no_resource_policy_deny_support": true,
+        "no_scp_deny_support_beyond_selected_synthetic_fixture_behavior": true
+      },
+      "pattern_id": "passrole_ecs",
+      "required_checks": [
+        {
+          "name": "shared_uncertainty_unresolved",
+          "state": "unknown"
+        }
+      ],
+      "severity": "medium",
+      "source_principal": "DeveloperRole",
+      "source_principal_arn": "arn:aws:iam::000000000000:role/DeveloperRole",
+      "target": "UnknownResourceScopeRole",
+      "target_role_arn": "arn:aws:iam::000000000000:role/UnknownResourceScopeRole",
+      "uncertainty_class": "shared_passrole_target_resource_scope_unknown",
+      "verdict": "inconclusive"
+    },
+    {
+      "classification": "shared_cross_account_trust_condition_unknown",
+      "evidence_boundary": {
+        "applies_only_to_fixture_id": "complex_shared_uncertainty_iam_benchmark_001",
+        "aws_calls_made": 0,
+        "frozen_synthetic_oracle": true,
+        "live_aws_used": false,
+        "local_only": true,
+        "synthetic_fixture": true
+      },
+      "finding_id": "complex-finding-016",
+      "naive_candidate_id": "cand-016",
+      "non_claims": {
+        "no_broad_iamscope_correctness": true,
+        "no_broad_passrole_correctness": true,
+        "no_composite_benchmark_score": true,
+        "no_correctness_for_other_principals_roles_accounts_regions_conditions_boundaries_scps_resource_policies_or_findings": true,
+        "no_correctness_for_real_aws_environments": true,
+        "no_downstream_authorization_proof": true,
+        "no_exploitability_proof": true,
+        "no_generic_deny_correctness": true,
+        "no_lambda_invocation_behavior": true,
+        "no_live_aws": true,
+        "no_pass_fail_benchmark_label": true,
+        "no_production_readiness": true,
+        "no_resource_policy_deny_support": true,
+        "no_scp_deny_support_beyond_selected_synthetic_fixture_behavior": true
+      },
+      "pattern_id": "cross_account_trust",
+      "required_checks": [
+        {
+          "name": "shared_uncertainty_unresolved",
+          "state": "unknown"
+        }
+      ],
+      "severity": "medium",
+      "source_principal": "BreakGlassCandidateRole",
+      "source_principal_arn": "arn:aws:iam::000000000000:role/BreakGlassCandidateRole",
+      "target": "CrossAccountOpsRole",
+      "target_role_arn": "arn:aws:iam::000000000000:role/CrossAccountOpsRole",
+      "uncertainty_class": "shared_cross_account_trust_condition_unknown",
+      "verdict": "inconclusive"
+    },
+    {
+      "classification": "shared_cross_account_trust_condition_unknown",
+      "evidence_boundary": {
+        "applies_only_to_fixture_id": "complex_shared_uncertainty_iam_benchmark_001",
+        "aws_calls_made": 0,
+        "frozen_synthetic_oracle": true,
+        "live_aws_used": false,
+        "local_only": true,
+        "synthetic_fixture": true
+      },
+      "finding_id": "complex-finding-017",
+      "naive_candidate_id": "cand-017",
+      "non_claims": {
+        "no_broad_iamscope_correctness": true,
+        "no_broad_passrole_correctness": true,
+        "no_composite_benchmark_score": true,
+        "no_correctness_for_other_principals_roles_accounts_regions_conditions_boundaries_scps_resource_policies_or_findings": true,
+        "no_correctness_for_real_aws_environments": true,
+        "no_downstream_authorization_proof": true,
+        "no_exploitability_proof": true,
+        "no_generic_deny_correctness": true,
+        "no_lambda_invocation_behavior": true,
+        "no_live_aws": true,
+        "no_pass_fail_benchmark_label": true,
+        "no_production_readiness": true,
+        "no_resource_policy_deny_support": true,
+        "no_scp_deny_support_beyond_selected_synthetic_fixture_behavior": true
+      },
+      "pattern_id": "assume_role_chain",
+      "required_checks": [
+        {
+          "name": "shared_uncertainty_unresolved",
+          "state": "unknown"
+        }
+      ],
+      "severity": "medium",
+      "source_principal": "ReadOnlyAuditRole",
+      "source_principal_arn": "arn:aws:iam::000000000000:role/ReadOnlyAuditRole",
+      "target": "CrossAccountOpsRole",
+      "target_role_arn": "arn:aws:iam::000000000000:role/CrossAccountOpsRole",
+      "uncertainty_class": "shared_cross_account_trust_condition_unknown",
+      "verdict": "inconclusive"
+    },
+    {
+      "classification": "shared_boundary_or_session_policy_context_missing",
+      "evidence_boundary": {
+        "applies_only_to_fixture_id": "complex_shared_uncertainty_iam_benchmark_001",
+        "aws_calls_made": 0,
+        "frozen_synthetic_oracle": true,
+        "live_aws_used": false,
+        "local_only": true,
+        "synthetic_fixture": true
+      },
+      "finding_id": "complex-finding-018",
+      "naive_candidate_id": "cand-018",
+      "non_claims": {
+        "no_broad_iamscope_correctness": true,
+        "no_broad_passrole_correctness": true,
+        "no_composite_benchmark_score": true,
+        "no_correctness_for_other_principals_roles_accounts_regions_conditions_boundaries_scps_resource_policies_or_findings": true,
+        "no_correctness_for_real_aws_environments": true,
+        "no_downstream_authorization_proof": true,
+        "no_exploitability_proof": true,
+        "no_generic_deny_correctness": true,
+        "no_lambda_invocation_behavior": true,
+        "no_live_aws": true,
+        "no_pass_fail_benchmark_label": true,
+        "no_production_readiness": true,
+        "no_resource_policy_deny_support": true,
+        "no_scp_deny_support_beyond_selected_synthetic_fixture_behavior": true
+      },
+      "pattern_id": "passrole_lambda",
+      "required_checks": [
+        {
+          "name": "shared_uncertainty_unresolved",
+          "state": "unknown"
+        }
+      ],
+      "severity": "medium",
+      "source_principal": "CICDRole",
+      "source_principal_arn": "arn:aws:iam::000000000000:role/CICDRole",
+      "target": "BoundaryConstrainedRole",
+      "target_role_arn": "arn:aws:iam::000000000000:role/BoundaryConstrainedRole",
+      "uncertainty_class": "shared_boundary_or_session_policy_context_missing",
+      "verdict": "inconclusive"
+    }
+  ],
+  "fixture_id": "complex_shared_uncertainty_iam_benchmark_001",
+  "generated_or_replayed_by_iamscope": false,
+  "generation_mode": "frozen_synthetic_oracle",
+  "live_aws_used": false,
+  "metadata": {
+    "aws_calls_made": 0,
+    "fixture_id": "complex_shared_uncertainty_iam_benchmark_001",
+    "generated_or_replayed_by_iamscope": false,
+    "generation_mode": "frozen_synthetic_oracle",
+    "live_aws_used": false,
+    "non_claims": {
+      "no_broad_iamscope_correctness": true,
+      "no_broad_passrole_correctness": true,
+      "no_composite_benchmark_score": true,
+      "no_correctness_for_other_principals_roles_accounts_regions_conditions_boundaries_scps_resource_policies_or_findings": true,
+      "no_correctness_for_real_aws_environments": true,
+      "no_downstream_authorization_proof": true,
+      "no_exploitability_proof": true,
+      "no_generic_deny_correctness": true,
+      "no_lambda_invocation_behavior": true,
+      "no_live_aws": true,
+      "no_pass_fail_benchmark_label": true,
+      "no_production_readiness": true,
+      "no_resource_policy_deny_support": true,
+      "no_scp_deny_support_beyond_selected_synthetic_fixture_behavior": true
+    },
+    "reasoners_run": [],
+    "schema_version": "complex_synthetic_benchmark_findings_metadata.v1",
+    "source_tool": "static_fixture_authoring",
+    "verdict_breakdown": {
+      "blocked": 5,
+      "inconclusive": 6,
+      "precondition_only": 3,
+      "validated": 4
+    }
+  },
+  "non_claims": {
+    "no_broad_iamscope_correctness": true,
+    "no_broad_passrole_correctness": true,
+    "no_composite_benchmark_score": true,
+    "no_correctness_for_other_principals_roles_accounts_regions_conditions_boundaries_scps_resource_policies_or_findings": true,
+    "no_correctness_for_real_aws_environments": true,
+    "no_downstream_authorization_proof": true,
+    "no_exploitability_proof": true,
+    "no_generic_deny_correctness": true,
+    "no_lambda_invocation_behavior": true,
+    "no_live_aws": true,
+    "no_pass_fail_benchmark_label": true,
+    "no_production_readiness": true,
+    "no_resource_policy_deny_support": true,
+    "no_scp_deny_support_beyond_selected_synthetic_fixture_behavior": true
+  },
+  "reasoners_run": [],
+  "schema_version": "complex_synthetic_benchmark_findings.v1",
+  "source_tool": "static_fixture_authoring",
+  "verdict_breakdown": {
+    "blocked": 5,
+    "inconclusive": 6,
+    "precondition_only": 3,
+    "validated": 4
+  }
+}

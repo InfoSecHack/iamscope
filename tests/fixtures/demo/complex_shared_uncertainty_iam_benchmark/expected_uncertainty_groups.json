@@ -1,0 +1,52 @@
+{
+  "fixture_id": "complex_shared_uncertainty_iam_benchmark_001",
+  "generation_mode": "frozen_synthetic_oracle",
+  "groups": [
+    {
+      "count": 3,
+      "finding_ids": [
+        "complex-finding-013",
+        "complex-finding-014",
+        "complex-finding-015"
+      ],
+      "reviewer_action": "Resolve target-role resource-scope coverage before treating these rows as independent validated risks.",
+      "uncertainty_class": "shared_passrole_target_resource_scope_unknown"
+    },
+    {
+      "count": 2,
+      "finding_ids": [
+        "complex-finding-016",
+        "complex-finding-017"
+      ],
+      "reviewer_action": "Resolve synthetic cross-account trust-condition context before promoting these rows.",
+      "uncertainty_class": "shared_cross_account_trust_condition_unknown"
+    },
+    {
+      "count": 1,
+      "finding_ids": [
+        "complex-finding-018"
+      ],
+      "reviewer_action": "Resolve boundary or session-policy context before treating this row as validated.",
+      "uncertainty_class": "shared_boundary_or_session_policy_context_missing"
+    }
+  ],
+  "non_claims": {
+    "no_broad_iamscope_correctness": true,
+    "no_broad_passrole_correctness": true,
+    "no_composite_benchmark_score": true,
+    "no_correctness_for_other_principals_roles_accounts_regions_conditions_boundaries_scps_resource_policies_or_findings": true,
+    "no_correctness_for_real_aws_environments": true,
+    "no_downstream_authorization_proof": true,
+    "no_exploitability_proof": true,
+    "no_generic_deny_correctness": true,
+    "no_lambda_invocation_behavior": true,
+    "no_live_aws": true,
+    "no_pass_fail_benchmark_label": true,
+    "no_production_readiness": true,
+    "no_resource_policy_deny_support": true,
+    "no_scp_deny_support_beyond_selected_synthetic_fixture_behavior": true
+  },
+  "report_only": true,
+  "schema_version": "complex_synthetic_benchmark_uncertainty_groups.v1",
+  "source_tool": "static_fixture_authoring"
+}
