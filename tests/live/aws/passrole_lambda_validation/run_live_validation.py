@@ -18,6 +18,8 @@ DEFAULT_OUTPUT_DIR = Path("/tmp/iamscope-live-passrole-lambda-validation")
 DEFAULT_FUNCTION_PREFIX = "iamscope-live-passrole-lambda-test"
 REPO_ROOT = Path(__file__).resolve().parents[4]
 ACCOUNT_ID_RE = re.compile(r"^[0-9]{12}$")
+VALIDATION_MODE_ALLOWED = "allowed"
+VALIDATION_MODE_DENIED = "denied_missing_passrole"
 
 
 @dataclass(frozen=True)
@@ -30,6 +32,9 @@ class LiveValidationConfig:
     function_name: str
     expected_iamscope_verdict: str | None
     source_principal_arn: str | None
+    validation_mode: str = VALIDATION_MODE_ALLOWED
+    expected_observed_aws_result: str = "create_function_succeeded"
+    denied_source_role_arn: str | None = None
 
 
 class ConfigError(ValueError):
@@ -60,7 +65,7 @@ def _require_env(name: str) -> str:
     return value
 
 
-def _load_role_arn_from_terraform_outputs(path: Path) -> str:
+def _load_terraform_outputs(path: Path) -> dict[str, Any]:
     try:
         payload = json.loads(path.read_text())
     except OSError as exc:
@@ -68,13 +73,28 @@ def _load_role_arn_from_terraform_outputs(path: Path) -> str:
     except json.JSONDecodeError as exc:
         raise ConfigError(f"invalid Terraform output JSON: {path}") from exc
 
-    for key in ("lambda_execution_role_arn", "execution_role_arn", "role_arn"):
+    if not isinstance(payload, dict):
+        raise ConfigError(f"Terraform output JSON was not an object: {path}")
+    return payload
+
+
+def _terraform_output_value(payload: dict[str, Any], keys: tuple[str, ...], label: str) -> str:
+    for key in keys:
         item = payload.get(key)
         if isinstance(item, dict) and isinstance(item.get("value"), str):
             return item["value"]
         if isinstance(item, str):
             return item
-    raise ConfigError("Terraform output JSON did not include lambda_execution_role_arn")
+    raise ConfigError(f"Terraform output JSON did not include {label}")
+
+
+def _load_role_arn_from_terraform_outputs(path: Path) -> str:
+    payload = _load_terraform_outputs(path)
+    return _terraform_output_value(
+        payload,
+        ("lambda_execution_role_arn", "execution_role_arn", "role_arn"),
+        "lambda_execution_role_arn",
+    )
 
 
 def _resolve_role_arn(args: argparse.Namespace) -> str:
@@ -92,10 +112,37 @@ def _resolve_role_arn(args: argparse.Namespace) -> str:
     )
 
 
+def _resolve_denied_source_role_arn(args: argparse.Namespace) -> str:
+    if args.denied_source_role_arn:
+        return str(args.denied_source_role_arn).strip()
+    env_role_arn = os.environ.get("IAMSCOPE_LIVE_PASSROLE_LAMBDA_DENIED_SOURCE_ROLE_ARN", "").strip()
+    if env_role_arn:
+        return env_role_arn
+    terraform_outputs = args.terraform_outputs or os.environ.get("IAMSCOPE_LIVE_PASSROLE_LAMBDA_TERRAFORM_OUTPUTS")
+    if terraform_outputs:
+        payload = _load_terraform_outputs(Path(terraform_outputs))
+        return _terraform_output_value(
+            payload,
+            ("denied_source_role_arn",),
+            "denied_source_role_arn",
+        )
+    raise ConfigError(
+        "missing denied source role ARN for denied mode; pass --denied-source-role-arn, set "
+        "IAMSCOPE_LIVE_PASSROLE_LAMBDA_DENIED_SOURCE_ROLE_ARN, or pass --terraform-outputs"
+    )
+
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run one controlled live PassRole-to-Lambda validation case.")
+    parser.add_argument(
+        "--mode",
+        choices=(VALIDATION_MODE_ALLOWED, VALIDATION_MODE_DENIED),
+        default=VALIDATION_MODE_ALLOWED,
+        help="Validation mode. Denied mode assumes a test source role that lacks iam:PassRole.",
+    )
     parser.add_argument("--out", default=str(DEFAULT_OUTPUT_DIR), help="Output directory outside the repository tree.")
     parser.add_argument("--role-arn", help="Test Lambda execution role ARN to pass to CreateFunction.")
+    parser.add_argument("--denied-source-role-arn", help="Denied-mode test source role ARN to assume.")
     parser.add_argument(
         "--terraform-outputs", help="Path to sanitized terraform output -json file containing role ARN."
     )
@@ -126,6 +173,13 @@ def load_config(argv: list[str] | None = None) -> LiveValidationConfig:
     if not function_name.startswith(DEFAULT_FUNCTION_PREFIX):
         raise ConfigError(f"function name must start with {DEFAULT_FUNCTION_PREFIX}")
 
+    denied_source_role_arn = _resolve_denied_source_role_arn(args) if args.mode == VALIDATION_MODE_DENIED else None
+    source_principal_arn = (
+        denied_source_role_arn
+        if args.mode == VALIDATION_MODE_DENIED
+        else os.environ.get("IAMSCOPE_LIVE_PASSROLE_LAMBDA_SOURCE_PRINCIPAL_ARN")
+    )
+
     return LiveValidationConfig(
         aws_profile=aws_profile,
         aws_region=aws_region,
@@ -134,7 +188,12 @@ def load_config(argv: list[str] | None = None) -> LiveValidationConfig:
         output_dir=output_dir,
         function_name=function_name,
         expected_iamscope_verdict=args.expected_iamscope_verdict,
-        source_principal_arn=os.environ.get("IAMSCOPE_LIVE_PASSROLE_LAMBDA_SOURCE_PRINCIPAL_ARN"),
+        source_principal_arn=source_principal_arn,
+        validation_mode=args.mode,
+        expected_observed_aws_result=(
+            "access_denied" if args.mode == VALIDATION_MODE_DENIED else "create_function_succeeded"
+        ),
+        denied_source_role_arn=denied_source_role_arn,
     )
 
 
@@ -159,11 +218,14 @@ def build_result(
     return {
         "fixture_id": "controlled_live_passrole_lambda_validation_001",
         "schema_version": "0.1",
+        "validation_mode": config.validation_mode,
         "timestamp": _utc_now(),
         "account_id": config.expected_account_id,
         "region": config.aws_region,
         "source_principal_arn": config.source_principal_arn,
+        "denied_source_role_arn": config.denied_source_role_arn,
         "attempted_action": "lambda:CreateFunction",
+        "expected_observed_aws_result": config.expected_observed_aws_result,
         "role_passed": config.role_arn,
         "function_name": config.function_name,
         "expected_iamscope_verdict": config.expected_iamscope_verdict,
@@ -213,6 +275,31 @@ def _client_error_code(exc: Exception) -> str:
     return exc.__class__.__name__
 
 
+def _lambda_client_for_config(config: LiveValidationConfig, session: Any, sts: Any) -> Any:
+    if config.validation_mode != VALIDATION_MODE_DENIED:
+        return session.client("lambda")
+    if not config.denied_source_role_arn:
+        raise ConfigError("denied mode requires denied_source_role_arn")
+    response = sts.assume_role(
+        RoleArn=config.denied_source_role_arn,
+        RoleSessionName="iamscope-live-passrole-denied-validation",
+    )
+    credentials = response.get("Credentials", {})
+    required_keys = ("AccessKeyId", "SecretAccessKey", "SessionToken")
+    if not all(isinstance(credentials.get(key), str) and credentials.get(key) for key in required_keys):
+        raise ConfigError("STS AssumeRole response did not include temporary credentials")
+
+    import boto3
+
+    denied_session = boto3.Session(
+        aws_access_key_id=credentials["AccessKeyId"],
+        aws_secret_access_key=credentials["SecretAccessKey"],
+        aws_session_token=credentials["SessionToken"],
+        region_name=config.aws_region,
+    )
+    return denied_session.client("lambda")
+
+
 def run_live_validation(config: LiveValidationConfig) -> dict[str, Any]:
     import boto3
     from botocore.exceptions import ClientError
@@ -224,7 +311,7 @@ def run_live_validation(config: LiveValidationConfig) -> dict[str, Any]:
     if account_id != config.expected_account_id:
         raise ConfigError("STS account id did not match IAMSCOPE_EXPECTED_AWS_ACCOUNT_ID; aborting before Lambda calls")
 
-    lambda_client = session.client("lambda")
+    lambda_client = _lambda_client_for_config(config, session, sts)
     function_created = False
     observed_result = "other_error"
     cleanup_status = "not_needed"
@@ -292,8 +379,10 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     print("IAMScope controlled live PassRole-to-Lambda validation")
+    print(f"Mode: {config.validation_mode}")
     print(f"Account: {config.expected_account_id}")
     print(f"Region: {config.aws_region}")
+    print(f"Expected observed AWS result: {result['expected_observed_aws_result']}")
     print(f"Observed AWS result: {result['observed_aws_result']}")
     print(f"Cleanup status: {result['cleanup_status']}")
     print(f"Result: {path}")

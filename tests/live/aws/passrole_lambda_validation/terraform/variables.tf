@@ -24,6 +24,12 @@ variable "name_prefix" {
   default     = "iamscope-live-passrole-lambda-test"
 }
 
+variable "denied_source_trusted_principal_arn" {
+  description = "Optional AWS principal ARN trusted to assume the denied source role. Defaults to the current caller ARN."
+  type        = string
+  default     = null
+}
+
 variable "tags" {
   description = "Required tags for all taggable resources."
   type        = map(string)
