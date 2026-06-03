@@ -1,0 +1,531 @@
+{
+  "candidate_count": 42,
+  "candidate_paths": [
+    {
+      "candidate_id": "cand-001",
+      "candidate_interpretation": "Naive structural passrole_lambda row from AnalystUser to LambdaExecutionScopedRole.",
+      "expected_oracle_status": "validated",
+      "maps_to": {
+        "finding_id": "complex-finding-001"
+      },
+      "pattern": "passrole_lambda",
+      "reason": "Frozen oracle maps this row to selected_synthetic_passrole_lambda_validated.",
+      "source_principal": "AnalystUser",
+      "target": "LambdaExecutionScopedRole"
+    },
+    {
+      "candidate_id": "cand-002",
+      "candidate_interpretation": "Naive structural passrole_lambda row from CICDRole to LambdaExecutionAdminLikeRole.",
+      "expected_oracle_status": "validated",
+      "maps_to": {
+        "finding_id": "complex-finding-002"
+      },
+      "pattern": "passrole_lambda",
+      "reason": "Frozen oracle maps this row to selected_synthetic_passrole_lambda_validated.",
+      "source_principal": "CICDRole",
+      "target": "LambdaExecutionAdminLikeRole"
+    },
+    {
+      "candidate_id": "cand-003",
+      "candidate_interpretation": "Naive structural passrole_ecs row from CICDRole to ECSExecutionAdminLikeRole.",
+      "expected_oracle_status": "validated",
+      "maps_to": {
+        "finding_id": "complex-finding-003"
+      },
+      "pattern": "passrole_ecs",
+      "reason": "Frozen oracle maps this row to selected_synthetic_passrole_ecs_validated.",
+      "source_principal": "CICDRole",
+      "target": "ECSExecutionAdminLikeRole"
+    },
+    {
+      "candidate_id": "cand-004",
+      "candidate_interpretation": "Naive structural assume_role_chain row from DeveloperRole to CrossAccountOpsRole.",
+      "expected_oracle_status": "validated",
+      "maps_to": {
+        "finding_id": "complex-finding-004"
+      },
+      "pattern": "assume_role_chain",
+      "reason": "Frozen oracle maps this row to selected_synthetic_assumerole_chain_validated.",
+      "source_principal": "DeveloperRole",
+      "target": "CrossAccountOpsRole"
+    },
+    {
+      "candidate_id": "cand-005",
+      "candidate_interpretation": "Naive structural passrole_lambda row from ReadOnlyAuditRole to BoundaryConstrainedRole.",
+      "expected_oracle_status": "blocked",
+      "maps_to": {
+        "finding_id": "complex-finding-005"
+      },
+      "pattern": "passrole_lambda",
+      "reason": "Frozen oracle maps this row to permission_boundary_blocked_path.",
+      "source_principal": "ReadOnlyAuditRole",
+      "target": "BoundaryConstrainedRole"
+    },
+    {
+      "candidate_id": "cand-006",
+      "candidate_interpretation": "Naive structural assume_role_chain row from DeveloperRole to CrossAccountOpsRole.",
+      "expected_oracle_status": "blocked",
+      "maps_to": {
+        "finding_id": "complex-finding-006"
+      },
+      "pattern": "assume_role_chain",
+      "reason": "Frozen oracle maps this row to scp_blocked_path.",
+      "source_principal": "DeveloperRole",
+      "target": "CrossAccountOpsRole"
+    },
+    {
+      "candidate_id": "cand-007",
+      "candidate_interpretation": "Naive structural assume_role_chain row from BreakGlassCandidateRole to BoundaryConstrainedRole.",
+      "expected_oracle_status": "blocked",
+      "maps_to": {
+        "finding_id": "complex-finding-007"
+      },
+      "pattern": "assume_role_chain",
+      "reason": "Frozen oracle maps this row to identity_deny_suppressed_path.",
+      "source_principal": "BreakGlassCandidateRole",
+      "target": "BoundaryConstrainedRole"
+    },
+    {
+      "candidate_id": "cand-008",
+      "candidate_interpretation": "Naive structural passrole_ecs row from AnalystUser to ECSExecutionAdminLikeRole.",
+      "expected_oracle_status": "blocked",
+      "maps_to": {
+        "finding_id": "complex-finding-008"
+      },
+      "pattern": "passrole_ecs",
+      "reason": "Frozen oracle maps this row to permission_boundary_blocked_path.",
+      "source_principal": "AnalystUser",
+      "target": "ECSExecutionAdminLikeRole"
+    },
+    {
+      "candidate_id": "cand-009",
+      "candidate_interpretation": "Naive structural cross_account_trust row from CICDRole to CrossAccountOpsRole.",
+      "expected_oracle_status": "blocked",
+      "maps_to": {
+        "finding_id": "complex-finding-009"
+      },
+      "pattern": "cross_account_trust",
+      "reason": "Frozen oracle maps this row to scp_blocked_path.",
+      "source_principal": "CICDRole",
+      "target": "CrossAccountOpsRole"
+    },
+    {
+      "candidate_id": "cand-010",
+      "candidate_interpretation": "Naive structural passrole_lambda row from ReadOnlyAuditRole to LambdaExecutionScopedRole.",
+      "expected_oracle_status": "precondition_only",
+      "maps_to": {
+        "finding_id": "complex-finding-010"
+      },
+      "pattern": "passrole_lambda",
+      "reason": "Frozen oracle maps this row to missing_iam_passrole_precondition.",
+      "source_principal": "ReadOnlyAuditRole",
+      "target": "LambdaExecutionScopedRole"
+    },
+    {
+      "candidate_id": "cand-011",
+      "candidate_interpretation": "Naive structural passrole_ecs row from DeveloperRole to ECSExecutionAdminLikeRole.",
+      "expected_oracle_status": "precondition_only",
+      "maps_to": {
+        "finding_id": "complex-finding-011"
+      },
+      "pattern": "passrole_ecs",
+      "reason": "Frozen oracle maps this row to missing_target_trust_precondition.",
+      "source_principal": "DeveloperRole",
+      "target": "ECSExecutionAdminLikeRole"
+    },
+    {
+      "candidate_id": "cand-012",
+      "candidate_interpretation": "Naive structural assume_role_chain row from AnalystUser to CrossAccountOpsRole.",
+      "expected_oracle_status": "precondition_only",
+      "maps_to": {
+        "finding_id": "complex-finding-012"
+      },
+      "pattern": "assume_role_chain",
+      "reason": "Frozen oracle maps this row to missing_target_trust_precondition.",
+      "source_principal": "AnalystUser",
+      "target": "CrossAccountOpsRole"
+    },
+    {
+      "candidate_id": "cand-013",
+      "candidate_interpretation": "Naive structural passrole_lambda row from AnalystUser to UnknownResourceScopeRole.",
+      "expected_oracle_status": "inconclusive",
+      "maps_to": {
+        "finding_id": "complex-finding-013"
+      },
+      "pattern": "passrole_lambda",
+      "reason": "Frozen oracle maps this row to shared_unknown_resource_scope.",
+      "source_principal": "AnalystUser",
+      "target": "UnknownResourceScopeRole"
+    },
+    {
+      "candidate_id": "cand-014",
+      "candidate_interpretation": "Naive structural passrole_lambda row from CICDRole to UnknownResourceScopeRole.",
+      "expected_oracle_status": "inconclusive",
+      "maps_to": {
+        "finding_id": "complex-finding-014"
+      },
+      "pattern": "passrole_lambda",
+      "reason": "Frozen oracle maps this row to shared_unknown_resource_scope.",
+      "source_principal": "CICDRole",
+      "target": "UnknownResourceScopeRole"
+    },
+    {
+      "candidate_id": "cand-015",
+      "candidate_interpretation": "Naive structural passrole_ecs row from DeveloperRole to UnknownResourceScopeRole.",
+      "expected_oracle_status": "inconclusive",
+      "maps_to": {
+        "finding_id": "complex-finding-015"
+      },
+      "pattern": "passrole_ecs",
+      "reason": "Frozen oracle maps this row to shared_unknown_resource_scope.",
+      "source_principal": "DeveloperRole",
+      "target": "UnknownResourceScopeRole"
+    },
+    {
+      "candidate_id": "cand-016",
+      "candidate_interpretation": "Naive structural cross_account_trust row from BreakGlassCandidateRole to CrossAccountOpsRole.",
+      "expected_oracle_status": "inconclusive",
+      "maps_to": {
+        "finding_id": "complex-finding-016"
+      },
+      "pattern": "cross_account_trust",
+      "reason": "Frozen oracle maps this row to shared_cross_account_trust_condition_unknown.",
+      "source_principal": "BreakGlassCandidateRole",
+      "target": "CrossAccountOpsRole"
+    },
+    {
+      "candidate_id": "cand-017",
+      "candidate_interpretation": "Naive structural assume_role_chain row from ReadOnlyAuditRole to CrossAccountOpsRole.",
+      "expected_oracle_status": "inconclusive",
+      "maps_to": {
+        "finding_id": "complex-finding-017"
+      },
+      "pattern": "assume_role_chain",
+      "reason": "Frozen oracle maps this row to shared_cross_account_trust_condition_unknown.",
+      "source_principal": "ReadOnlyAuditRole",
+      "target": "CrossAccountOpsRole"
+    },
+    {
+      "candidate_id": "cand-018",
+      "candidate_interpretation": "Naive structural passrole_lambda row from CICDRole to BoundaryConstrainedRole.",
+      "expected_oracle_status": "inconclusive",
+      "maps_to": {
+        "finding_id": "complex-finding-018"
+      },
+      "pattern": "passrole_lambda",
+      "reason": "Frozen oracle maps this row to shared_boundary_or_session_policy_context_missing.",
+      "source_principal": "CICDRole",
+      "target": "BoundaryConstrainedRole"
+    },
+    {
+      "candidate_id": "cand-019",
+      "candidate_interpretation": "Naive structural passrole_lambda row from AnalystUser to LambdaExecutionAdminLikeRole.",
+      "expected_oracle_status": "non_finding_structural_duplicate",
+      "maps_to": {
+        "non_finding_reason": "duplicate structural row folded into selected PassRole-to-Lambda fixture family"
+      },
+      "pattern": "passrole_lambda",
+      "reason": "duplicate structural row folded into selected PassRole-to-Lambda fixture family",
+      "source_principal": "AnalystUser",
+      "target": "LambdaExecutionAdminLikeRole"
+    },
+    {
+      "candidate_id": "cand-020",
+      "candidate_interpretation": "Naive structural passrole_ecs row from AnalystUser to UnknownResourceScopeRole.",
+      "expected_oracle_status": "non_finding_unknown_scope_duplicate",
+      "maps_to": {
+        "non_finding_reason": "unknown resource scope is represented by grouped inconclusive findings"
+      },
+      "pattern": "passrole_ecs",
+      "reason": "unknown resource scope is represented by grouped inconclusive findings",
+      "source_principal": "AnalystUser",
+      "target": "UnknownResourceScopeRole"
+    },
+    {
+      "candidate_id": "cand-021",
+      "candidate_interpretation": "Naive structural assume_role_chain row from AnalystUser to BoundaryConstrainedRole.",
+      "expected_oracle_status": "non_finding_blocker_duplicate",
+      "maps_to": {
+        "non_finding_reason": "permission-boundary blocker already represented by fixture oracle"
+      },
+      "pattern": "assume_role_chain",
+      "reason": "permission-boundary blocker already represented by fixture oracle",
+      "source_principal": "AnalystUser",
+      "target": "BoundaryConstrainedRole"
+    },
+    {
+      "candidate_id": "cand-022",
+      "candidate_interpretation": "Naive structural cross_account_trust row from AnalystUser to CrossAccountOpsRole.",
+      "expected_oracle_status": "non_finding_missing_trust_context",
+      "maps_to": {
+        "non_finding_reason": "trust-condition context is intentionally unresolved"
+      },
+      "pattern": "cross_account_trust",
+      "reason": "trust-condition context is intentionally unresolved",
+      "source_principal": "AnalystUser",
+      "target": "CrossAccountOpsRole"
+    },
+    {
+      "candidate_id": "cand-023",
+      "candidate_interpretation": "Naive structural identity_deny_suppressed_path row from AnalystUser to BoundaryConstrainedRole.",
+      "expected_oracle_status": "non_finding_suppressed_duplicate",
+      "maps_to": {
+        "non_finding_reason": "identity-Deny suppression is represented by selected blocked finding"
+      },
+      "pattern": "identity_deny_suppressed_path",
+      "reason": "identity-Deny suppression is represented by selected blocked finding",
+      "source_principal": "AnalystUser",
+      "target": "BoundaryConstrainedRole"
+    },
+    {
+      "candidate_id": "cand-024",
+      "candidate_interpretation": "Naive structural passrole_ecs row from CICDRole to UnknownResourceScopeRole.",
+      "expected_oracle_status": "non_finding_unknown_scope_duplicate",
+      "maps_to": {
+        "non_finding_reason": "unknown resource scope is represented by grouped inconclusive findings"
+      },
+      "pattern": "passrole_ecs",
+      "reason": "unknown resource scope is represented by grouped inconclusive findings",
+      "source_principal": "CICDRole",
+      "target": "UnknownResourceScopeRole"
+    },
+    {
+      "candidate_id": "cand-025",
+      "candidate_interpretation": "Naive structural assume_role_chain row from CICDRole to BoundaryConstrainedRole.",
+      "expected_oracle_status": "non_finding_boundary_context_duplicate",
+      "maps_to": {
+        "non_finding_reason": "boundary or session-policy context is represented by selected inconclusive finding"
+      },
+      "pattern": "assume_role_chain",
+      "reason": "boundary or session-policy context is represented by selected inconclusive finding",
+      "source_principal": "CICDRole",
+      "target": "BoundaryConstrainedRole"
+    },
+    {
+      "candidate_id": "cand-026",
+      "candidate_interpretation": "Naive structural missing_target_trust_precondition row from CICDRole to ECSExecutionAdminLikeRole.",
+      "expected_oracle_status": "non_finding_precondition_duplicate",
+      "maps_to": {
+        "non_finding_reason": "missing trust precondition is represented by selected precondition-only finding"
+      },
+      "pattern": "missing_target_trust_precondition",
+      "reason": "missing trust precondition is represented by selected precondition-only finding",
+      "source_principal": "CICDRole",
+      "target": "ECSExecutionAdminLikeRole"
+    },
+    {
+      "candidate_id": "cand-027",
+      "candidate_interpretation": "Naive structural identity_deny_suppressed_path row from CICDRole to BoundaryConstrainedRole.",
+      "expected_oracle_status": "non_finding_suppressed_duplicate",
+      "maps_to": {
+        "non_finding_reason": "identity-Deny suppression is represented by selected blocked finding"
+      },
+      "pattern": "identity_deny_suppressed_path",
+      "reason": "identity-Deny suppression is represented by selected blocked finding",
+      "source_principal": "CICDRole",
+      "target": "BoundaryConstrainedRole"
+    },
+    {
+      "candidate_id": "cand-028",
+      "candidate_interpretation": "Naive structural passrole_lambda row from DeveloperRole to UnknownResourceScopeRole.",
+      "expected_oracle_status": "non_finding_unknown_scope_duplicate",
+      "maps_to": {
+        "non_finding_reason": "unknown resource scope is represented by grouped inconclusive findings"
+      },
+      "pattern": "passrole_lambda",
+      "reason": "unknown resource scope is represented by grouped inconclusive findings",
+      "source_principal": "DeveloperRole",
+      "target": "UnknownResourceScopeRole"
+    },
+    {
+      "candidate_id": "cand-029",
+      "candidate_interpretation": "Naive structural cross_account_trust row from DeveloperRole to CrossAccountOpsRole.",
+      "expected_oracle_status": "non_finding_scp_duplicate",
+      "maps_to": {
+        "non_finding_reason": "SCP-like blocker is represented by selected blocked finding"
+      },
+      "pattern": "cross_account_trust",
+      "reason": "SCP-like blocker is represented by selected blocked finding",
+      "source_principal": "DeveloperRole",
+      "target": "CrossAccountOpsRole"
+    },
+    {
+      "candidate_id": "cand-030",
+      "candidate_interpretation": "Naive structural missing_iam_passrole_precondition row from DeveloperRole to LambdaExecutionScopedRole.",
+      "expected_oracle_status": "non_finding_precondition_duplicate",
+      "maps_to": {
+        "non_finding_reason": "missing iam:PassRole precondition is represented by selected precondition-only finding"
+      },
+      "pattern": "missing_iam_passrole_precondition",
+      "reason": "missing iam:PassRole precondition is represented by selected precondition-only finding",
+      "source_principal": "DeveloperRole",
+      "target": "LambdaExecutionScopedRole"
+    },
+    {
+      "candidate_id": "cand-031",
+      "candidate_interpretation": "Naive structural identity_deny_suppressed_path row from DeveloperRole to BoundaryConstrainedRole.",
+      "expected_oracle_status": "non_finding_suppressed_duplicate",
+      "maps_to": {
+        "non_finding_reason": "identity-Deny suppression is represented by selected blocked finding"
+      },
+      "pattern": "identity_deny_suppressed_path",
+      "reason": "identity-Deny suppression is represented by selected blocked finding",
+      "source_principal": "DeveloperRole",
+      "target": "BoundaryConstrainedRole"
+    },
+    {
+      "candidate_id": "cand-032",
+      "candidate_interpretation": "Naive structural passrole_ecs row from ReadOnlyAuditRole to ECSExecutionAdminLikeRole.",
+      "expected_oracle_status": "non_finding_boundary_duplicate",
+      "maps_to": {
+        "non_finding_reason": "permission boundary blocker is represented by selected blocked finding"
+      },
+      "pattern": "passrole_ecs",
+      "reason": "permission boundary blocker is represented by selected blocked finding",
+      "source_principal": "ReadOnlyAuditRole",
+      "target": "ECSExecutionAdminLikeRole"
+    },
+    {
+      "candidate_id": "cand-033",
+      "candidate_interpretation": "Naive structural missing_iam_passrole_precondition row from ReadOnlyAuditRole to UnknownResourceScopeRole.",
+      "expected_oracle_status": "non_finding_precondition_duplicate",
+      "maps_to": {
+        "non_finding_reason": "missing iam:PassRole precondition is represented by selected precondition-only finding"
+      },
+      "pattern": "missing_iam_passrole_precondition",
+      "reason": "missing iam:PassRole precondition is represented by selected precondition-only finding",
+      "source_principal": "ReadOnlyAuditRole",
+      "target": "UnknownResourceScopeRole"
+    },
+    {
+      "candidate_id": "cand-034",
+      "candidate_interpretation": "Naive structural cross_account_trust row from ReadOnlyAuditRole to CrossAccountOpsRole.",
+      "expected_oracle_status": "non_finding_trust_uncertainty_duplicate",
+      "maps_to": {
+        "non_finding_reason": "cross-account trust uncertainty is represented by grouped inconclusive findings"
+      },
+      "pattern": "cross_account_trust",
+      "reason": "cross-account trust uncertainty is represented by grouped inconclusive findings",
+      "source_principal": "ReadOnlyAuditRole",
+      "target": "CrossAccountOpsRole"
+    },
+    {
+      "candidate_id": "cand-035",
+      "candidate_interpretation": "Naive structural passrole_lambda row from BreakGlassCandidateRole to LambdaExecutionAdminLikeRole.",
+      "expected_oracle_status": "non_finding_suppressed_duplicate",
+      "maps_to": {
+        "non_finding_reason": "identity-Deny suppression prevents promotion in this fixture oracle"
+      },
+      "pattern": "passrole_lambda",
+      "reason": "identity-Deny suppression prevents promotion in this fixture oracle",
+      "source_principal": "BreakGlassCandidateRole",
+      "target": "LambdaExecutionAdminLikeRole"
+    },
+    {
+      "candidate_id": "cand-036",
+      "candidate_interpretation": "Naive structural passrole_ecs row from BreakGlassCandidateRole to ECSExecutionAdminLikeRole.",
+      "expected_oracle_status": "non_finding_suppressed_duplicate",
+      "maps_to": {
+        "non_finding_reason": "identity-Deny suppression prevents promotion in this fixture oracle"
+      },
+      "pattern": "passrole_ecs",
+      "reason": "identity-Deny suppression prevents promotion in this fixture oracle",
+      "source_principal": "BreakGlassCandidateRole",
+      "target": "ECSExecutionAdminLikeRole"
+    },
+    {
+      "candidate_id": "cand-037",
+      "candidate_interpretation": "Naive structural missing_target_trust_precondition row from BreakGlassCandidateRole to BoundaryConstrainedRole.",
+      "expected_oracle_status": "non_finding_precondition_duplicate",
+      "maps_to": {
+        "non_finding_reason": "missing target trust precondition is represented by selected precondition-only finding"
+      },
+      "pattern": "missing_target_trust_precondition",
+      "reason": "missing target trust precondition is represented by selected precondition-only finding",
+      "source_principal": "BreakGlassCandidateRole",
+      "target": "BoundaryConstrainedRole"
+    },
+    {
+      "candidate_id": "cand-038",
+      "candidate_interpretation": "Naive structural cross_account_trust row from BreakGlassCandidateRole to UnknownResourceScopeRole.",
+      "expected_oracle_status": "non_finding_trust_uncertainty_duplicate",
+      "maps_to": {
+        "non_finding_reason": "cross-account trust uncertainty is represented by grouped inconclusive findings"
+      },
+      "pattern": "cross_account_trust",
+      "reason": "cross-account trust uncertainty is represented by grouped inconclusive findings",
+      "source_principal": "BreakGlassCandidateRole",
+      "target": "UnknownResourceScopeRole"
+    },
+    {
+      "candidate_id": "cand-039",
+      "candidate_interpretation": "Naive structural scp_blocked_path row from CICDRole to CrossAccountOpsRole.",
+      "expected_oracle_status": "non_finding_scp_duplicate",
+      "maps_to": {
+        "non_finding_reason": "SCP-like blocker is represented by selected blocked finding"
+      },
+      "pattern": "scp_blocked_path",
+      "reason": "SCP-like blocker is represented by selected blocked finding",
+      "source_principal": "CICDRole",
+      "target": "CrossAccountOpsRole"
+    },
+    {
+      "candidate_id": "cand-040",
+      "candidate_interpretation": "Naive structural permission_boundary_blocked_path row from AnalystUser to BoundaryConstrainedRole.",
+      "expected_oracle_status": "non_finding_boundary_duplicate",
+      "maps_to": {
+        "non_finding_reason": "permission boundary blocker is represented by selected blocked finding"
+      },
+      "pattern": "permission_boundary_blocked_path",
+      "reason": "permission boundary blocker is represented by selected blocked finding",
+      "source_principal": "AnalystUser",
+      "target": "BoundaryConstrainedRole"
+    },
+    {
+      "candidate_id": "cand-041",
+      "candidate_interpretation": "Naive structural shared_unknown_resource_scope row from DeveloperRole to UnknownResourceScopeRole.",
+      "expected_oracle_status": "non_finding_unknown_scope_duplicate",
+      "maps_to": {
+        "non_finding_reason": "shared unknown resource scope is represented by grouped inconclusive findings"
+      },
+      "pattern": "shared_unknown_resource_scope",
+      "reason": "shared unknown resource scope is represented by grouped inconclusive findings",
+      "source_principal": "DeveloperRole",
+      "target": "UnknownResourceScopeRole"
+    },
+    {
+      "candidate_id": "cand-042",
+      "candidate_interpretation": "Naive structural shared_boundary_or_session_policy_context_missing row from ReadOnlyAuditRole to BoundaryConstrainedRole.",
+      "expected_oracle_status": "non_finding_boundary_context_duplicate",
+      "maps_to": {
+        "non_finding_reason": "boundary or session-policy context is represented by selected inconclusive finding"
+      },
+      "pattern": "shared_boundary_or_session_policy_context_missing",
+      "reason": "boundary or session-policy context is represented by selected inconclusive finding",
+      "source_principal": "ReadOnlyAuditRole",
+      "target": "BoundaryConstrainedRole"
+    }
+  ],
+  "fixture_id": "complex_shared_uncertainty_iam_benchmark_001",
+  "generation_mode": "frozen_synthetic_oracle",
+  "is_iamscope_output": false,
+  "non_claims": {
+    "no_broad_iamscope_correctness": true,
+    "no_broad_passrole_correctness": true,
+    "no_composite_benchmark_score": true,
+    "no_correctness_for_other_principals_roles_accounts_regions_conditions_boundaries_scps_resource_policies_or_findings": true,
+    "no_correctness_for_real_aws_environments": true,
+    "no_downstream_authorization_proof": true,
+    "no_exploitability_proof": true,
+    "no_generic_deny_correctness": true,
+    "no_lambda_invocation_behavior": true,
+    "no_live_aws": true,
+    "no_pass_fail_benchmark_label": true,
+    "no_production_readiness": true,
+    "no_resource_policy_deny_support": true,
+    "no_scp_deny_support_beyond_selected_synthetic_fixture_behavior": true
+  },
+  "reachability_evidence": false,
+  "schema_version": "complex_synthetic_benchmark_naive_candidates.v1",
+  "source_tool": "static_fixture_authoring"
+}
