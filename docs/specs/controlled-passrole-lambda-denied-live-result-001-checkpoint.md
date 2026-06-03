@@ -173,10 +173,6 @@ This checkpoint does not claim:
 - Composite benchmark scoring.
 - Pass/fail benchmark labeling.
 
-## Next Validation Slice
+## Current Reviewer Entry Point
 
-Recommended next slice: bind denied live result to local no-selected-finding expectation.
-
-That next slice should compare the observed AWS `access_denied` result to the
-existing local IAMScope expectation that no selected validated `passrole_lambda`
-finding is emitted when `source_has_passrole_to_target` has no witness.
+Recommended reviewer entry point: docs/case-studies/passrole-lambda-controlled-live-validation.md

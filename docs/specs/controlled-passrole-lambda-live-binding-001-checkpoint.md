@@ -105,6 +105,6 @@ This checkpoint does not claim:
 - Composite benchmark score.
 - Pass/fail benchmark label.
 
-## Next Validation Slice
+## Current Reviewer Entry Point
 
-Recommended next slice: add one denied PassRole-to-Lambda live validation case.
+Recommended reviewer entry point: docs/case-studies/passrole-lambda-controlled-live-validation.md

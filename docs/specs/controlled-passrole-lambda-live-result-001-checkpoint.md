@@ -117,8 +117,6 @@ This checkpoint does not claim:
 - Composite benchmark scoring.
 - Pass/fail benchmark labeling.
 
-## Next Validation Slice
+## Current Reviewer Entry Point
 
-Recommended next slice: bind live PassRole result to selected IAMScope finding.
-
-That next slice should compare a selected IAMScope expected verdict/path to the observed AWS result without broadening claims.
+Recommended reviewer entry point: docs/case-studies/passrole-lambda-controlled-live-validation.md

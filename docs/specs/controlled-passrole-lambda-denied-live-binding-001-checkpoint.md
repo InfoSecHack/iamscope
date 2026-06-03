@@ -143,10 +143,6 @@ This checkpoint does not claim:
 - Composite benchmark score.
 - Pass/fail benchmark label.
 
-## Next Validation Slice
+## Current Reviewer Entry Point
 
-Recommended next slice: add denied live binding to public demo narrative.
-
-That slice should update public-facing narrative only if it can preserve the
-narrow evidence boundary: one allowed service-mediated CreateFunction match and
-one denied missing-PassRole no-selected-finding match.
+Recommended reviewer entry point: docs/case-studies/passrole-lambda-controlled-live-validation.md
