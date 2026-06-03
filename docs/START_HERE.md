@@ -107,6 +107,17 @@ Local demo: [Path Overcounting and Shared Uncertainty](case-studies/path-overcou
 
 Case study: [PassRole-to-Lambda Controlled Live Validation](case-studies/passrole-lambda-controlled-live-validation.md) summarizes the two-sided controlled live validation pair: one selected allowed `CreateFunction` match and one missing-PassRole `access_denied` no-selected-finding match.
 
+Run the local demo review:
+
+```sh
+python scripts/run_public_demo_review.py --out /tmp/iamscope-public-demo-review
+```
+
+This local-only command generates `summary.md`, `manifest.json`, and
+`path-overcounting-uncertainty-groups.json` under the output directory. It does
+not run live AWS. See the
+[public demo review runbook](case-studies/public-demo-review-runbook.md).
+
 ### Live AWS Collection
 
 Live `iamscope collect` is not the default path. It is advanced/authorized only.

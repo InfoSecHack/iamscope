@@ -6,6 +6,19 @@ IAMScope currently has a local synthetic path-overcounting teaching demo and one
 
 This guide is a reviewer-facing map for the current public demo/evidence chain. It does not add evidence, broaden supported claims, or change the safe local workflow.
 
+## Run The Local Demo Review
+
+From the repository root:
+
+```sh
+python scripts/run_public_demo_review.py --out /tmp/iamscope-public-demo-review
+```
+
+This local-only command generates `summary.md`, `manifest.json`, and
+`path-overcounting-uncertainty-groups.json` under the output directory. It does
+not run live AWS. See
+[`docs/case-studies/public-demo-review-runbook.md`](case-studies/public-demo-review-runbook.md).
+
 ## What To Review First
 
 Start with the public case-study narrative, then inspect the binding checkpoints and local fixtures only if you want deeper verification. The intended review is about claim boundaries, evidence framing, and whether the docs make the safe local path clear.
