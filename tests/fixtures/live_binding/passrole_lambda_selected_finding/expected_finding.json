@@ -1,7 +1,8 @@
 {
-  "binding_status": "ready_for_next_checkpoint_comparison",
+  "binding_status": "bound_to_controlled_live_result",
   "fixture_id": "passrole_lambda_selected_live_binding_finding_001",
-  "next_slice": "Recommended next slice: bind selected IAMScope PassRole finding to live AWS result.",
+  "local_expectation_status": "selected_validated_finding_bound",
+  "next_slice": "Recommended next slice: use public PassRole-to-Lambda case study as reviewer entry point.",
   "non_claims": {
     "no_admin_equivalent_execution_role_claim": true,
     "no_broad_iamscope_correctness": true,
