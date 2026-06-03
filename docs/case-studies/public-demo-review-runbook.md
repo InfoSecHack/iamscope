@@ -25,6 +25,7 @@ The runner performs local checks only:
 - IAM ARN hygiene scan for `docs/` and `tests/`;
 - generated artifact hygiene scan for live result JSON, Terraform state/cache/plan/output files, and Terraform lock files;
 - report-only path-overcounting uncertainty grouping from the local synthetic fixture.
+- report-only summary of the complex synthetic benchmark fixture.
 
 The runner treats non-empty account, ARN, or artifact hygiene scan output as a failure. The current expected scan result is no output.
 
@@ -37,6 +38,23 @@ The runner generates:
 - `/tmp/iamscope-public-demo-review/path-overcounting-uncertainty-groups.json`
 
 Generated outputs are local scratch outputs and are not committed by default.
+
+## Complex Synthetic Benchmark Section
+
+The generated `summary.md` and `manifest.json` include a report-only complex
+synthetic benchmark section for
+`complex_shared_uncertainty_iam_benchmark_001`.
+
+That fixture is a local-only frozen synthetic oracle. It has `42` naive
+candidates, `18` findings, and a verdict breakdown of `4` `validated`, `5`
+`blocked`, `3` `precondition_only`, and `6` `inconclusive` rows. Its uncertainty
+groups are `shared_passrole_target_resource_scope_unknown`: `3`,
+`shared_cross_account_trust_condition_unknown`: `2`, and
+`shared_boundary_or_session_policy_context_missing`: `1`.
+
+The complex synthetic benchmark section is not live AWS evidence, was not
+generated/replayed by IAMScope, and is not a composite score or pass/fail
+benchmark label.
 
 ## Claim boundary
 
