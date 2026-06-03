@@ -89,6 +89,63 @@ def test_config_parsing_uses_terraform_outputs_without_aws_credentials(
     assert config.aws_region == "us-east-1"
     assert config.expected_account_id == "123456789012"
     assert config.role_arn.endswith("iamscope-live-passrole-lambda-test-lambda-exec-role")
+    assert config.validation_mode == "allowed"
+    assert config.expected_observed_aws_result == "create_function_succeeded"
+
+
+def test_denied_config_parsing_uses_terraform_outputs_without_aws_credentials(
+    monkeypatch: pytest.MonkeyPatch, runner: ModuleType, tmp_path: Path
+) -> None:
+    _set_required_env(monkeypatch)
+    terraform_outputs = tmp_path / "terraform-outputs.json"
+    terraform_outputs.write_text(
+        json.dumps(
+            {
+                "lambda_execution_role_arn": {
+                    "value": "arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-lambda-exec-role"
+                },
+                "denied_source_role_arn": {
+                    "value": "arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-denied-source-role"
+                },
+            }
+        )
+    )
+
+    config = runner.load_config(
+        [
+            "--mode",
+            "denied_missing_passrole",
+            "--terraform-outputs",
+            str(terraform_outputs),
+            "--out",
+            str(tmp_path / "out"),
+        ]
+    )
+
+    assert config.validation_mode == "denied_missing_passrole"
+    assert config.expected_observed_aws_result == "access_denied"
+    assert config.role_arn.endswith("iamscope-live-passrole-lambda-test-lambda-exec-role")
+    assert config.denied_source_role_arn is not None
+    assert config.denied_source_role_arn.endswith("iamscope-live-passrole-lambda-test-denied-source-role")
+    assert config.source_principal_arn == config.denied_source_role_arn
+
+
+def test_denied_mode_requires_denied_source_role(
+    monkeypatch: pytest.MonkeyPatch, runner: ModuleType, tmp_path: Path
+) -> None:
+    _set_required_env(monkeypatch)
+
+    with pytest.raises(runner.ConfigError, match="denied source role ARN"):
+        runner.load_config(
+            [
+                "--mode",
+                "denied_missing_passrole",
+                "--role-arn",
+                "arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-lambda-exec-role",
+                "--out",
+                str(tmp_path / "out"),
+            ]
+        )
 
 
 def test_result_shape_preserves_non_claims_and_redaction(runner: ModuleType, tmp_path: Path) -> None:
@@ -111,6 +168,8 @@ def test_result_shape_preserves_non_claims_and_redaction(runner: ModuleType, tmp
     )
 
     assert result["attempted_action"] == "lambda:CreateFunction"
+    assert result["validation_mode"] == "allowed"
+    assert result["expected_observed_aws_result"] == "create_function_succeeded"
     assert result["account_id"] == "123456789012"
     assert result["observed_aws_result"] == "create_function_succeeded"
     assert result["safety"]["lambda_invoke_function_called"] is False
@@ -124,6 +183,41 @@ def test_result_shape_preserves_non_claims_and_redaction(runner: ModuleType, tmp
         "not_downstream_authorization_proof": True,
         "function_was_not_invoked": True,
     }
+
+
+def test_denied_result_shape_preserves_expected_denial_and_non_claims(runner: ModuleType, tmp_path: Path) -> None:
+    config = runner.LiveValidationConfig(
+        aws_profile="iamscope-test-profile",
+        aws_region="us-east-1",
+        expected_account_id="123456789012",
+        role_arn="arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-lambda-exec-role",
+        output_dir=tmp_path,
+        function_name="iamscope-live-passrole-lambda-test-20260602000000",
+        expected_iamscope_verdict=None,
+        source_principal_arn="arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-denied-source-role",
+        validation_mode="denied_missing_passrole",
+        expected_observed_aws_result="access_denied",
+        denied_source_role_arn="arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-denied-source-role",
+    )
+
+    result = runner.build_result(
+        config=config,
+        observed_result="access_denied",
+        cleanup_status="not_needed",
+        function_created=False,
+        error_category="AccessDeniedException",
+    )
+
+    assert result["validation_mode"] == "denied_missing_passrole"
+    assert result["expected_observed_aws_result"] == "access_denied"
+    assert result["observed_aws_result"] == "access_denied"
+    assert result["function_created"] is False
+    assert result["cleanup_status"] == "not_needed"
+    assert result["denied_source_role_arn"] == config.denied_source_role_arn
+    assert result["safety"]["lambda_invoke_function_called"] is False
+    assert result["safety"]["downstream_actions_tested"] is False
+    assert result["non_claims"]["not_broad_iamscope_correctness"] is True
+    assert result["non_claims"]["not_exploitability_proof"] is True
 
 
 def test_no_generated_live_outputs_or_terraform_artifacts_committed() -> None:
@@ -155,6 +249,95 @@ def test_terraform_fixture_uses_test_prefix_required_tags_and_account_guard() ->
     assert "TestOnly" in terraform_text
 
 
+def test_terraform_fixture_defines_denied_source_without_passrole_allow() -> None:
+    terraform_text = "\n".join(path.read_text() for path in TERRAFORM_DIR.glob("*.tf"))
+    assert 'variable "denied_source_trusted_principal_arn"' in terraform_text
+    assert 'resource "aws_iam_role" "denied_source"' in terraform_text
+    assert 'data "aws_iam_policy_document" "denied_source_assume_role"' in terraform_text
+    assert "data.aws_caller_identity.current.arn" in terraform_text
+    assert 'data "aws_iam_policy_document" "denied_source_lambda_create"' in terraform_text
+    assert '"lambda:CreateFunction"' in terraform_text
+    assert 'resource "aws_iam_role_policy_attachment" "denied_source_lambda_create"' in terraform_text
+    assert 'output "denied_source_role_arn"' in terraform_text
+    assert 'output "denied_source_role_name"' in terraform_text
+
+    denied_policy_start = terraform_text.index('data "aws_iam_policy_document" "denied_source_lambda_create"')
+    denied_policy_end = terraform_text.index('resource "aws_iam_role" "lambda_execution"')
+    denied_policy_text = terraform_text[denied_policy_start:denied_policy_end]
+    assert "iam:PassRole" not in denied_policy_text
+
+
+def test_denied_mode_classifies_access_denied_without_creating_function(
+    monkeypatch: pytest.MonkeyPatch, runner: ModuleType, tmp_path: Path
+) -> None:
+    class FakeClientError(Exception):
+        def __init__(self, code: str) -> None:
+            self.response = {"Error": {"Code": code}}
+            super().__init__(code)
+
+    class FakeStsClient:
+        def get_caller_identity(self) -> dict[str, str]:
+            return {"Account": "123456789012"}
+
+        def assume_role(self, **kwargs: object) -> dict[str, dict[str, str]]:
+            assert str(kwargs["RoleArn"]).endswith("iamscope-live-passrole-lambda-test-denied-source-role")
+            assert kwargs["RoleSessionName"] == "iamscope-live-passrole-denied-validation"
+            return {
+                "Credentials": {
+                    "AccessKeyId": "test-access-key",
+                    "SecretAccessKey": "test-secret-key",
+                    "SessionToken": "test-session-token",
+                }
+            }
+
+    class FakeLambdaClient:
+        def create_function(self, **_kwargs: object) -> object:
+            raise FakeClientError("AccessDeniedException")
+
+    class FakeSession:
+        def __init__(self, **kwargs: object) -> None:
+            self.kwargs = kwargs
+
+        def client(self, service_name: str) -> object:
+            if service_name == "sts":
+                return FakeStsClient()
+            if service_name == "lambda":
+                assert self.kwargs.get("aws_session_token") == "test-session-token"
+                return FakeLambdaClient()
+            raise AssertionError(f"unexpected service {service_name}")
+
+    fake_boto3 = ModuleType("boto3")
+    fake_boto3.Session = FakeSession  # type: ignore[attr-defined]
+    fake_botocore = ModuleType("botocore")
+    fake_exceptions = ModuleType("botocore.exceptions")
+    fake_exceptions.ClientError = FakeClientError  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "boto3", fake_boto3)
+    monkeypatch.setitem(sys.modules, "botocore", fake_botocore)
+    monkeypatch.setitem(sys.modules, "botocore.exceptions", fake_exceptions)
+
+    config = runner.LiveValidationConfig(
+        aws_profile="iamscope-test-profile",
+        aws_region="us-east-1",
+        expected_account_id="123456789012",
+        role_arn="arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-lambda-exec-role",
+        output_dir=tmp_path,
+        function_name="iamscope-live-passrole-lambda-test-20260602000000",
+        expected_iamscope_verdict=None,
+        source_principal_arn="arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-denied-source-role",
+        validation_mode="denied_missing_passrole",
+        expected_observed_aws_result="access_denied",
+        denied_source_role_arn="arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-denied-source-role",
+    )
+
+    result = runner.run_live_validation(config)
+
+    assert result["observed_aws_result"] == "access_denied"
+    assert result["function_created"] is False
+    assert result["cleanup_status"] == "not_needed"
+    assert result["error_category"] == "AccessDeniedException"
+    assert result["validation_mode"] == "denied_missing_passrole"
+
+
 def test_cleanup_failure_exits_nonzero_after_writing_result(
     monkeypatch: pytest.MonkeyPatch, runner: ModuleType, tmp_path: Path
 ) -> None:
@@ -181,6 +364,38 @@ def test_cleanup_failure_exits_nonzero_after_writing_result(
     assert runner.main([]) == 1
     written = json.loads((tmp_path / "result.json").read_text())
     assert written["cleanup_status"] == "delete_failed:AccessDeniedException"
+
+
+def test_denied_unexpected_create_cleanup_failure_exits_nonzero_after_writing_result(
+    monkeypatch: pytest.MonkeyPatch, runner: ModuleType, tmp_path: Path
+) -> None:
+    config = runner.LiveValidationConfig(
+        aws_profile="iamscope-test-profile",
+        aws_region="us-east-1",
+        expected_account_id="123456789012",
+        role_arn="arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-lambda-exec-role",
+        output_dir=tmp_path,
+        function_name="iamscope-live-passrole-lambda-test-20260602000000",
+        expected_iamscope_verdict=None,
+        source_principal_arn="arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-denied-source-role",
+        validation_mode="denied_missing_passrole",
+        expected_observed_aws_result="access_denied",
+        denied_source_role_arn="arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-denied-source-role",
+    )
+    result = runner.build_result(
+        config=config,
+        observed_result="create_function_succeeded",
+        cleanup_status="delete_status_unknown",
+        function_created=True,
+    )
+
+    monkeypatch.setattr(runner, "load_config", lambda _argv=None: config)
+    monkeypatch.setattr(runner, "run_live_validation", lambda _config: result)
+
+    assert runner.main([]) == 1
+    written = json.loads((tmp_path / "result.json").read_text())
+    assert written["validation_mode"] == "denied_missing_passrole"
+    assert written["cleanup_status"] == "delete_status_unknown"
 
 
 def test_cleanup_failure_helper_allows_no_create_or_verified_delete(runner: ModuleType) -> None:
