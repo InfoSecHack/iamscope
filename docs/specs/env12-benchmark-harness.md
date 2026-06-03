@@ -22,8 +22,8 @@ The harness refuses to run without explicit profiles, region, and confirmation.
 
 Existing accounts only:
 
-- management account: `516525145310`
-- member account: `377114445031`
+- management account: `<redacted-aws-account-id>`
+- member account: `<redacted-aws-account-id>`
 - organization: `o-ubf697v0et`
 
 Member IAM fixture:

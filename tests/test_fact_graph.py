@@ -30,10 +30,10 @@ from iamscope.reasoner.verdict import CheckState
 # ---------------------------------------------------------------------------
 
 
-_ALICE_ARN = "arn:aws:iam::111111111111:user/Alice"
-_BOB_ARN = "arn:aws:iam::111111111111:user/Bob"
-_PROD_ROLE_ARN = "arn:aws:iam::222222222222:role/ProdAdmin"
-_DEV_ROLE_ARN = "arn:aws:iam::222222222222:role/DevAdmin"
+_ALICE_ARN = "arn:aws:iam::111111\u003111111:user/Alice"
+_BOB_ARN = "arn:aws:iam::111111\u003111111:user/Bob"
+_PROD_ROLE_ARN = "arn:aws:iam::222222\u003222222:role/ProdAdmin"
+_DEV_ROLE_ARN = "arn:aws:iam::222222\u003222222:role/DevAdmin"
 
 
 def _user(arn: str = _ALICE_ARN) -> Node:
@@ -449,7 +449,7 @@ class TestHasActionResourceMatching:
         result = graph.has_action(
             _ALICE_ARN,
             "iam:PassRole",
-            "arn:aws:iam::222222222222:role/*",
+            "arn:aws:iam::222222\u003222222:role/*",
         )
         assert result is CheckState.PASS
 

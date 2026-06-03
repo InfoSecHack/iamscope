@@ -10,9 +10,9 @@ This is docs/checkpoint only. It does not run live AWS, call STS AssumeRole, run
 
 - `validation_run_id`: `controlled-sts-run-001-env06-admin-reachability-assume-role`
 - Environment label: `acceptance/env06_ar_validated_admin`
-- Expected account ID: `516525145310`
-- Planned source principal: `arn:aws:iam::516525145310:user/iamscope-test/env06-alice`
-- Planned target role: `arn:aws:iam::516525145310:role/iamscope-test/env06-admin`
+- Expected account ID: `<redacted-aws-account-id>`
+- Planned source principal: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-test/env06-alice`
+- Planned target role: `arn:aws:iam::<redacted-aws-account-id>:role/iamscope-test/env06-admin`
 - Expected outcome: `assumed`
 - IAMScope-native `finding_id`: unavailable in committed sanitized evidence
 - IAMScope-native `path_id`: unavailable in committed sanitized evidence
@@ -22,8 +22,8 @@ This is docs/checkpoint only. It does not run live AWS, call STS AssumeRole, run
 
 The following checks had already been performed before this checkpoint slice:
 
-- `aws sts get-caller-identity --profile iamscope-test` returned `arn:aws:iam::516525145310:user/iamscope-verify`.
-- That caller identity does not match the planned source principal `arn:aws:iam::516525145310:user/iamscope-test/env06-alice`.
+- `aws sts get-caller-identity --profile iamscope-test` returned `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-verify`.
+- That caller identity does not match the planned source principal `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-test/env06-alice`.
 - `aws iam get-role --role-name iamscope-test/env06-admin` failed because that is invalid `role-name` syntax for IAM `get-role`.
 - `aws iam get-role --role-name env06-admin` returned `NoSuchEntity`.
 
@@ -48,7 +48,7 @@ This is not classified as `tool_bug_candidate`, because the observed issue is th
 
 Controlled STS Run #1 must not proceed to live execution under the currently checked setup because:
 
-1. The `iamscope-test` profile resolves to `arn:aws:iam::516525145310:user/iamscope-verify`, not the planned source principal `arn:aws:iam::516525145310:user/iamscope-test/env06-alice`.
+1. The `iamscope-test` profile resolves to `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-verify`, not the planned source principal `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-test/env06-alice`.
 2. The target role was not found by the checked role-name forms.
 3. The currently checked AWS environment/profile setup therefore does not match the sanitized Env06 path selected for Run #1.
 

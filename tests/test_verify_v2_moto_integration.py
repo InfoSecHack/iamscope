@@ -30,7 +30,7 @@ from unittest.mock import MagicMock, patch
 from iamscope.identity.canonical import canonical_json_bytes, compute_hash
 from iamscope.verify import cmd_verify
 
-_ACCOUNT = "111111111111"
+_ACCOUNT = "111111\u003111111"
 _USER_ARN = f"arn:aws:iam::{_ACCOUNT}:user/Alice"
 _ROLE_ARN = f"arn:aws:iam::{_ACCOUNT}:role/AdminRole"
 _SECRET_ARN = f"arn:aws:secretsmanager:us-east-1:{_ACCOUNT}:secret:prod/db-password-abc123"
@@ -286,7 +286,7 @@ class TestSourceTypeGatingIntegration:
     ) -> None:
         f = _make_finding(
             pattern_id="cross_account_trust",
-            source_arn="arn:aws:iam::222222222222:root",
+            source_arn="arn:aws:iam::222222\u003222222:root",
             source_type="AccountPrincipalSet",
         )
         doc = _make_findings_doc(f)

@@ -4,7 +4,7 @@
 
 This document designs a minimal isolated test-only IAM setup that could support one future positive/assumed STS proof.
 
-The design exists because the current positive proof path is blocked: no local profile maps to `arn:aws:iam::516525145310:user/arf-rt-attacker`, and IAMScope should not force live evidence through ad hoc changes to existing roles, trust policies, or credentials.
+The design exists because the current positive proof path is blocked: no local profile maps to `arn:aws:iam::<redacted-aws-account-id>:user/arf-rt-attacker`, and IAMScope should not force live evidence through ad hoc changes to existing roles, trust policies, or credentials.
 
 This is docs/design only. It does not run live AWS, call STS AssumeRole, create IAM users, create IAM roles, modify trust policies, modify permission policies, run Terraform apply, add live AWS environments, create credentials, change executor logic, change the dry-run validator, add raw artifacts, commit `/tmp` outputs, add CI gates, add pass/fail benchmark labels, add composite scoring, claim production readiness, claim broad IAMScope correctness, or claim broad runtime exploitability.
 

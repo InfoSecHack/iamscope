@@ -29,7 +29,7 @@ _TRUST_POLICY = {
     "Statement": [
         {
             "Effect": "Allow",
-            "Principal": {"AWS": "arn:aws:iam::222222222222:root"},
+            "Principal": {"AWS": "arn:aws:iam::222222\u003222222:root"},
             "Action": "sts:AssumeRole",
         }
     ],
@@ -41,7 +41,7 @@ _IDENTITY_POLICY = {
         {
             "Effect": "Allow",
             "Action": "iam:PassRole",
-            "Resource": "arn:aws:iam::111111111111:role/LambdaExec",
+            "Resource": "arn:aws:iam::111111\u003111111:role/LambdaExec",
             "Condition": {"StringEquals": {"iam:PassedToService": "lambda.amazonaws.com"}},
         }
     ],
@@ -52,9 +52,9 @@ def _role_node() -> Node:
     return Node(
         provider=PROVIDER_AWS,
         node_type=NODE_TYPE_IAM_ROLE,
-        provider_id="arn:aws:iam::111111111111:role/TestRole",
+        provider_id="arn:aws:iam::111111\u003111111:role/TestRole",
         region=REGION_GLOBAL,
-        properties={"account_id": "111111111111"},
+        properties={"account_id": "111111\u003111111"},
     )
 
 
@@ -76,7 +76,7 @@ class TestTrustEdgeDigestPropagation:
         trust_results = parse_trust_policy(
             policy_document=_TRUST_POLICY,
             role_arn=role.provider_id,
-            role_account_id="111111111111",
+            role_account_id="111111\u003111111",
         )
         assert len(trust_results) >= 1
         # Every trust parse result must have a populated digest field.
@@ -105,9 +105,9 @@ class TestPermissionEdgeDigestPropagation:
         """build_permission_edges output carries digest via allow_controls ControlRef."""
         parse_results = parse_permission_policy(
             policy_document=_IDENTITY_POLICY,
-            source_arn="arn:aws:iam::111111111111:user/Alice",
+            source_arn="arn:aws:iam::111111\u003111111:user/Alice",
             source_node_type=NODE_TYPE_IAM_USER,
-            source_account_id="111111111111",
+            source_account_id="111111\u003111111",
             policy_source="inline",
             policy_name="AliceAdmin",
             policy_arn="",
@@ -142,13 +142,13 @@ class TestDigestStability:
 
         run_a = parse_trust_policy(
             policy_document=policy_a,
-            role_arn="arn:aws:iam::111111111111:role/TestRole",
-            role_account_id="111111111111",
+            role_arn="arn:aws:iam::111111\u003111111:role/TestRole",
+            role_account_id="111111\u003111111",
         )
         run_b = parse_trust_policy(
             policy_document=policy_b,
-            role_arn="arn:aws:iam::111111111111:role/TestRole",
-            role_account_id="111111111111",
+            role_arn="arn:aws:iam::111111\u003111111:role/TestRole",
+            role_account_id="111111\u003111111",
         )
         assert len(run_a) == len(run_b)
         for tr_a, tr_b in zip(run_a, run_b, strict=True):
@@ -162,18 +162,18 @@ class TestDigestStability:
 
         run_a = parse_permission_policy(
             policy_document=policy_a,
-            source_arn="arn:aws:iam::111111111111:user/Alice",
+            source_arn="arn:aws:iam::111111\u003111111:user/Alice",
             source_node_type=NODE_TYPE_IAM_USER,
-            source_account_id="111111111111",
+            source_account_id="111111\u003111111",
             policy_source="inline",
             policy_name="AliceAdmin",
             policy_arn="",
         )
         run_b = parse_permission_policy(
             policy_document=policy_b,
-            source_arn="arn:aws:iam::111111111111:user/Alice",
+            source_arn="arn:aws:iam::111111\u003111111:user/Alice",
             source_node_type=NODE_TYPE_IAM_USER,
-            source_account_id="111111111111",
+            source_account_id="111111\u003111111",
             policy_source="inline",
             policy_name="AliceAdmin",
             policy_arn="",
@@ -193,15 +193,15 @@ class TestDigestInvariant:
         trust_results = parse_trust_policy(
             policy_document=_TRUST_POLICY,
             role_arn=role.provider_id,
-            role_account_id="111111111111",
+            role_account_id="111111\u003111111",
         )
         trust_edges = build_trust_edges(trust_results, role)
 
         perm_results = parse_permission_policy(
             policy_document=_IDENTITY_POLICY,
-            source_arn="arn:aws:iam::111111111111:user/Alice",
+            source_arn="arn:aws:iam::111111\u003111111:user/Alice",
             source_node_type=NODE_TYPE_IAM_USER,
-            source_account_id="111111111111",
+            source_account_id="111111\u003111111",
             policy_source="inline",
             policy_name="AliceAdmin",
             policy_arn="",

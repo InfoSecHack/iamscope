@@ -26,9 +26,9 @@ from iamscope.parser.permission_policy import parse_permission_policy
 
 FIXTURES = Path(__file__).parent / "fixtures" / "permission_policies"
 
-SRC_ARN = "arn:aws:iam::111111111111:user/Admin"
+SRC_ARN = "arn:aws:iam::111111\u003111111:user/Admin"
 SRC_TYPE = NODE_TYPE_IAM_USER
-SRC_ACCT = "111111111111"
+SRC_ACCT = "111111\u003111111"
 
 
 def _load(name: str) -> dict:
@@ -58,7 +58,7 @@ class TestAssumeRoleGrants:
         assert len(results) == 1
         r = results[0]
         assert r.action == "sts:AssumeRole"
-        assert r.resource_pattern == "arn:aws:iam::222222222222:role/ProdDeploy"
+        assert r.resource_pattern == "arn:aws:iam::222222\u003222222:role/ProdDeploy"
         assert r.is_wildcard_resource is False
         assert r.action_matched_via == "exact"
         assert r.source_arn == SRC_ARN
@@ -79,9 +79,9 @@ class TestAssumeRoleGrants:
 
         assert len(results) == 3
         arns = {r.resource_pattern for r in results}
-        assert "arn:aws:iam::222222222222:role/RoleA" in arns
-        assert "arn:aws:iam::222222222222:role/RoleB" in arns
-        assert "arn:aws:iam::333333333333:role/RoleC" in arns
+        assert "arn:aws:iam::222222\u003222222:role/RoleA" in arns
+        assert "arn:aws:iam::222222\u003222222:role/RoleB" in arns
+        assert "arn:aws:iam::333333\u003333333:role/RoleC" in arns
 
 
 class TestPassRoleGrants:

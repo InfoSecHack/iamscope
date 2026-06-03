@@ -23,9 +23,9 @@ def _make_env03_archive(
     run_log = "\n".join(
         [
             "Resources deployed:",
-            "  alice_arn  : arn:aws:iam::123456789012:user/iamscope-test/env03-cc1-alice",
-            "  admins_arn : arn:aws:iam::123456789012:group/iamscope-test/env03-cc1-admins",
-            "  account_id : 123456789012",
+            "  alice_arn  : arn:aws:iam::123456\u003789012:user/iamscope-test/env03-cc1-alice",
+            "  admins_arn : arn:aws:iam::123456\u003789012:group/iamscope-test/env03-cc1-admins",
+            "  account_id : 123456\u003789012",
             "scenario validation: PASS",
             "benchmark semantic assertion: PASS",
         ]
@@ -37,8 +37,8 @@ def _make_env03_archive(
         finding = {
             "pattern_id": "iam_group_membership_escalation",
             "verdict": "blocked" if correct_semantics else "validated",
-            "source": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env03-cc1-alice"},
-            "target": {"provider_id": "arn:aws:iam::123456789012:group/iamscope-test/env03-cc1-admins"},
+            "source": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env03-cc1-alice"},
+            "target": {"provider_id": "arn:aws:iam::123456\u003789012:group/iamscope-test/env03-cc1-admins"},
             "blockers_observed": [
                 {
                     "kind": "identity_deny",
@@ -120,9 +120,9 @@ def _make_env16_archive(tmp_path: Path, name: str, *, include_blocked_deny: bool
     run_log = "\n".join(
         [
             "Resources deployed:",
-            "  alice_arn  : arn:aws:iam::123456789012:user/iamscope-test/env16-alice",
-            "  admins_arn : arn:aws:iam::123456789012:group/iamscope-test/env16-admins",
-            "  account_id : 123456789012",
+            "  alice_arn  : arn:aws:iam::123456\u003789012:user/iamscope-test/env16-alice",
+            "  admins_arn : arn:aws:iam::123456\u003789012:group/iamscope-test/env16-admins",
+            "  account_id : 123456\u003789012",
             "scenario validation: PASS",
             "benchmark semantic assertion: PASS",
         ]
@@ -133,8 +133,8 @@ def _make_env16_archive(tmp_path: Path, name: str, *, include_blocked_deny: bool
     finding = {
         "pattern_id": "iam_group_membership_escalation",
         "verdict": "blocked" if include_blocked_deny else "validated",
-        "source": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env16-alice"},
-        "target": {"provider_id": "arn:aws:iam::123456789012:group/iamscope-test/env16-admins"},
+        "source": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env16-alice"},
+        "target": {"provider_id": "arn:aws:iam::123456\u003789012:group/iamscope-test/env16-admins"},
         "blockers_observed": [
             {
                 "kind": "identity_deny",
@@ -186,14 +186,14 @@ def _make_env17_archive(tmp_path: Path, name: str, *, include_scp_block: bool = 
     archive_dir = tmp_path / name
     collect_dir = archive_dir / "collect"
     collect_dir.mkdir(parents=True)
-    source = "arn:aws:iam::123456789012:user/iamscope-test/env17-alice"
-    target = "arn:aws:iam::123456789012:role/iamscope-test/env17-admin"
+    source = "arn:aws:iam::123456\u003789012:user/iamscope-test/env17-alice"
+    target = "arn:aws:iam::123456\u003789012:role/iamscope-test/env17-admin"
     run_log = "\n".join(
         [
             "Resources deployed:",
             f"  alice_arn  : {source}",
             f"  admin_arn  : {target}",
-            "  account_id : 123456789012",
+            "  account_id : 123456\u003789012",
             "scenario validation: PASS",
             "benchmark semantic assertion: PASS",
         ]
@@ -282,9 +282,9 @@ def _make_env07_archive(tmp_path: Path, name: str, *, include_permission_edge: b
     run_log = "\n".join(
         [
             "Resources deployed:",
-            "  alice_arn  : arn:aws:iam::123456789012:user/iamscope-test/env07-alice",
-            "  reader_arn : arn:aws:iam::123456789012:role/iamscope-test/env07-reader",
-            "  account_id : 123456789012",
+            "  alice_arn  : arn:aws:iam::123456\u003789012:user/iamscope-test/env07-alice",
+            "  reader_arn : arn:aws:iam::123456\u003789012:role/iamscope-test/env07-reader",
+            "  account_id : 123456\u003789012",
             "scenario validation: PASS",
             "benchmark semantic assertion: PASS",
         ]
@@ -294,16 +294,16 @@ def _make_env07_archive(tmp_path: Path, name: str, *, include_permission_edge: b
     edges = [
         {
             "edge_type": "sts:AssumeRole_trust",
-            "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env07-alice"},
-            "dst": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env07-reader"},
+            "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env07-alice"},
+            "dst": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env07-reader"},
         }
     ]
     if include_permission_edge:
         edges.append(
             {
                 "edge_type": "sts:AssumeRole_permission",
-                "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env07-alice"},
-                "dst": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env07-reader"},
+                "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env07-alice"},
+                "dst": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env07-reader"},
             }
         )
     _write_json(collect_dir / "scenario.json", {"nodes": [], "edges": edges, "constraints": []})
@@ -347,9 +347,9 @@ def _make_env08_archive(
     run_log = "\n".join(
         [
             "Resources deployed:",
-            "  alice_arn            : arn:aws:iam::123456789012:user/iamscope-test/env08-alice",
-            "  conditioned_admin_arn: arn:aws:iam::123456789012:role/iamscope-test/env08-conditioned-admin",
-            "  account_id           : 123456789012",
+            "  alice_arn            : arn:aws:iam::123456\u003789012:user/iamscope-test/env08-alice",
+            "  conditioned_admin_arn: arn:aws:iam::123456\u003789012:role/iamscope-test/env08-conditioned-admin",
+            "  account_id           : 123456\u003789012",
             "scenario validation: PASS",
             "benchmark semantic assertion: PASS",
         ]
@@ -362,14 +362,14 @@ def _make_env08_archive(
             {
                 "edge_id": "e1",
                 "edge_type": "sts:AssumeRole_permission",
-                "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env08-alice"},
-                "dst": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env08-conditioned-admin"},
+                "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env08-alice"},
+                "dst": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env08-conditioned-admin"},
             },
             {
                 "edge_id": "e2",
                 "edge_type": "sts:AssumeRole_trust",
-                "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env08-alice"},
-                "dst": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env08-conditioned-admin"},
+                "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env08-alice"},
+                "dst": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env08-conditioned-admin"},
             },
         ],
         "constraints": [
@@ -389,8 +389,8 @@ def _make_env08_archive(
         {
             "pattern_id": "admin_reachability",
             "verdict": "validated" if false_validated else "inconclusive",
-            "source": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env08-alice"},
-            "target": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env08-conditioned-admin"},
+            "source": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env08-alice"},
+            "target": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env08-conditioned-admin"},
             "blockers_observed": [],
             "required_checks": [],
         }
@@ -433,9 +433,9 @@ def _make_env10_archive(tmp_path: Path, name: str) -> Path:
     run_log = "\n".join(
         [
             "Resources deployed:",
-            "  alice_arn  : arn:aws:iam::123456789012:user/iamscope-test/env10-alice",
-            "  admin_arn  : arn:aws:iam::123456789012:role/iamscope-test/env10-admin",
-            "  account_id : 123456789012",
+            "  alice_arn  : arn:aws:iam::123456\u003789012:user/iamscope-test/env10-alice",
+            "  admin_arn  : arn:aws:iam::123456\u003789012:role/iamscope-test/env10-admin",
+            "  account_id : 123456\u003789012",
             "scenario validation: PASS",
             "benchmark semantic assertion: PASS",
         ]
@@ -448,14 +448,14 @@ def _make_env10_archive(tmp_path: Path, name: str) -> Path:
             {
                 "edge_id": "e1",
                 "edge_type": "sts:AssumeRole_permission",
-                "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env10-alice"},
-                "dst": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env10-admin"},
+                "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env10-alice"},
+                "dst": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env10-admin"},
             },
             {
                 "edge_id": "e2",
                 "edge_type": "sts:AssumeRole_trust",
-                "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env10-alice"},
-                "dst": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env10-admin"},
+                "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env10-alice"},
+                "dst": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env10-admin"},
             },
         ],
         "constraints": [],
@@ -466,8 +466,8 @@ def _make_env10_archive(tmp_path: Path, name: str) -> Path:
         {
             "pattern_id": "admin_reachability",
             "verdict": "validated",
-            "source": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env10-alice"},
-            "target": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env10-admin"},
+            "source": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env10-alice"},
+            "target": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env10-admin"},
             "blockers_observed": [],
             "required_checks": [],
         }
@@ -496,10 +496,13 @@ def _make_env11_archive(tmp_path: Path, name: str) -> Path:
     run_log = "\n".join(
         [
             "Resources deployed:",
-            "  alice_arn                  : arn:aws:iam::123456789012:user/iamscope-test/env11-alice",
-            "  broad_conditioned_admin_arn: arn:aws:iam::123456789012:role/iamscope-test/env11-broad-conditioned-admin",
-            "  root_arn                   : arn:aws:iam::123456789012:root",
-            "  account_id                 : 123456789012",
+            "  alice_arn                  : arn:aws:iam::123456\u003789012:user/iamscope-test/env11-alice",
+            (
+                "  broad_conditioned_admin_arn: "
+                "arn:aws:iam::123456\u003789012:role/iamscope-test/env11-broad-conditioned-admin"
+            ),
+            "  root_arn                   : arn:aws:iam::123456\u003789012:root",
+            "  account_id                 : 123456\u003789012",
             "scenario validation: PASS",
             "benchmark semantic assertion: PASS",
         ]
@@ -512,14 +515,18 @@ def _make_env11_archive(tmp_path: Path, name: str) -> Path:
             {
                 "edge_id": "e1",
                 "edge_type": "sts:AssumeRole_permission",
-                "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env11-alice"},
-                "dst": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env11-broad-conditioned-admin"},
+                "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env11-alice"},
+                "dst": {
+                    "provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env11-broad-conditioned-admin"
+                },
             },
             {
                 "edge_id": "e2",
                 "edge_type": "sts:AssumeRole_trust",
-                "src": {"provider_id": "arn:aws:iam::123456789012:root"},
-                "dst": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env11-broad-conditioned-admin"},
+                "src": {"provider_id": "arn:aws:iam::123456\u003789012:root"},
+                "dst": {
+                    "provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env11-broad-conditioned-admin"
+                },
             },
         ],
         "constraints": [
@@ -559,10 +566,10 @@ def _make_env12_archive(tmp_path: Path, name: str) -> Path:
     run_log = "\n".join(
         [
             "Resources deployed:",
-            "  management_account_id : 516525145310",
-            "  member_account_id     : 377114445031",
-            "  alice_arn             : arn:aws:iam::377114445031:user/iamscope-test/env12-alice",
-            "  admin_arn             : arn:aws:iam::377114445031:role/iamscope-test/env12-admin",
+            "  management_account_id : 516525\u003145310",
+            "  member_account_id     : 377114\u003445031",
+            "  alice_arn             : arn:aws:iam::377114\u003445031:user/iamscope-test/env12-alice",
+            "  admin_arn             : arn:aws:iam::377114\u003445031:role/iamscope-test/env12-admin",
             "  scp_policy_id         : p-env12",
             "scenario validation: PASS",
             "benchmark semantic assertion: PASS",
@@ -576,14 +583,14 @@ def _make_env12_archive(tmp_path: Path, name: str) -> Path:
             {
                 "edge_id": "e1",
                 "edge_type": "sts:AssumeRole_permission",
-                "src": {"provider_id": "arn:aws:iam::377114445031:user/iamscope-test/env12-alice"},
-                "dst": {"provider_id": "arn:aws:iam::377114445031:role/iamscope-test/env12-admin"},
+                "src": {"provider_id": "arn:aws:iam::377114\u003445031:user/iamscope-test/env12-alice"},
+                "dst": {"provider_id": "arn:aws:iam::377114\u003445031:role/iamscope-test/env12-admin"},
             },
             {
                 "edge_id": "e2",
                 "edge_type": "sts:AssumeRole_trust",
-                "src": {"provider_id": "arn:aws:iam::377114445031:user/iamscope-test/env12-alice"},
-                "dst": {"provider_id": "arn:aws:iam::377114445031:role/iamscope-test/env12-admin"},
+                "src": {"provider_id": "arn:aws:iam::377114\u003445031:user/iamscope-test/env12-alice"},
+                "dst": {"provider_id": "arn:aws:iam::377114\u003445031:role/iamscope-test/env12-admin"},
             },
         ],
         "constraints": [
@@ -639,9 +646,9 @@ def _make_env15_archive(tmp_path: Path, name: str, *, include_condition: bool = 
     run_log = "\n".join(
         [
             "Resources deployed:",
-            "  alice_arn  : arn:aws:iam::123456789012:user/iamscope-test/env15-alice",
-            "  admin_arn  : arn:aws:iam::123456789012:role/iamscope-test/env15-admin",
-            "  account_id : 123456789012",
+            "  alice_arn  : arn:aws:iam::123456\u003789012:user/iamscope-test/env15-alice",
+            "  admin_arn  : arn:aws:iam::123456\u003789012:role/iamscope-test/env15-admin",
+            "  account_id : 123456\u003789012",
             "scenario validation: PASS",
             "benchmark semantic assertion: PASS",
         ]
@@ -660,15 +667,15 @@ def _make_env15_archive(tmp_path: Path, name: str, *, include_condition: bool = 
             {
                 "edge_id": "e1",
                 "edge_type": "sts:AssumeRole_permission",
-                "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env15-alice"},
-                "dst": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env15-admin"},
+                "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env15-alice"},
+                "dst": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env15-admin"},
                 "features": permission_features,
             },
             {
                 "edge_id": "e2",
                 "edge_type": "sts:AssumeRole_trust",
-                "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env15-alice"},
-                "dst": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env15-admin"},
+                "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env15-alice"},
+                "dst": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env15-admin"},
                 "features": {"has_conditions": False, "raw_conditions": {}},
             },
         ],
@@ -680,8 +687,8 @@ def _make_env15_archive(tmp_path: Path, name: str, *, include_condition: bool = 
         {
             "pattern_id": "admin_reachability",
             "verdict": "validated",
-            "source": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env15-alice"},
-            "target": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env15-admin"},
+            "source": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env15-alice"},
+            "target": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env15-admin"},
             "blockers_observed": [],
             "required_checks": [],
         }
@@ -721,15 +728,15 @@ def _make_env18_archive(tmp_path: Path, name: str, *, include_validated: bool = 
     archive_dir = tmp_path / name
     collect_dir = archive_dir / "collect"
     collect_dir.mkdir(parents=True)
-    source = "arn:aws:iam::123456789012:user/iamscope-test/env18-alice"
-    target = "arn:aws:iam::123456789012:role/iamscope-test/env18-lambda-admin-exec"
+    source = "arn:aws:iam::123456\u003789012:user/iamscope-test/env18-alice"
+    target = "arn:aws:iam::123456\u003789012:role/iamscope-test/env18-lambda-admin-exec"
     run_log = "\n".join(
         [
             "Resources deployed:",
             f"  alice_arn             : {source}",
             f"  lambda_admin_role_arn : {target}",
-            "  lambda_function_arn   : arn:aws:lambda:us-east-1:123456789012:function:env18-passrole-probe",
-            "  account_id            : 123456789012",
+            "  lambda_function_arn   : arn:aws:lambda:us-east-1:123456\u003789012:function:env18-passrole-probe",
+            "  account_id            : 123456\u003789012",
             "scenario validation: PASS",
             "benchmark semantic assertion: PASS",
         ]
@@ -743,7 +750,7 @@ def _make_env18_archive(tmp_path: Path, name: str, *, include_validated: bool = 
                 "edge_id": "lambda-create-edge-1",
                 "edge_type": "lambda:CreateFunction_permission",
                 "src": {"provider_id": source},
-                "dst": {"provider_id": "arn:aws:lambda:us-east-1:123456789012:function:env18-passrole-probe"},
+                "dst": {"provider_id": "arn:aws:lambda:us-east-1:123456\u003789012:function:env18-passrole-probe"},
                 "features": {"has_conditions": False, "raw_conditions": {}},
             },
             {
@@ -813,15 +820,15 @@ def _make_env19_archive(tmp_path: Path, name: str, *, include_validated: bool = 
     archive_dir = tmp_path / name
     collect_dir = archive_dir / "collect"
     collect_dir.mkdir(parents=True)
-    source = "arn:aws:iam::123456789012:user/iamscope-test/env19-alice"
-    target = "arn:aws:iam::123456789012:role/iamscope-test/env19-lambda-admin-exec"
+    source = "arn:aws:iam::123456\u003789012:user/iamscope-test/env19-alice"
+    target = "arn:aws:iam::123456\u003789012:role/iamscope-test/env19-lambda-admin-exec"
     run_log = "\n".join(
         [
             "Resources deployed:",
             f"  alice_arn             : {source}",
             f"  lambda_admin_role_arn : {target}",
-            "  lambda_function_arn   : arn:aws:lambda:us-east-1:123456789012:function:env19-passrole-probe",
-            "  account_id            : 123456789012",
+            "  lambda_function_arn   : arn:aws:lambda:us-east-1:123456\u003789012:function:env19-passrole-probe",
+            "  account_id            : 123456\u003789012",
             "scenario validation: PASS",
             "benchmark semantic assertion: PASS",
         ]
@@ -835,7 +842,7 @@ def _make_env19_archive(tmp_path: Path, name: str, *, include_validated: bool = 
                 "edge_id": "lambda-create-edge-1",
                 "edge_type": "lambda:CreateFunction_permission",
                 "src": {"provider_id": source},
-                "dst": {"provider_id": "arn:aws:lambda:us-east-1:123456789012:function:env19-passrole-probe"},
+                "dst": {"provider_id": "arn:aws:lambda:us-east-1:123456\u003789012:function:env19-passrole-probe"},
                 "features": {"has_conditions": False, "raw_conditions": {}},
             },
             {
@@ -926,16 +933,16 @@ def _make_env20_archive(
     archive_dir = tmp_path / name
     collect_dir = archive_dir / "collect"
     collect_dir.mkdir(parents=True)
-    source = "arn:aws:iam::123456789012:user/iamscope-test/env20-alice"
-    target = "arn:aws:iam::123456789012:role/iamscope-test/env20-ecs-admin-task"
-    task_definition = "arn:aws:ecs:us-east-1:123456789012:task-definition/env20-passrole-probe:1"
+    source = "arn:aws:iam::123456\u003789012:user/iamscope-test/env20-alice"
+    target = "arn:aws:iam::123456\u003789012:role/iamscope-test/env20-ecs-admin-task"
+    task_definition = "arn:aws:ecs:us-east-1:123456\u003789012:task-definition/env20-passrole-probe:1"
     run_log = "\n".join(
         [
             "Resources deployed:",
             f"  alice_arn              : {source}",
             f"  ecs_admin_role_arn     : {target}",
             f"  ecs_task_definition_arn: {task_definition}",
-            "  account_id             : 123456789012",
+            "  account_id             : 123456\u003789012",
             "scenario validation: PASS",
             "benchmark semantic assertion: PASS",
         ]
@@ -1056,16 +1063,16 @@ def _make_env21_archive(
     archive_dir = tmp_path / name
     collect_dir = archive_dir / "collect"
     collect_dir.mkdir(parents=True)
-    source = "arn:aws:iam::123456789012:user/iamscope-test/env21-alice"
-    target = "arn:aws:iam::123456789012:role/iamscope-test/env21-ecs-admin-task"
-    task_definition = "arn:aws:ecs:us-east-1:123456789012:task-definition/env21-passrole-probe:1"
+    source = "arn:aws:iam::123456\u003789012:user/iamscope-test/env21-alice"
+    target = "arn:aws:iam::123456\u003789012:role/iamscope-test/env21-ecs-admin-task"
+    task_definition = "arn:aws:ecs:us-east-1:123456\u003789012:task-definition/env21-passrole-probe:1"
     run_log = "\n".join(
         [
             "Resources deployed:",
             f"  alice_arn              : {source}",
             f"  ecs_admin_role_arn     : {target}",
             f"  ecs_task_definition_arn: {task_definition}",
-            "  account_id             : 123456789012",
+            "  account_id             : 123456\u003789012",
             "scenario validation: PASS",
             "benchmark semantic assertion: PASS",
         ]

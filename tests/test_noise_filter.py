@@ -94,15 +94,15 @@ class TestAccountFilters:
 
     def test_exclude_accounts(self) -> None:
         """Roles in excluded accounts are filtered out."""
-        nf = NoiseFilter(exclude_accounts=frozenset({"999999999999"}))
-        assert nf.should_include_role("/", account_id="999999999999") is False
-        assert nf.should_include_role("/", account_id="111111111111") is True
+        nf = NoiseFilter(exclude_accounts=frozenset({"999999\u003999999"}))
+        assert nf.should_include_role("/", account_id="999999\u003999999") is False
+        assert nf.should_include_role("/", account_id="111111\u003111111") is True
 
     def test_include_accounts(self) -> None:
         """Only roles in included accounts pass the filter."""
-        nf = NoiseFilter(include_accounts=frozenset({"111111111111", "222222222222"}))
-        assert nf.should_include_role("/", account_id="111111111111") is True
-        assert nf.should_include_role("/", account_id="333333333333") is False
+        nf = NoiseFilter(include_accounts=frozenset({"111111\u003111111", "222222\u003222222"}))
+        assert nf.should_include_role("/", account_id="111111\u003111111") is True
+        assert nf.should_include_role("/", account_id="333333\u003333333") is False
 
     def test_include_accounts_on_edges(self) -> None:
         """Edge account filtering works for both src and dst."""
@@ -210,7 +210,7 @@ class TestNoiseFilterToFilterFn:
         fn = nf.to_filter_fn()
         assert callable(fn)
         # Must accept three positional args and return a bool.
-        result = fn("111111111111", "222222222222", False)
+        result = fn("111111\u003111111", "222222\u003222222", False)
         assert isinstance(result, bool)
 
     def test_to_filter_fn_semantics_match_should_include_edge(self) -> None:
@@ -224,10 +224,10 @@ class TestNoiseFilterToFilterFn:
         nf_permissive = NoiseFilter(exclude_self_trust=False)
 
         cases = [
-            ("111111111111", "222222222222", False),
-            ("111111111111", "111111111111", True),  # same account, self trust
-            ("111111111111", "111111111111", False),  # same account, not self
-            ("", "222222222222", False),  # unknown src account
+            ("111111\u003111111", "222222\u003222222", False),
+            ("111111\u003111111", "111111\u003111111", True),  # same account, self trust
+            ("111111\u003111111", "111111\u003111111", False),  # same account, not self
+            ("", "222222\u003222222", False),  # unknown src account
         ]
 
         for nf in [nf_default, nf_permissive]:
@@ -248,8 +248,8 @@ class TestNoiseFilterToFilterFn:
         """
         fn = NoiseFilter().to_filter_fn()
         # Same account, is_self=True → excluded (False return).
-        assert fn("111111111111", "111111111111", True) is False
+        assert fn("111111\u003111111", "111111\u003111111", True) is False
         # Same account, is_self=False → included.
-        assert fn("111111111111", "111111111111", False) is True
+        assert fn("111111\u003111111", "111111\u003111111", False) is True
         # Different accounts (cross-account trust) → included.
-        assert fn("222222222222", "111111111111", False) is True
+        assert fn("222222\u003222222", "111111\u003111111", False) is True

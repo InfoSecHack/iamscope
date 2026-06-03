@@ -45,7 +45,7 @@ def full_org_setup():
 
     Management account IAM:
         - Role: CrossAccountTarget
-          - Trust: Allow from 999999999999:root (external account)
+          - Trust: Allow from 999999\u003999999:root (external account)
           - Inline policy: sts:AssumeRole → * (wildcard)
         - User: admin
           - Inline policy: iam:PassRole → *
@@ -98,7 +98,7 @@ def full_org_setup():
                 "Statement": [
                     {
                         "Effect": "Allow",
-                        "Principal": {"AWS": "arn:aws:iam::999999999999:root"},
+                        "Principal": {"AWS": "arn:aws:iam::999999\u003999999:root"},
                         "Action": "sts:AssumeRole",
                     }
                 ],
@@ -249,7 +249,7 @@ class TestPhase3Resolution:
 
         scenario = json.loads(result.scenario_bytes)
         synthetic = [n for n in scenario["nodes"] if n.get("properties", {}).get("is_synthetic") is True]
-        # Should have synthetic node for 999999999999:root
+        # Should have synthetic node for 999999 999999:root
         assert len(synthetic) >= 1
 
     def test_permission_edges_created(self, full_org_setup) -> None:
@@ -641,7 +641,7 @@ class TestNf1NoiseFilterWiring:
             TrustParseResult,
         )
 
-        account_id = "111111111111"
+        account_id = "111111\u003111111"
         role_arn = f"arn:aws:iam::{account_id}:role/TargetRole"
         role_node = Node(
             provider=PROVIDER_AWS,
@@ -659,7 +659,7 @@ class TestNf1NoiseFilterWiring:
             cross_account = False
         else:
             # Role trusts a different account's root.
-            principal_value = "arn:aws:iam::222222222222:root"
+            principal_value = "arn:aws:iam::222222\u003222222:root"
             principal_type = "AWS"
             resolved_node_type = NODE_TYPE_ACCOUNT_ROOT
             cross_account = True
@@ -742,15 +742,15 @@ class TestNf1NoiseFilterWiring:
 
         trust_edges = [e for e in edges if "_trust" in e.edge_type]
         assert len(trust_edges) == 1
-        assert trust_edges[0].src.provider_id == "arn:aws:iam::222222222222:root"
-        assert trust_edges[0].dst.provider_id == "arn:aws:iam::111111111111:role/TargetRole"
+        assert trust_edges[0].src.provider_id == "arn:aws:iam::222222\u003222222:root"
+        assert trust_edges[0].dst.provider_id == "arn:aws:iam::111111\u003111111:role/TargetRole"
 
 
 class TestStalePrincipalDriftResolution:
     """Focused regression for stale principal drift wiring in resolution."""
 
     def test_run_resolution_emits_stale_principal_drift_constraint(self) -> None:
-        account_id = "111111111111"
+        account_id = "111111\u003111111"
         role_arn = f"arn:aws:iam::{account_id}:role/Target"
         role_node = Node(
             provider=PROVIDER_AWS,

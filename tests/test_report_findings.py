@@ -60,8 +60,8 @@ def _build_finding(
     verdict: str,
     severity: str,
     title: str,
-    source_arn: str = "arn:aws:iam::111111111111:user/Alice",
-    target_arn: str = "arn:aws:iam::111111111111:role/AdminRole",
+    source_arn: str = "arn:aws:iam::111111\u003111111:user/Alice",
+    target_arn: str = "arn:aws:iam::111111\u003111111:role/AdminRole",
     checks: list[dict[str, Any]] | None = None,
     blockers: list[dict[str, Any]] | None = None,
     assumptions: list[dict[str, Any]] | None = None,
@@ -181,8 +181,8 @@ class TestValidatedFinding:
 
     def test_shows_source_and_target_arns(self) -> None:
         md = render_findings_section(self._make())
-        assert "arn:aws:iam::111111111111:user/Alice" in md
-        assert "arn:aws:iam::111111111111:role/AdminRole" in md
+        assert "arn:aws:iam::111111\u003111111:user/Alice" in md
+        assert "arn:aws:iam::111111\u003111111:role/AdminRole" in md
 
     def test_shows_all_checks_as_pass(self) -> None:
         md = render_findings_section(self._make())

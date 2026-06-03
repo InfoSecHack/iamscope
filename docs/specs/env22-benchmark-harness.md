@@ -35,8 +35,8 @@ Expected approved setup for the first live run:
 export MANAGEMENT_PROFILE=iamscope-admin
 export CALLER_PROFILE=serim-dev-admin
 export TARGET_PROFILE=serim-prod-admin
-export CALLER_ACCOUNT_ID=377114445031
-export TARGET_ACCOUNT_ID=737923406074
+export CALLER_ACCOUNT_ID=<redacted-aws-account-id>
+export TARGET_ACCOUNT_ID=<redacted-aws-account-id>
 export AWS_REGION=us-east-1
 export CONFIRM_ENV22_CROSS_ACCOUNT_MUTATION=YES
 ```

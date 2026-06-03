@@ -22,9 +22,9 @@ def _make_archive(tmp_path: Path, name: str, *, include_findings: bool = True, i
     run_log = "\n".join(
         [
             "Resources deployed:",
-            "  alice_arn  : arn:aws:iam::123456789012:user/iamscope-test/env03-cc1-alice",
-            "  admins_arn : arn:aws:iam::123456789012:group/iamscope-test/env03-cc1-admins",
-            "  account_id : 123456789012",
+            "  alice_arn  : arn:aws:iam::123456\u003789012:user/iamscope-test/env03-cc1-alice",
+            "  admins_arn : arn:aws:iam::123456\u003789012:group/iamscope-test/env03-cc1-admins",
+            "  account_id : 123456\u003789012",
             "scenario validation: PASS",
             "benchmark semantic assertion: PASS",
         ]
@@ -40,8 +40,10 @@ def _make_archive(tmp_path: Path, name: str, *, include_findings: bool = True, i
                     {
                         "pattern_id": "iam_group_membership_escalation",
                         "verdict": "blocked",
-                        "source": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env03-cc1-alice"},
-                        "target": {"provider_id": "arn:aws:iam::123456789012:group/iamscope-test/env03-cc1-admins"},
+                        "source": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env03-cc1-alice"},
+                        "target": {
+                            "provider_id": "arn:aws:iam::123456\u003789012:group/iamscope-test/env03-cc1-admins"
+                        },
                     }
                 ]
             },
@@ -97,9 +99,9 @@ def test_env14_ingest_parses_alice_admin_context(tmp_path: Path) -> None:
     run_log = "\n".join(
         [
             "Resources deployed:",
-            "  alice_arn  : arn:aws:iam::123456789012:user/iamscope-test/env14-alice",
-            "  admin_arn  : arn:aws:iam::123456789012:role/iamscope-test/env14-admin",
-            "  account_id : 123456789012",
+            "  alice_arn  : arn:aws:iam::123456\u003789012:user/iamscope-test/env14-alice",
+            "  admin_arn  : arn:aws:iam::123456\u003789012:role/iamscope-test/env14-admin",
+            "  account_id : 123456\u003789012",
             "scenario validation: PASS",
             "benchmark semantic assertion: PASS",
         ]
@@ -126,10 +128,10 @@ def test_env18_ingest_parses_lambda_passrole_context(tmp_path: Path) -> None:
     run_log = "\n".join(
         [
             "Resources deployed:",
-            "  alice_arn             : arn:aws:iam::123456789012:user/iamscope-test/env18-alice",
-            "  lambda_admin_role_arn : arn:aws:iam::123456789012:role/iamscope-test/env18-lambda-admin-exec",
-            "  lambda_function_arn   : arn:aws:lambda:us-east-1:123456789012:function:env18-passrole-probe",
-            "  account_id            : 123456789012",
+            "  alice_arn             : arn:aws:iam::123456\u003789012:user/iamscope-test/env18-alice",
+            "  lambda_admin_role_arn : arn:aws:iam::123456\u003789012:role/iamscope-test/env18-lambda-admin-exec",
+            "  lambda_function_arn   : arn:aws:lambda:us-east-1:123456\u003789012:function:env18-passrole-probe",
+            "  account_id            : 123456\u003789012",
             "scenario validation: PASS",
             "benchmark semantic assertion: PASS",
         ]
@@ -156,10 +158,10 @@ def test_env19_ingest_parses_passedtoservice_mutation_context(tmp_path: Path) ->
     run_log = "\n".join(
         [
             "Resources deployed:",
-            "  alice_arn             : arn:aws:iam::123456789012:user/iamscope-test/env19-alice",
-            "  lambda_admin_role_arn : arn:aws:iam::123456789012:role/iamscope-test/env19-lambda-admin-exec",
-            "  lambda_function_arn   : arn:aws:lambda:us-east-1:123456789012:function:env19-passrole-probe",
-            "  account_id            : 123456789012",
+            "  alice_arn             : arn:aws:iam::123456\u003789012:user/iamscope-test/env19-alice",
+            "  lambda_admin_role_arn : arn:aws:iam::123456\u003789012:role/iamscope-test/env19-lambda-admin-exec",
+            "  lambda_function_arn   : arn:aws:lambda:us-east-1:123456\u003789012:function:env19-passrole-probe",
+            "  account_id            : 123456\u003789012",
             "scenario validation: PASS",
             "benchmark semantic assertion: PASS",
         ]
@@ -186,10 +188,10 @@ def test_env20_ingest_parses_ecs_passrole_context(tmp_path: Path) -> None:
     run_log = "\n".join(
         [
             "Resources deployed:",
-            "  alice_arn              : arn:aws:iam::123456789012:user/iamscope-test/env20-alice",
-            "  ecs_admin_role_arn     : arn:aws:iam::123456789012:role/iamscope-test/env20-ecs-admin-task",
-            "  ecs_task_definition_arn: arn:aws:ecs:us-east-1:123456789012:task-definition/env20-passrole-probe:1",
-            "  account_id             : 123456789012",
+            "  alice_arn              : arn:aws:iam::123456\u003789012:user/iamscope-test/env20-alice",
+            "  ecs_admin_role_arn     : arn:aws:iam::123456\u003789012:role/iamscope-test/env20-ecs-admin-task",
+            "  ecs_task_definition_arn: arn:aws:ecs:us-east-1:123456\u003789012:task-definition/env20-passrole-probe:1",
+            "  account_id             : 123456\u003789012",
             "scenario validation: PASS",
             "benchmark semantic assertion: PASS",
         ]
@@ -216,10 +218,10 @@ def test_env21_ingest_parses_ecs_passedtoservice_mutation_context(tmp_path: Path
     run_log = "\n".join(
         [
             "Resources deployed:",
-            "  alice_arn              : arn:aws:iam::123456789012:user/iamscope-test/env21-alice",
-            "  ecs_admin_role_arn     : arn:aws:iam::123456789012:role/iamscope-test/env21-ecs-admin-task",
-            "  ecs_task_definition_arn: arn:aws:ecs:us-east-1:123456789012:task-definition/env21-passrole-probe:1",
-            "  account_id             : 123456789012",
+            "  alice_arn              : arn:aws:iam::123456\u003789012:user/iamscope-test/env21-alice",
+            "  ecs_admin_role_arn     : arn:aws:iam::123456\u003789012:role/iamscope-test/env21-ecs-admin-task",
+            "  ecs_task_definition_arn: arn:aws:ecs:us-east-1:123456\u003789012:task-definition/env21-passrole-probe:1",
+            "  account_id             : 123456\u003789012",
             "scenario validation: PASS",
             "benchmark semantic assertion: PASS",
         ]
@@ -248,10 +250,10 @@ def test_env22_ingest_parses_cross_account_context(tmp_path: Path) -> None:
     run_log = "\n".join(
         [
             "Resources deployed:",
-            "  alice_arn                : arn:aws:iam::377114445031:user/iamscope-test/env22-alice",
-            "  admin_arn                : arn:aws:iam::737923406074:role/iamscope-test/env22-cross-account-admin",
-            "  caller_account_id        : 377114445031",
-            "  target_account_id        : 737923406074",
+            "  alice_arn                : arn:aws:iam::377114\u003445031:user/iamscope-test/env22-alice",
+            "  admin_arn                : arn:aws:iam::737923\u003406074:role/iamscope-test/env22-cross-account-admin",
+            "  caller_account_id        : 377114\u003445031",
+            "  target_account_id        : 737923\u003406074",
             "  collection_role_name     : env22-iamscope-reader",
             "scenario validation: PASS",
             "benchmark semantic assertion: PASS",
@@ -279,11 +281,11 @@ def test_env23_ingest_parses_cross_account_mutation_context(tmp_path: Path) -> N
     run_log = "\n".join(
         [
             "Resources deployed:",
-            "  alice_arn                : arn:aws:iam::377114445031:user/iamscope-test/env23-alice",
-            "  decoy_arn                : arn:aws:iam::377114445031:user/iamscope-test/env23-decoy",
-            "  admin_arn                : arn:aws:iam::737923406074:role/iamscope-test/env23-cross-account-admin",
-            "  caller_account_id        : 377114445031",
-            "  target_account_id        : 737923406074",
+            "  alice_arn                : arn:aws:iam::377114\u003445031:user/iamscope-test/env23-alice",
+            "  decoy_arn                : arn:aws:iam::377114\u003445031:user/iamscope-test/env23-decoy",
+            "  admin_arn                : arn:aws:iam::737923\u003406074:role/iamscope-test/env23-cross-account-admin",
+            "  caller_account_id        : 377114\u003445031",
+            "  target_account_id        : 737923\u003406074",
             "  collection_role_name     : env23-iamscope-reader",
             "scenario validation: PASS",
             "benchmark semantic assertion: PASS",
@@ -313,10 +315,10 @@ def test_env24_ingest_parses_s3_resource_policy_context(tmp_path: Path) -> None:
     run_log = "\n".join(
         [
             "Resources deployed:",
-            "  reader_arn  : arn:aws:iam::123456789012:user/iamscope-test/env24-reader",
-            "  bucket_arn  : arn:aws:s3:::env24-rp-allow-123456789012-deadbeef",
-            "  bucket_name : env24-rp-allow-123456789012-deadbeef",
-            "  account_id  : 123456789012",
+            "  reader_arn  : arn:aws:iam::123456\u003789012:user/iamscope-test/env24-reader",
+            "  bucket_arn  : arn:aws:s3:::env24-rp-allow-123456\u003789012-deadbeef",
+            "  bucket_name : env24-rp-allow-123456\u003789012-deadbeef",
+            "  account_id  : 123456\u003789012",
             "scenario validation: PASS",
             "benchmark semantic assertion: PASS",
         ]
@@ -332,7 +334,7 @@ def test_env24_ingest_parses_s3_resource_policy_context(tmp_path: Path) -> None:
     run_manifest = ingest_archive("env24_s3_resource_policy_allow", archive_dir, out_path, REPO_ROOT)
 
     assert run_manifest["context"]["source_provider_id"].endswith("env24-reader")
-    assert run_manifest["context"]["target_provider_id"] == "arn:aws:s3:::env24-rp-allow-123456789012-deadbeef"
+    assert run_manifest["context"]["target_provider_id"] == "arn:aws:s3:::env24-rp-allow-123456\u003789012-deadbeef"
     assert validate_run_manifest(load_json(out_path)) == []
 
 
@@ -343,11 +345,11 @@ def test_env25_ingest_parses_scoped_away_s3_resource_policy_context(tmp_path: Pa
     run_log = "\n".join(
         [
             "Resources deployed:",
-            "  reader_arn  : arn:aws:iam::123456789012:user/iamscope-test/env25-reader",
-            "  decoy_arn   : arn:aws:iam::123456789012:user/iamscope-test/env25-decoy",
-            "  bucket_arn  : arn:aws:s3:::env25-rp-scoped-away-123456789012-deadbeef",
-            "  bucket_name : env25-rp-scoped-away-123456789012-deadbeef",
-            "  account_id  : 123456789012",
+            "  reader_arn  : arn:aws:iam::123456\u003789012:user/iamscope-test/env25-reader",
+            "  decoy_arn   : arn:aws:iam::123456\u003789012:user/iamscope-test/env25-decoy",
+            "  bucket_arn  : arn:aws:s3:::env25-rp-scoped-away-123456\u003789012-deadbeef",
+            "  bucket_name : env25-rp-scoped-away-123456\u003789012-deadbeef",
+            "  account_id  : 123456\u003789012",
             "scenario validation: PASS",
             "benchmark semantic assertion: PASS",
         ]
@@ -369,7 +371,9 @@ def test_env25_ingest_parses_scoped_away_s3_resource_policy_context(tmp_path: Pa
 
     assert run_manifest["context"]["source_provider_id"].endswith("env25-reader")
     assert run_manifest["context"]["decoy_provider_id"].endswith("env25-decoy")
-    assert run_manifest["context"]["target_provider_id"] == "arn:aws:s3:::env25-rp-scoped-away-123456789012-deadbeef"
+    assert (
+        run_manifest["context"]["target_provider_id"] == "arn:aws:s3:::env25-rp-scoped-away-123456\u003789012-deadbeef"
+    )
     assert validate_run_manifest(load_json(out_path)) == []
 
 
@@ -380,11 +384,11 @@ def test_env26_ingest_parses_multihop_context(tmp_path: Path) -> None:
     run_log = "\n".join(
         [
             "Resources deployed:",
-            "  alice_arn  : arn:aws:iam::123456789012:user/iamscope-test/env26-alice",
-            "  hop1_arn   : arn:aws:iam::123456789012:role/iamscope-test/env26-hop1",
-            "  hop2_arn   : arn:aws:iam::123456789012:role/iamscope-test/env26-hop2",
-            "  admin_arn  : arn:aws:iam::123456789012:role/iamscope-test/env26-admin",
-            "  account_id : 123456789012",
+            "  alice_arn  : arn:aws:iam::123456\u003789012:user/iamscope-test/env26-alice",
+            "  hop1_arn   : arn:aws:iam::123456\u003789012:role/iamscope-test/env26-hop1",
+            "  hop2_arn   : arn:aws:iam::123456\u003789012:role/iamscope-test/env26-hop2",
+            "  admin_arn  : arn:aws:iam::123456\u003789012:role/iamscope-test/env26-admin",
+            "  account_id : 123456\u003789012",
             "scenario validation: PASS",
             "benchmark semantic assertion: PASS",
         ]

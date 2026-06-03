@@ -52,8 +52,8 @@ from iamscope.reasoner import (
 # ---------------------------------------------------------------------------
 
 
-_TARGET_ACCOUNT = "111111111111"
-_EXTERNAL_ACCOUNT = "999999999999"
+_TARGET_ACCOUNT = "111111\u003111111"
+_EXTERNAL_ACCOUNT = "999999\u003999999"
 _TARGET_ROLE_ARN = f"arn:aws:iam::{_TARGET_ACCOUNT}:role/ProdAdmin"
 _EXTERNAL_ROOT_ARN = f"arn:aws:iam::{_EXTERNAL_ACCOUNT}:root"
 
@@ -133,9 +133,9 @@ def _build_one_finding_facts() -> FactGraph:
 def _build_three_findings_facts() -> FactGraph:
     """A FactGraph with three external sources → three findings of varying severity."""
     target = _target_role_node()
-    ext_a = _account_root_node("111111111111")
-    ext_b = _account_root_node("222222222222")
-    ext_c = _account_root_node("333333333333")
+    ext_a = _account_root_node("111111\u003111111")
+    ext_b = _account_root_node("222222\u003222222")
+    ext_c = _account_root_node("333333\u003333333")
     edge_a = _trust_edge(src=ext_a, dst=target, naked_trust=NAKED_CRITICAL)
     edge_b = _trust_edge(src=ext_b, dst=target, naked_trust=NAKED_BROAD)
     # Third edge with weak conditions for variety.

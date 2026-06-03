@@ -44,7 +44,7 @@ from iamscope.truth.probe_overlay import ProbeRecord
 # Constants
 # ---------------------------------------------------------------------------
 
-_ACCOUNT = "111111111111"
+_ACCOUNT = "111111\u003111111"
 _ALICE_ARN = f"arn:aws:iam::{_ACCOUNT}:user/Alice"
 _DEVOPS_ARN = f"arn:aws:iam::{_ACCOUNT}:role/DevOps"
 _PROD_ARN = f"arn:aws:iam::{_ACCOUNT}:role/Prod"

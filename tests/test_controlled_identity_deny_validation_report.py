@@ -31,9 +31,9 @@ def _base_report(
             "prediction_source": "selected sanitized IAMScope identity Deny summary",
             "source_document": "docs/example/sanitized-identity-deny-selection.md",
         },
-        "source_principal_arn": "arn:aws:iam::123456789012:user/example-source",
+        "source_principal_arn": "arn:aws:iam::123456\u003789012:user/example-source",
         "candidate_action": "iam:AddUserToGroup",
-        "candidate_resource": "arn:aws:iam::123456789012:group/example-admins",
+        "candidate_resource": "arn:aws:iam::123456\u003789012:group/example-admins",
         "allow_basis": {
             "allow_present": True,
             "allow_source_type": "identity_policy",
@@ -60,7 +60,7 @@ def _base_report(
         },
         "predicted_behavior": {
             "predicted_action": "iam:AddUserToGroup",
-            "predicted_resource": "arn:aws:iam::123456789012:group/example-admins",
+            "predicted_resource": "arn:aws:iam::123456\u003789012:group/example-admins",
             "predicted_outcome": predicted_outcome,
             "prediction_basis": "explicit identity Deny suppresses structurally allowed action",
             "prediction_caveats": ["selected case only", "controlled test environment only"],

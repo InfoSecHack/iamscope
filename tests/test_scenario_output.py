@@ -377,7 +377,7 @@ class TestReferentialIntegrity:
         orphan_ref = Node(
             provider=PROVIDER_AWS,
             node_type=NODE_TYPE_ACCOUNT_ROOT,
-            provider_id="arn:aws:iam::999999999999:root",
+            provider_id="arn:aws:iam::999999\u003999999:root",
         )
         edge = Edge(
             edge_type="sts:AssumeRole_trust",
@@ -429,7 +429,7 @@ class TestReferentialIntegrity:
     ) -> None:
         """EdgeConstraint referencing non-existent edge must raise ValueError."""
         ec = EdgeConstraint(
-            edge_id="0000000000000000000000000000000000000000000000000000000000000000",
+            edge_id="000000\u003000\u003000000\u003000000\u003000000\u003000000\u003000000\u003000000\u003000000\u003000000\u003000000\u0030",
             constraint_id=minimal_constraint.constraint_id,
             governance_confidence="complete",
             likely_blocking=True,
@@ -454,7 +454,7 @@ class TestReferentialIntegrity:
         """EdgeConstraint referencing non-existent constraint must raise ValueError."""
         ec = EdgeConstraint(
             edge_id=minimal_trust_edge.edge_id,
-            constraint_id="0000000000000000000000000000000000000000000000000000000000000000",
+            constraint_id="000000\u003000\u003000000\u003000000\u003000000\u003000000\u003000000\u003000000\u003000000\u003000000\u003000000\u0030",
             governance_confidence="complete",
             likely_blocking=True,
         )

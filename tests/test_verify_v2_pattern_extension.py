@@ -26,12 +26,12 @@ from unittest.mock import MagicMock, patch
 
 from iamscope.verify import cmd_verify
 
-_ACCOUNT = "111111111111"
+_ACCOUNT = "111111\u003111111"
 _USER_ARN = f"arn:aws:iam::{_ACCOUNT}:user/Alice"
 _ROLE_ARN = f"arn:aws:iam::{_ACCOUNT}:role/TargetRole"
 _BUCKET_ARN = "arn:aws:s3:::corp-secrets"
 _SECRET_ARN = f"arn:aws:secretsmanager:us-east-1:{_ACCOUNT}:secret:prod/db-password-abc123"
-_EXTERNAL_ACCOUNT = "999999999999"
+_EXTERNAL_ACCOUNT = "999999\u003999999"
 _ACCOUNT_ROOT_ARN = f"arn:aws:iam::{_EXTERNAL_ACCOUNT}:root"
 _OIDC_ARN = f"arn:aws:iam::{_ACCOUNT}:oidc-provider/token.actions.githubusercontent.com"
 

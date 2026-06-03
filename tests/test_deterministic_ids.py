@@ -35,28 +35,28 @@ class TestCanonicalId:
 
     def test_same_input_same_output(self) -> None:
         """Identical inputs must produce identical IDs across calls."""
-        id1 = canonical_id("aws", "IAMRole", "arn:aws:iam::111111111111:role/Test")
-        id2 = canonical_id("aws", "IAMRole", "arn:aws:iam::111111111111:role/Test")
+        id1 = canonical_id("aws", "IAMRole", "arn:aws:iam::111111\u003111111:role/Test")
+        id2 = canonical_id("aws", "IAMRole", "arn:aws:iam::111111\u003111111:role/Test")
         assert id1 == id2
         assert len(id1) == 64  # SHA-256 hex digest
 
     def test_different_input_different_output(self) -> None:
         """Different inputs must produce different IDs."""
-        id1 = canonical_id("aws", "IAMRole", "arn:aws:iam::111111111111:role/RoleA")
-        id2 = canonical_id("aws", "IAMRole", "arn:aws:iam::111111111111:role/RoleB")
+        id1 = canonical_id("aws", "IAMRole", "arn:aws:iam::111111\u003111111:role/RoleA")
+        id2 = canonical_id("aws", "IAMRole", "arn:aws:iam::111111\u003111111:role/RoleB")
         assert id1 != id2
 
     def test_case_insensitive(self) -> None:
         """IDs must be case-insensitive (all fields lowercased)."""
-        id_lower = canonical_id("aws", "iamrole", "arn:aws:iam::111111111111:role/test")
-        id_upper = canonical_id("AWS", "IAMRole", "arn:aws:iam::111111111111:role/Test")
-        id_mixed = canonical_id("Aws", "IamRole", "ARN:AWS:IAM::111111111111:ROLE/TEST")
+        id_lower = canonical_id("aws", "iamrole", "arn:aws:iam::111111\u003111111:role/test")
+        id_upper = canonical_id("AWS", "IAMRole", "arn:aws:iam::111111\u003111111:role/Test")
+        id_mixed = canonical_id("Aws", "IamRole", "ARN:AWS:IAM::111111\u003111111:ROLE/TEST")
         assert id_lower == id_upper == id_mixed
 
     def test_whitespace_insensitive(self) -> None:
         """Leading/trailing whitespace must be stripped before hashing."""
-        id_clean = canonical_id("aws", "IAMRole", "arn:aws:iam::111111111111:role/Test")
-        id_padded = canonical_id("  aws  ", "  IAMRole  ", "  arn:aws:iam::111111111111:role/Test  ")
+        id_clean = canonical_id("aws", "IAMRole", "arn:aws:iam::111111\u003111111:role/Test")
+        id_padded = canonical_id("  aws  ", "  IAMRole  ", "  arn:aws:iam::111111\u003111111:role/Test  ")
         assert id_clean == id_padded
 
     def test_stable_known_hash(self) -> None:
@@ -67,10 +67,10 @@ class TestCanonicalId:
         breaks ARF-RT references and cross-run comparisons.
         """
         # Manually compute expected hash
-        canonical = "\x00".join(["aws", "iamrole", "arn:aws:iam::333333333333:role/proddeployrole"])
+        canonical = "\x00".join(["aws", "iamrole", "arn:aws:iam::333333\u003333333:role/proddeployrole"])
         expected = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
-        actual = canonical_id("aws", "IAMRole", "arn:aws:iam::333333333333:role/ProdDeployRole")
+        actual = canonical_id("aws", "IAMRole", "arn:aws:iam::333333\u003333333:role/ProdDeployRole")
         assert actual == expected
 
     def test_null_separator_not_in_arns(self) -> None:
@@ -109,8 +109,8 @@ class TestNodeId:
 
     def test_node_id_components(self) -> None:
         """node_id must use (provider, node_type, provider_id)."""
-        nid = node_id("aws", "IAMRole", "arn:aws:iam::111111111111:role/TestRole")
-        expected = canonical_id("aws", "IAMRole", "arn:aws:iam::111111111111:role/TestRole")
+        nid = node_id("aws", "IAMRole", "arn:aws:iam::111111\u003111111:role/TestRole")
+        expected = canonical_id("aws", "IAMRole", "arn:aws:iam::111111\u003111111:role/TestRole")
         assert nid == expected
 
     def test_different_node_types_different_ids(self) -> None:
@@ -135,15 +135,15 @@ class TestEdgeId:
         region, features_digest)."""
         eid = edge_id(
             "sts:AssumeRole_trust",
-            "arn:aws:iam::222222222222:role/DevJump",
-            "arn:aws:iam::333333333333:role/ProdDeploy",
+            "arn:aws:iam::222222\u003222222:role/DevJump",
+            "arn:aws:iam::333333\u003333333:role/ProdDeploy",
             "-",
             self._EMPTY_FEATURES_DIGEST,
         )
         expected = canonical_id(
             "sts:AssumeRole_trust",
-            "arn:aws:iam::222222222222:role/DevJump",
-            "arn:aws:iam::333333333333:role/ProdDeploy",
+            "arn:aws:iam::222222\u003222222:role/DevJump",
+            "arn:aws:iam::333333\u003333333:role/ProdDeploy",
             "-",
             self._EMPTY_FEATURES_DIGEST,
         )

@@ -10,9 +10,9 @@ This slice does not run live AWS, call STS, call `iam:PassRole`, call Lambda API
 
 - Validation run ID: `controlled-identity-deny-run-001-static-suppression`
 - Environment label: `phase0-env03-sanitized-static`
-- Source principal ARN: `arn:aws:iam::516525145310:user/iamscope-test/env03-cc1-alice`
+- Source principal ARN: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-test/env03-cc1-alice`
 - Candidate action: `iam:AddUserToGroup`
-- Candidate resource: `arn:aws:iam::516525145310:group/iamscope-test/env03-cc1-admins`
+- Candidate resource: `arn:aws:iam::<redacted-aws-account-id>:group/iamscope-test/env03-cc1-admins`
 - Pattern/finding family: `iam_group_membership_escalation`
 - Validation-layer ID: `controlled-identity-deny-run-001-env03-add-user-to-group`
 - Native finding/path ID status: no reusable native `finding_id` or `path_id` was identified in the committed sanitized run summaries.

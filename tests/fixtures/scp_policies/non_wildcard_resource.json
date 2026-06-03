@@ -5,7 +5,7 @@
       "Sid": "DenySpecificResource",
       "Effect": "Deny",
       "Action": "sts:AssumeRole",
-      "Resource": "arn:aws:iam::333333333333:role/ProdDeploy*"
+      "Resource": "arn:aws:iam::333333\u003333333:role/ProdDeploy*"
     }
   ]
 }

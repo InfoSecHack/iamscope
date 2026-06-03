@@ -12,9 +12,9 @@ This slice is pre-live planning and validation only. It does not run live AWS, c
 - Environment label: `acceptance/env06_ar_validated_admin`
 - Case ID: `env06_validated_admin_reachability`
 - Benchmark run ID: `iamscope-benchmark-env06-20260425T003000Z`
-- Exact account ID: `516525145310`
-- Exact source principal ARN: `arn:aws:iam::516525145310:user/iamscope-test/env06-alice`
-- Exact target role ARN: `arn:aws:iam::516525145310:role/iamscope-test/env06-admin`
+- Exact account ID: `<redacted-aws-account-id>`
+- Exact source principal ARN: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-test/env06-alice`
+- Exact target role ARN: `arn:aws:iam::<redacted-aws-account-id>:role/iamscope-test/env06-admin`
 - Predicted behavior: `assumed`
 - Expected outcome: `assumed`
 - Planned action: `sts:AssumeRole`

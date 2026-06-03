@@ -241,9 +241,9 @@ sanitized summary, not raw runtime output.
   "input_bundle_reference": "frozen-sanitized-bundle-placeholder",
   "finding_reference": {
     "path_id": "path-placeholder-001",
-    "source_principal_arn": "arn:aws:iam::123456789012:user/example-source",
-    "target_role_arn": "arn:aws:iam::123456789012:role/example-target-role",
-    "expected_account_id": "123456789012",
+    "source_principal_arn": "arn:aws:iam::<redacted-aws-account-id>:user/example-source",
+    "target_role_arn": "arn:aws:iam::<redacted-aws-account-id>:role/example-target-role",
+    "expected_account_id": "<redacted-aws-account-id>",
     "reasoner_or_finding_type": "sts_assume_role_path",
     "prediction_source": "selected sanitized IAMScope finding summary",
     "source_bundle": "frozen-sanitized-bundle-placeholder"
@@ -275,7 +275,7 @@ sanitized summary, not raw runtime output.
   },
   "observed_behavior": {
     "observed_outcome": "denied",
-    "observed_account_id": "123456789012",
+    "observed_account_id": "<redacted-aws-account-id>",
     "result_classification": "denied",
     "sanitized_reasons": [
       "STS AssumeRole was denied under the configured test condition"
@@ -503,8 +503,8 @@ The generator emits controlled STS validation report JSON only.
 
 The `denied` report records:
 
-- Source principal: `arn:aws:iam::516525145310:user/iamscope-admin`.
-- Target role: `arn:aws:iam::516525145310:role/arf-rt-DevRole`.
+- Source principal: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-admin`.
+- Target role: `arn:aws:iam::<redacted-aws-account-id>:role/arf-rt-DevRole`.
 - Predicted outcome: `denied`.
 - Observed outcome: `denied`.
 - Outcome classification: `corroborated`.
@@ -513,9 +513,9 @@ The `denied` report records:
 
 The `assumed` report records:
 
-- Source principal: `arn:aws:iam::516525145310:user/iamscope-positive-source`.
+- Source principal: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-positive-source`.
 - Target role:
-  `arn:aws:iam::516525145310:role/iamscope-positive-target-role`.
+  `arn:aws:iam::<redacted-aws-account-id>:role/iamscope-positive-target-role`.
 - Predicted outcome: `assumed`.
 - Observed outcome: `assumed`.
 - Outcome classification: `corroborated`.

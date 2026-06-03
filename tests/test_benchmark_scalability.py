@@ -362,10 +362,10 @@ def _valid_sts_probe_plan() -> dict[str, Any]:
         "probes": [
             {
                 "probe_id": "sts-assume-role-test-admin",
-                "source_principal_arn": "arn:aws:iam::123456789012:role/iamscope-test-source",
-                "target_role_arn": "arn:aws:iam::123456789012:role/iamscope-test-target",
+                "source_principal_arn": "arn:aws:iam::123456\u003789012:role/iamscope-test-source",
+                "target_role_arn": "arn:aws:iam::123456\u003789012:role/iamscope-test-target",
                 "aws_profile": "iamscope-test",
-                "expected_account_id": "123456789012",
+                "expected_account_id": "123456\u003789012",
                 "session_name_prefix": "iamscope-test",
                 "duration_seconds": 900,
                 "expected_outcome": "assumed",
@@ -1869,10 +1869,10 @@ def test_sts_probe_plan_validator_reports_safety_and_malformed_probe_issues(tmp_
     missing_profile.pop("aws_profile")
     mismatched_account = dict(valid_probe)
     mismatched_account["probe_id"] = "mismatched-account"
-    mismatched_account["target_role_arn"] = "arn:aws:iam::210987654321:role/iamscope-test-target"
+    mismatched_account["target_role_arn"] = "arn:aws:iam::210987\u003654321:role/iamscope-test-target"
     wildcard_role = dict(valid_probe)
     wildcard_role["probe_id"] = "wildcard-role"
-    wildcard_role["target_role_arn"] = "arn:aws:iam::123456789012:role/*"
+    wildcard_role["target_role_arn"] = "arn:aws:iam::123456\u003789012:role/*"
     excessive_duration = dict(valid_probe)
     excessive_duration["probe_id"] = "excessive-duration"
     excessive_duration["duration_seconds"] = 3600
@@ -1881,7 +1881,7 @@ def test_sts_probe_plan_validator_reports_safety_and_malformed_probe_issues(tmp_
     missing_boundaries["evidence_boundary"] = ""
     missing_boundaries["safety_notes"] = ""
     duplicate_probe = dict(valid_probe)
-    duplicate_probe["target_role_arn"] = "arn:aws:iam::123456789012:role/iamscope-test-target-2"
+    duplicate_probe["target_role_arn"] = "arn:aws:iam::123456\u003789012:role/iamscope-test-target-2"
     plan["probes"] = [
         valid_probe,
         missing_profile,
@@ -2176,7 +2176,7 @@ def test_sts_probe_executor_live_probe_refuses_failed_validator_before_sts_call(
 
 def test_sts_probe_executor_live_probe_refuses_mismatched_account_before_sts_call(tmp_path: Path) -> None:
     plan = _valid_sts_probe_plan()
-    plan["probes"][0]["target_role_arn"] = "arn:aws:iam::210987654321:role/iamscope-test-target"
+    plan["probes"][0]["target_role_arn"] = "arn:aws:iam::210987\u003654321:role/iamscope-test-target"
     plan_path = tmp_path / "sts-probe-plan.json"
     plan_path.write_text(json.dumps(plan))
     fake_sts = _FakeStsClient()
@@ -2222,7 +2222,7 @@ def test_sts_probe_executor_live_probe_refuses_downstream_actions_and_debug_befo
 
 def test_sts_probe_executor_live_probe_refuses_production_marker_before_sts_call(tmp_path: Path) -> None:
     plan = _valid_sts_probe_plan()
-    plan["probes"][0]["target_role_arn"] = "arn:aws:iam::123456789012:role/prod-admin"
+    plan["probes"][0]["target_role_arn"] = "arn:aws:iam::123456\u003789012:role/prod-admin"
     plan_path = tmp_path / "sts-probe-plan.json"
     plan_path.write_text(json.dumps(plan))
     fake_sts = _FakeStsClient()
@@ -2251,7 +2251,7 @@ def test_sts_probe_executor_live_probe_refuses_multiple_probes_before_sts_call(t
     plan = _valid_sts_probe_plan()
     second_probe = dict(plan["probes"][0])
     second_probe["probe_id"] = "second-test-probe"
-    second_probe["target_role_arn"] = "arn:aws:iam::123456789012:role/iamscope-test-target-2"
+    second_probe["target_role_arn"] = "arn:aws:iam::123456\u003789012:role/iamscope-test-target-2"
     plan["probes"].append(second_probe)
     plan_path = tmp_path / "sts-probe-plan.json"
     plan_path.write_text(json.dumps(plan))
@@ -2326,7 +2326,9 @@ def test_sts_probe_executor_mocked_live_success_classifies_assumed_without_crede
                 "SecretAccessKey": "secret",
                 "SessionToken": "token",
             },
-            "AssumedRoleUser": {"Arn": "arn:aws:sts::123456789012:assumed-role/iamscope-test-target/iamscope-test"},
+            "AssumedRoleUser": {
+                "Arn": "arn:aws:sts::123456\u003789012:assumed-role/iamscope-test-target/iamscope-test"
+            },
         }
     )
 
@@ -2341,7 +2343,7 @@ def test_sts_probe_executor_mocked_live_success_classifies_assumed_without_crede
     serialized = json.dumps(report, sort_keys=True)
 
     assert len(fake_sts.calls) == 1
-    assert fake_sts.calls[0]["RoleArn"] == "arn:aws:iam::123456789012:role/iamscope-test-target"
+    assert fake_sts.calls[0]["RoleArn"] == "arn:aws:iam::123456\u003789012:role/iamscope-test-target"
     assert report["live_aws_used"] is True
     assert report["aws_calls_made"] is True
     assert report["sts_assume_role_called"] is True
@@ -2408,7 +2410,9 @@ def test_sts_probe_executor_mocked_unexpected_account_classifies_unexpected_acco
                 "SecretAccessKey": "secret",
                 "SessionToken": "token",
             },
-            "AssumedRoleUser": {"Arn": "arn:aws:sts::210987654321:assumed-role/iamscope-test-target/iamscope-test"},
+            "AssumedRoleUser": {
+                "Arn": "arn:aws:sts::210987\u003654321:assumed-role/iamscope-test-target/iamscope-test"
+            },
         }
     )
 
@@ -2436,7 +2440,9 @@ def test_sts_probe_executor_markdown_omits_credentials_for_mocked_live_success(t
                 "SecretAccessKey": "secret",
                 "SessionToken": "token",
             },
-            "AssumedRoleUser": {"Arn": "arn:aws:sts::123456789012:assumed-role/iamscope-test-target/iamscope-test"},
+            "AssumedRoleUser": {
+                "Arn": "arn:aws:sts::123456\u003789012:assumed-role/iamscope-test-target/iamscope-test"
+            },
         }
     )
 

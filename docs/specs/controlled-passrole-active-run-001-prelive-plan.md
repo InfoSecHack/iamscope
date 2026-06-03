@@ -15,10 +15,10 @@ This is a pre-live planning slice only. It does not run live AWS, call `iam:Pass
 
 ## Planned Test-Only Values
 
-- Account ID: `516525145310`, from prior test-only setup metadata.
+- Account ID: `<redacted-aws-account-id>`, from prior test-only setup metadata.
 - Source profile: `iamscope-passrole-positive-source`.
-- Source principal ARN: `arn:aws:iam::516525145310:user/iamscope-passrole-positive-source`.
-- Target role ARN: `arn:aws:iam::516525145310:role/iamscope-passrole-target-role`.
+- Source principal ARN: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-passrole-positive-source`.
+- Target role ARN: `arn:aws:iam::<redacted-aws-account-id>:role/iamscope-passrole-target-role`.
 - Service principal: `lambda.amazonaws.com`.
 - Function name: `iamscope-passrole-active-run001`.
 - Region: required before live approval; suggested only as a placeholder until confirmed: `<controlled-test-region>`.
@@ -53,7 +53,7 @@ If a later no-call preflight package slice is approved, the ZIP must be created 
 
 The source principal must have only the permissions needed for this active path:
 
-- `iam:PassRole` on `arn:aws:iam::516525145310:role/iamscope-passrole-target-role` with `iam:PassedToService=lambda.amazonaws.com`.
+- `iam:PassRole` on `arn:aws:iam::<redacted-aws-account-id>:role/iamscope-passrole-target-role` with `iam:PassedToService=lambda.amazonaws.com`.
 - `lambda:CreateFunction` on the single test function ARN if AWS supports that scope for `CreateFunction`; otherwise the later setup checklist must document the narrowest supported create scope.
 - `lambda:GetFunction` on the single test function ARN.
 - `lambda:GetFunctionConfiguration` on the single test function ARN.
@@ -102,7 +102,7 @@ This slice performs only static/doc checks:
 Before live approval, a later slice must collect or confirm:
 
 - Controlled test region.
-- Source profile resolves to `arn:aws:iam::516525145310:user/iamscope-passrole-positive-source`.
+- Source profile resolves to `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-passrole-positive-source`.
 - Source user exists and has only the required scoped permissions.
 - Target role exists.
 - Target role trust is scoped to `lambda.amazonaws.com` only.

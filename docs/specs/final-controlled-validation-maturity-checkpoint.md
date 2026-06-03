@@ -11,8 +11,8 @@ This is docs/checkpoint only. It does not run live AWS, call STS AssumeRole, run
 ### Controlled STS Run #1
 
 - Selected path: Env06 positive admin-reachability STS path.
-- Planned source: `arn:aws:iam::516525145310:user/iamscope-test/env06-alice`.
-- Planned target: `arn:aws:iam::516525145310:role/iamscope-test/env06-admin`.
+- Planned source: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-test/env06-alice`.
+- Planned target: `arn:aws:iam::<redacted-aws-account-id>:role/iamscope-test/env06-admin`.
 - Status: blocked before live execution.
 - Classification: `environment_mismatch`.
 - Reason: the live profile/source and checked target role did not match the sanitized Env06 path.
@@ -25,8 +25,8 @@ Run #1 remains useful because it demonstrates that the controlled validation wor
 ### Controlled STS Run #2
 
 - Selected candidate: live-profile-matched `iamscope-admin` denied STS path.
-- Source: `arn:aws:iam::516525145310:user/iamscope-admin`.
-- Target: `arn:aws:iam::516525145310:role/arf-rt-DevRole`.
+- Source: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-admin`.
+- Target: `arn:aws:iam::<redacted-aws-account-id>:role/arf-rt-DevRole`.
 - Expected outcome: `denied`.
 - Observed outcome: `denied/access_denied`.
 - `outcome_classification`: `corroborated`.

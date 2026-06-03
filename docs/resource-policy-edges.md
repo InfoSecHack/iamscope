@@ -19,7 +19,7 @@ Each parsed Allow statement can produce an ordinary graph edge with the
 `_resource_policy` layer suffix, for example:
 
 ```text
-arn:aws:iam::222222222222:role/Partner -> arn:aws:s3:::demo-bucket
+arn:aws:iam::<redacted-aws-account-id>:role/Partner -> arn:aws:s3:::demo-bucket
 edge_type = s3:GetObject_resource_policy
 ```
 

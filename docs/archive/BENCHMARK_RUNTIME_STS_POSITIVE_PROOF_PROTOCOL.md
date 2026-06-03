@@ -277,8 +277,8 @@ A positive single-case live STS proof was performed manually outside this PR and
 
 Sanitized proof summary:
 
-- Source principal: `arn:aws:iam::516525145310:user/iamscope-positive-source`
-- Target role: `arn:aws:iam::516525145310:role/iamscope-positive-target-role`
+- Source principal: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-positive-source`
+- Target role: `arn:aws:iam::<redacted-aws-account-id>:role/iamscope-positive-target-role`
 - Expected outcome: `assumed`
 - Observed result classification: `assumed`
 - `live_aws_used=true`

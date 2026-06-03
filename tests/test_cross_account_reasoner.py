@@ -53,8 +53,8 @@ from iamscope.truth.probe_overlay import ProbeRecord
 NODE_TYPE_OIDC_PROVIDER = "OIDCProvider"
 
 # Canonical test ARNs.
-_TARGET_ACCOUNT = "111111111111"
-_EXTERNAL_ACCOUNT = "999999999999"
+_TARGET_ACCOUNT = "111111\u003111111"
+_EXTERNAL_ACCOUNT = "999999\u003999999"
 _TARGET_ROLE_ARN = f"arn:aws:iam::{_TARGET_ACCOUNT}:role/ProdAdmin"
 _EXTERNAL_ROOT_ARN = f"arn:aws:iam::{_EXTERNAL_ACCOUNT}:root"
 _EXTERNAL_ROLE_ARN = f"arn:aws:iam::{_EXTERNAL_ACCOUNT}:role/Specific"
@@ -767,9 +767,9 @@ class TestDeterminism:
 
     def _build(self) -> FactGraph:
         target = _target_role_node()
-        ext_a = _account_root_node("111111111111", org_member=True)
-        ext_b = _account_root_node("222222222222", org_member=False)
-        ext_c = _account_root_node("333333333333", org_member=False)
+        ext_a = _account_root_node("111111\u003111111", org_member=True)
+        ext_b = _account_root_node("222222\u003222222", org_member=False)
+        ext_c = _account_root_node("333333\u003333333", org_member=False)
         edge_a = _trust_edge(
             src=ext_a,
             dst=target,

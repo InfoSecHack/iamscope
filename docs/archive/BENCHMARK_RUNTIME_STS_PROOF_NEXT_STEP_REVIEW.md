@@ -18,8 +18,8 @@ This is docs/review only. It does not run live AWS, call STS AssumeRole, impleme
 The first single-case live STS proof produced a denied result:
 
 - One live STS AssumeRole call was attempted.
-- Source principal: `arn:aws:iam::516525145310:user/iamscope-admin`.
-- Target role: `arn:aws:iam::516525145310:role/arf-rt-DevRole`.
+- Source principal: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-admin`.
+- Target role: `arn:aws:iam::<redacted-aws-account-id>:role/arf-rt-DevRole`.
 - Expected outcome: `denied`.
 - Observed result: `denied`.
 - Safe error category: `access_denied`.

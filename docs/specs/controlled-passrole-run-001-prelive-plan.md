@@ -11,9 +11,9 @@ This slice is pre-live/static report validation only. It does not run live AWS, 
 - Validation run ID: `controlled-passrole-run-001-lambda-static-allowed`.
 - Environment label: `controlled-passrole-run-001-test-only-static`.
 - AWS profile name for future setup reference: `iamscope-passrole-positive-source`.
-- Expected account ID: `516525145310`.
-- Source principal ARN: `arn:aws:iam::516525145310:user/iamscope-passrole-positive-source`.
-- Target role ARN: `arn:aws:iam::516525145310:role/iamscope-passrole-target-role`.
+- Expected account ID: `<redacted-aws-account-id>`.
+- Source principal ARN: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-passrole-positive-source`.
+- Target role ARN: `arn:aws:iam::<redacted-aws-account-id>:role/iamscope-passrole-target-role`.
 - Service principal: `lambda.amazonaws.com`.
 - Predicted action: `iam:PassRole`.
 - Predicted behavior: `allowed`.
@@ -71,8 +71,8 @@ Reasons:
 
 Abort any live or active validation if any condition is true:
 
-- The source profile does not resolve to `arn:aws:iam::516525145310:user/iamscope-passrole-positive-source`.
-- The target role ARN differs from `arn:aws:iam::516525145310:role/iamscope-passrole-target-role`.
+- The source profile does not resolve to `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-passrole-positive-source`.
+- The target role ARN differs from `arn:aws:iam::<redacted-aws-account-id>:role/iamscope-passrole-target-role`.
 - The target role trust does not allow exactly the selected service principal.
 - The source permission is broader than `iam:PassRole` on the selected target role.
 - The setup requires production accounts, production profiles, broad wildcards, or downstream service launch.

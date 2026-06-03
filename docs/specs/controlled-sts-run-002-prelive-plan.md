@@ -11,9 +11,9 @@ This slice is pre-live planning and validation only. It does not run live AWS, c
 - `validation_run_id`: `controlled-sts-run-002-iam-admin-arf-rt-devrole-denied`
 - Environment label: `controlled-sts-denied-proof-summary`
 - Source profile: `iamscope-admin`
-- Exact account ID: `516525145310`
-- Exact source principal ARN: `arn:aws:iam::516525145310:user/iamscope-admin`
-- Exact target role ARN: `arn:aws:iam::516525145310:role/arf-rt-DevRole`
+- Exact account ID: `<redacted-aws-account-id>`
+- Exact source principal ARN: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-admin`
+- Exact target role ARN: `arn:aws:iam::<redacted-aws-account-id>:role/arf-rt-DevRole`
 - Predicted behavior: `denied`
 - Expected outcome: `denied`
 - Planned action: `sts:AssumeRole`
@@ -113,8 +113,8 @@ Any future live slice must show the selected source principal, target role, expe
 Abort any future live execution if any of these are true:
 
 - The operator has not explicitly approved live execution for this exact single probe.
-- The `iamscope-admin` profile no longer resolves to `arn:aws:iam::516525145310:user/iamscope-admin`.
-- The target role ARN differs from `arn:aws:iam::516525145310:role/arf-rt-DevRole`.
+- The `iamscope-admin` profile no longer resolves to `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-admin`.
+- The target role ARN differs from `arn:aws:iam::<redacted-aws-account-id>:role/arf-rt-DevRole`.
 - The target role cannot be read by safe IAM lookup immediately before live planning or execution.
 - The probe plan contains more than one probe.
 - `duration_seconds` exceeds `900`.

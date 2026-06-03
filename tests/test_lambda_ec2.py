@@ -201,15 +201,15 @@ class TestPermissionParserLambdaEC2:
                 {
                     "Effect": "Allow",
                     "Action": "lambda:InvokeFunction",
-                    "Resource": "arn:aws:lambda:us-east-1:123456789012:function:MyFunc",
+                    "Resource": "arn:aws:lambda:us-east-1:123456\u003789012:function:MyFunc",
                 }
             ],
         }
         results = parse_permission_policy(
             policy,
-            source_arn="arn:aws:iam::123456789012:role/Caller",
+            source_arn="arn:aws:iam::123456\u003789012:role/Caller",
             source_node_type="IAMRole",
-            source_account_id="123456789012",
+            source_account_id="123456\u003789012",
         )
         assert len(results) == 1
         assert results[0].action == "lambda:InvokeFunction"
@@ -229,9 +229,9 @@ class TestPermissionParserLambdaEC2:
         }
         results = parse_permission_policy(
             policy,
-            source_arn="arn:aws:iam::123456789012:role/Deployer",
+            source_arn="arn:aws:iam::123456\u003789012:role/Deployer",
             source_node_type="IAMRole",
-            source_account_id="123456789012",
+            source_account_id="123456\u003789012",
         )
         assert len(results) == 1
         assert results[0].action == "lambda:CreateFunction"
@@ -250,9 +250,9 @@ class TestPermissionParserLambdaEC2:
         }
         results = parse_permission_policy(
             policy,
-            source_arn="arn:aws:iam::123456789012:role/Admin",
+            source_arn="arn:aws:iam::123456\u003789012:role/Admin",
             source_node_type="IAMRole",
-            source_account_id="123456789012",
+            source_account_id="123456\u003789012",
         )
         assert len(results) == 1
         assert results[0].action == "ec2:RunInstances"
@@ -271,9 +271,9 @@ class TestPermissionParserLambdaEC2:
         }
         results = parse_permission_policy(
             policy,
-            source_arn="arn:aws:iam::123456789012:role/Admin",
+            source_arn="arn:aws:iam::123456\u003789012:role/Admin",
             source_node_type="IAMRole",
-            source_account_id="123456789012",
+            source_account_id="123456\u003789012",
         )
         actions = {r.action for r in results}
         assert "lambda:InvokeFunction" in actions
@@ -293,9 +293,9 @@ class TestPermissionParserLambdaEC2:
         }
         results = parse_permission_policy(
             policy,
-            source_arn="arn:aws:iam::123456789012:role/Admin",
+            source_arn="arn:aws:iam::123456\u003789012:role/Admin",
             source_node_type="IAMRole",
-            source_account_id="123456789012",
+            source_account_id="123456\u003789012",
         )
         actions = {r.action for r in results}
         assert "ec2:RunInstances" in actions
@@ -314,9 +314,9 @@ class TestPermissionParserLambdaEC2:
         }
         results = parse_permission_policy(
             policy,
-            source_arn="arn:aws:iam::123456789012:role/Admin",
+            source_arn="arn:aws:iam::123456\u003789012:role/Admin",
             source_node_type="IAMRole",
-            source_account_id="123456789012",
+            source_account_id="123456\u003789012",
         )
         actions = {r.action for r in results}
         assert "sts:AssumeRole" in actions
@@ -339,9 +339,9 @@ class TestPermissionParserLambdaEC2:
         }
         results = parse_permission_policy(
             policy,
-            source_arn="arn:aws:iam::123456789012:role/Reader",
+            source_arn="arn:aws:iam::123456\u003789012:role/Reader",
             source_node_type="IAMRole",
-            source_account_id="123456789012",
+            source_account_id="123456\u003789012",
         )
         assert len(results) == 0
 

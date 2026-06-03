@@ -21,7 +21,7 @@ class TestStatementDigest:
         stmt = {
             "Effect": "Allow",
             "Action": "sts:AssumeRole",
-            "Principal": {"AWS": "arn:aws:iam::222222222222:root"},
+            "Principal": {"AWS": "arn:aws:iam::222222\u003222222:root"},
         }
         d1 = statement_digest(stmt)
         d2 = statement_digest(stmt)
@@ -33,10 +33,10 @@ class TestStatementDigest:
         stmt_a = {
             "Effect": "Allow",
             "Action": "sts:AssumeRole",
-            "Principal": {"AWS": "arn:aws:iam::222222222222:root"},
+            "Principal": {"AWS": "arn:aws:iam::222222\u003222222:root"},
         }
         stmt_b = {
-            "Principal": {"AWS": "arn:aws:iam::222222222222:root"},
+            "Principal": {"AWS": "arn:aws:iam::222222\u003222222:root"},
             "Action": "sts:AssumeRole",
             "Effect": "Allow",
         }

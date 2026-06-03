@@ -25,8 +25,8 @@ The harness uses the same non-production account/profile prerequisites as Env22:
 - `MANAGEMENT_PROFILE=iamscope-admin`
 - `CALLER_PROFILE=serim-dev-admin`
 - `TARGET_PROFILE=serim-prod-admin`
-- `CALLER_ACCOUNT_ID=377114445031`
-- `TARGET_ACCOUNT_ID=737923406074`
+- `CALLER_ACCOUNT_ID=<redacted-aws-account-id>`
+- `TARGET_ACCOUNT_ID=<redacted-aws-account-id>`
 - `AWS_REGION=us-east-1`
 
 The runner refuses to run unless `CONFIRM_ENV23_CROSS_ACCOUNT_MUTATION=YES` is set and the caller and target account IDs differ. It runs the existing read-only cross-account preflight before Terraform mutation, creates no SCPs, performs no Organizations mutation, and destroys Terraform-managed IAM resources on exit.
@@ -60,8 +60,8 @@ Env23 does not prove broad cross-account trust correctness, all external-princip
 export MANAGEMENT_PROFILE=iamscope-admin
 export CALLER_PROFILE=serim-dev-admin
 export TARGET_PROFILE=serim-prod-admin
-export CALLER_ACCOUNT_ID=377114445031
-export TARGET_ACCOUNT_ID=737923406074
+export CALLER_ACCOUNT_ID=<redacted-aws-account-id>
+export TARGET_ACCOUNT_ID=<redacted-aws-account-id>
 export AWS_REGION=us-east-1
 export CONFIRM_ENV23_CROSS_ACCOUNT_MUTATION=YES
 

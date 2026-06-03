@@ -31,12 +31,12 @@ from iamscope.resolver.trust_condition_binder import (
     build_trust_condition_constraints,
 )
 
-SOURCE_ROLE_ARN = "arn:aws:iam::111111111111:role/JumpRole"
-TARGET_ROLE_ARN = "arn:aws:iam::222222222222:role/ProdDeployRole"
+SOURCE_ROLE_ARN = "arn:aws:iam::111111\u003111111:role/JumpRole"
+TARGET_ROLE_ARN = "arn:aws:iam::222222\u003222222:role/ProdDeployRole"
 RAW_CONDITIONS = {"StringEquals": {"sts:ExternalId": "serim-shared-prod-trust"}}
 
 
-def _role_node(arn: str = TARGET_ROLE_ARN, account_id: str = "222222222222") -> Node:
+def _role_node(arn: str = TARGET_ROLE_ARN, account_id: str = "222222\u003222222") -> Node:
     return Node(
         provider=PROVIDER_AWS,
         node_type=NODE_TYPE_IAM_ROLE,
@@ -101,7 +101,7 @@ class TestBuildTrustConditionConstraints:
             [
                 _trust_result(raw_conditions=RAW_CONDITIONS),
                 _trust_result(
-                    principal_arn="arn:aws:iam::111111111111:role/TerraformRole",
+                    principal_arn="arn:aws:iam::111111\u003111111:role/TerraformRole",
                     raw_conditions=RAW_CONDITIONS,
                 ),
             ],
@@ -132,7 +132,7 @@ class TestBindTrustConditionToEdge:
             [
                 _trust_result(raw_conditions=RAW_CONDITIONS),
                 _trust_result(
-                    principal_arn="arn:aws:iam::111111111111:role/TerraformRole",
+                    principal_arn="arn:aws:iam::111111\u003111111:role/TerraformRole",
                     raw_conditions=RAW_CONDITIONS,
                 ),
             ],
@@ -150,7 +150,7 @@ class TestTrustConditionPipeline:
     def test_resolution_exports_trust_condition_constraint_to_scenario(self) -> None:
         role = _role_node()
         acct = AccountData(
-            account_id="222222222222",
+            account_id="222222\u003222222",
             nodes=[role],
             trust_results=[(role, _trust_result(raw_conditions=RAW_CONDITIONS))],
             role_arns=[TARGET_ROLE_ARN],
@@ -160,14 +160,14 @@ class TestTrustConditionPipeline:
             root_id="r-test",
             accounts=[
                 AccountInfo(
-                    account_id="111111111111",
+                    account_id="111111\u003111111",
                     name="dev",
                     email="",
                     status="ACTIVE",
                     parent_id="r-test",
                 ),
                 AccountInfo(
-                    account_id="222222222222",
+                    account_id="222222\u003222222",
                     name="prod",
                     email="",
                     status="ACTIVE",

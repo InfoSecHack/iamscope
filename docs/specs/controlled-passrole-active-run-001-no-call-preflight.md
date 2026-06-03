@@ -9,11 +9,11 @@ This is a docs/preflight slice only. It does not call `iam:PassRole`, call Lambd
 ## Run Identity
 
 - Validation run ID: `controlled-passrole-active-run-001-lambda-createfunction`.
-- Expected account ID: `516525145310`.
+- Expected account ID: `<redacted-aws-account-id>`.
 - Confirmed region: `us-east-1`, from local AWS config for profile `iamscope-passrole-positive-source`.
 - Source profile: `iamscope-passrole-positive-source`.
-- Planned source principal ARN: `arn:aws:iam::516525145310:user/iamscope-passrole-positive-source`.
-- Target role ARN: `arn:aws:iam::516525145310:role/iamscope-passrole-target-role`.
+- Planned source principal ARN: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-passrole-positive-source`.
+- Target role ARN: `arn:aws:iam::<redacted-aws-account-id>:role/iamscope-passrole-target-role`.
 - Service principal: `lambda.amazonaws.com`.
 - Function name: `iamscope-passrole-active-run001`.
 - Expected outcome for later active validation: `allowed`.
@@ -33,7 +33,7 @@ No Lambda API, `iam:PassRole`, STS `AssumeRole`, resource creation, or resource 
 
 ## Source Identity Check Result
 
-- Expected source principal: `arn:aws:iam::516525145310:user/iamscope-passrole-positive-source`.
+- Expected source principal: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-passrole-positive-source`.
 - Observed source profile status: unusable; `get-caller-identity` returned `InvalidClientTokenId`.
 - Readiness implication: source profile identity is not confirmed and is a blocker for live approval.
 
@@ -43,7 +43,7 @@ Source policy readiness is not confirmed:
 
 - Source user lookup returned `NoSuchEntity`.
 - No source inline or attached policy was confirmed.
-- `iam:PassRole` scoped to `arn:aws:iam::516525145310:role/iamscope-passrole-target-role` with `iam:PassedToService=lambda.amazonaws.com` was not confirmed.
+- `iam:PassRole` scoped to `arn:aws:iam::<redacted-aws-account-id>:role/iamscope-passrole-target-role` with `iam:PassedToService=lambda.amazonaws.com` was not confirmed.
 - Lambda `CreateFunction`, `GetFunction`, `GetFunctionConfiguration`, and `DeleteFunction` permissions scoped to the single test function were not confirmed.
 - Absence of `lambda:InvokeFunction`, trigger creation, function URL creation, event source mapping permissions, broad admin permissions, broad role wildcards, and unrelated service permissions was not confirmed.
 

@@ -9,8 +9,8 @@ This is a docs/checkpoint slice only. It does not run live AWS, call `iam:PassRo
 ## Run Summary
 
 - Validation run ID: `controlled-passrole-run-001-lambda-static-allowed`.
-- Source principal: `arn:aws:iam::516525145310:user/iamscope-passrole-positive-source`.
-- Target role: `arn:aws:iam::516525145310:role/iamscope-passrole-target-role`.
+- Source principal: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-passrole-positive-source`.
+- Target role: `arn:aws:iam::<redacted-aws-account-id>:role/iamscope-passrole-target-role`.
 - Service principal: `lambda.amazonaws.com`.
 - Predicted action: `iam:PassRole`.
 - Predicted outcome: `allowed`.

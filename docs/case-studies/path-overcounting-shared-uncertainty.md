@@ -134,6 +134,6 @@ It also does not use percentages, composite scores, or accuracy claims.
 
 ## Next implementation slice
 
-Recommended next slice: report-only uncertainty grouping helper.
+Recommended next slice: no further path-overcounting demo scaffolding; use the PassRole-to-Lambda controlled live validation case study for current live evidence.
 
 This next slice should group inconclusive findings by uncertainty class from the local fixture/report output without changing verdicts, reasoner logic, schemas, or benchmark semantics.

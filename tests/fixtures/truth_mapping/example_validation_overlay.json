@@ -2,8 +2,8 @@
   "schema_version": "iamscope.validation_overlay.v1",
   "edge_id": null,
   "edge_key": {
-    "source_role_arn": "arn:aws:iam::111111111111:role/ExampleSourceRole",
-    "target_role_arn": "arn:aws:iam::222222222222:role/ExampleTargetRole",
+    "source_role_arn": "arn:aws:iam::111111\u003111111:role/ExampleSourceRole",
+    "target_role_arn": "arn:aws:iam::222222\u003222222:role/ExampleTargetRole",
     "external_id": true
   },
   "validated_state": "denied",

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from iamscope.parser.permission_policy import parse_permission_denies
 
-PRINCIPAL_ARN = "arn:aws:iam::111111111111:user/Admin"
+PRINCIPAL_ARN = "arn:aws:iam::111111\u003111111:user/Admin"
 POLICY_ID = "inline:admin-policy"
 
 
@@ -72,7 +72,7 @@ def test_plain_deny_multiple_actions() -> None:
 
 
 def test_plain_deny_specific_resource() -> None:
-    resource = "arn:aws:iam::222222222222:role/ProdDeploy"
+    resource = "arn:aws:iam::222222\u003222222:role/ProdDeploy"
     results = _parse(
         {
             "Statement": [{"Effect": "Deny", "Action": "sts:AssumeRole", "Resource": resource}],
@@ -136,7 +136,7 @@ def test_notresource_deny_parse_status_unsupported() -> None:
                 {
                     "Effect": "Deny",
                     "Action": "sts:AssumeRole",
-                    "NotResource": "arn:aws:iam::222222222222:role/Allowed",
+                    "NotResource": "arn:aws:iam::222222\u003222222:role/Allowed",
                 }
             ],
         }

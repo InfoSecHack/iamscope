@@ -188,10 +188,10 @@ This example uses placeholder values and sanitized summaries only.
     "finding_id": null,
     "path_id": null,
     "validation_layer_id": "validation-layer-passrole-example-001",
-    "source_principal_arn": "arn:aws:iam::123456789012:user/iamscope-test/example-alice",
-    "target_role_arn": "arn:aws:iam::123456789012:role/iamscope-test/example-service-role",
+    "source_principal_arn": "arn:aws:iam::<redacted-aws-account-id>:user/iamscope-test/example-alice",
+    "target_role_arn": "arn:aws:iam::<redacted-aws-account-id>:role/iamscope-test/example-service-role",
     "service_principal": "lambda.amazonaws.com",
-    "expected_account_id": "123456789012",
+    "expected_account_id": "<redacted-aws-account-id>",
     "reasoner_or_finding_type": "passrole_lambda",
     "prediction_source": "sanitized_selected_path",
     "source_document": "docs/example/sanitized-passrole-selection.md",
@@ -200,7 +200,7 @@ This example uses placeholder values and sanitized summaries only.
   "predicted_behavior": {
     "predicted_action": "iam:PassRole",
     "predicted_service_principal": "lambda.amazonaws.com",
-    "predicted_target_role_arn": "arn:aws:iam::123456789012:role/iamscope-test/example-service-role",
+    "predicted_target_role_arn": "arn:aws:iam::<redacted-aws-account-id>:role/iamscope-test/example-service-role",
     "predicted_outcome": "allowed",
     "prediction_basis": "Sanitized metadata shows source permission scoped to the target role and target trust for the selected service principal.",
     "prediction_caveats": ["Static corroboration does not prove service launch or downstream authorization."]

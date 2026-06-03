@@ -40,11 +40,11 @@ def org_setup():
     Structure:
         Root
         ├── Production OU
-        │   └── Account: prod-account (333333333333 or similar)
+        │   └── Account: prod-account (333333\u003333333 or similar)
         │   └── SCP: DenyAssumeRole (deny sts:AssumeRole)
         │   └── SCP: DenyS3Delete (deny s3:DeleteObject)
         └── Development OU
-            └── Account: dev-account (444444444444 or similar)
+            └── Account: dev-account (444444\u003444444 or similar)
     """
     with mock_aws():
         session = get_session(region_name="us-east-1")
@@ -141,8 +141,8 @@ def org_setup():
                         "Condition": {
                             "ArnLike": {
                                 "aws:PrincipalArn": [
-                                    "arn:aws:iam::222222222222:role/Blocked*",
-                                    "arn:aws:sts::222222222222:assumed-role/Blocked*/*",
+                                    "arn:aws:iam::222222\u003222222:role/Blocked*",
+                                    "arn:aws:sts::222222\u003222222:assumed-role/Blocked*/*",
                                 ]
                             }
                         },
@@ -266,8 +266,8 @@ class TestSCPCollection:
         assert c.properties["parse_status"] == "complete"
         assert c.properties["parse_warnings"] == []
         assert c.properties["applicable_principal_patterns"] == [
-            "arn:aws:iam::222222222222:role/Blocked*",
-            "arn:aws:sts::222222222222:assumed-role/Blocked*/*",
+            "arn:aws:iam::222222\u003222222:role/Blocked*",
+            "arn:aws:sts::222222\u003222222:assumed-role/Blocked*/*",
         ]
 
     def test_collected_nonmatching_principal_arn_scp_does_not_bind_unrelated_trust_edge(self, org_setup) -> None:
@@ -280,12 +280,12 @@ class TestSCPCollection:
             src=NodeRef(
                 provider=PROVIDER_AWS,
                 node_type=NODE_TYPE_IAM_USER,
-                provider_id="arn:aws:iam::222222222222:user/iamscope-test/env22-alice",
+                provider_id="arn:aws:iam::222222\u003222222:user/iamscope-test/env22-alice",
             ),
             dst=NodeRef(
                 provider=PROVIDER_AWS,
                 node_type=NODE_TYPE_IAM_ROLE,
-                provider_id="arn:aws:iam::333333333333:role/iamscope-test/env22-admin",
+                provider_id="arn:aws:iam::333333\u003333333:role/iamscope-test/env22-admin",
             ),
             region=REGION_GLOBAL,
             features={"layer": "trust"},

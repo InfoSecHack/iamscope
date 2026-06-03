@@ -14,8 +14,8 @@ This is docs/checkpoint only. It does not run live AWS, call STS AssumeRole, cre
 
 Sanitized denied proof summary:
 
-- Source principal: `arn:aws:iam::516525145310:user/iamscope-admin`
-- Target role: `arn:aws:iam::516525145310:role/arf-rt-DevRole`
+- Source principal: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-admin`
+- Target role: `arn:aws:iam::<redacted-aws-account-id>:role/arf-rt-DevRole`
 - Expected outcome: `denied`
 - Observed result: `denied`
 - `credentials_obtained=false`
@@ -30,8 +30,8 @@ Evidence boundary:
 
 Sanitized positive proof summary:
 
-- Source principal: `arn:aws:iam::516525145310:user/iamscope-positive-source`
-- Target role: `arn:aws:iam::516525145310:role/iamscope-positive-target-role`
+- Source principal: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-positive-source`
+- Target role: `arn:aws:iam::<redacted-aws-account-id>:role/iamscope-positive-target-role`
 - Expected outcome: `assumed`
 - Observed result: `assumed`
 - `credentials_obtained=true`

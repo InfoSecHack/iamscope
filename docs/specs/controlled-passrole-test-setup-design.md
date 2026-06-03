@@ -11,9 +11,9 @@ This is a docs/design slice only. It does not run live AWS, call `iam:PassRole`,
 Controlled PassRole candidate selection found no ready live-profile-matched candidate:
 
 - Env18 and Env20 are the strongest committed sanitized PassRole candidates.
-- Env18 source principal is `arn:aws:iam::516525145310:user/iamscope-test/env18-alice`.
-- Env20 source principal is `arn:aws:iam::516525145310:user/iamscope-test/env20-alice`.
-- Current available `iamscope-test` profile resolves to `arn:aws:iam::516525145310:user/iamscope-verify`, not either Alice principal.
+- Env18 source principal is `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-test/env18-alice`.
+- Env20 source principal is `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-test/env20-alice`.
+- Current available `iamscope-test` profile resolves to `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-verify`, not either Alice principal.
 - No committed sanitized PassRole evidence currently maps to `iamscope-admin`, `iamscope-verify`, or the known assumed-role profiles.
 
 Source: `docs/specs/controlled-passrole-candidate-selection.md`.

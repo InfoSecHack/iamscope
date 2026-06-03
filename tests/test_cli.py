@@ -51,14 +51,14 @@ class TestArgumentParsing:
     def test_collect_with_accounts(self) -> None:
         """--accounts sets account filter."""
         parser = _build_parser()
-        args = parser.parse_args(["collect", "--accounts", "111111111111,222222222222"])
-        assert args.account_filter == "111111111111,222222222222"
+        args = parser.parse_args(["collect", "--accounts", "111111\u003111111,222222\u003222222"])
+        assert args.account_filter == "111111\u003111111,222222\u003222222"
 
     def test_collect_with_skip_accounts(self) -> None:
         """--skip-accounts sets accounts to skip."""
         parser = _build_parser()
-        args = parser.parse_args(["collect", "--skip-accounts", "333333333333"])
-        assert args.skip_accounts == "333333333333"
+        args = parser.parse_args(["collect", "--skip-accounts", "333333\u003333333"])
+        assert args.skip_accounts == "333333\u003333333"
 
     def test_expansion_mode_choices(self) -> None:
         """--expansion-mode accepts expand/warn/skip."""
@@ -487,7 +487,7 @@ class TestAccountIDValidation:
             [
                 "collect",
                 "--accounts",
-                "123456789012",
+                "123456\u003789012",
                 "--output",
                 str(tmp_path),
             ]

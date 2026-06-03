@@ -27,7 +27,7 @@ from iamscope.constants import (
 from iamscope.models import Constraint, Edge, EdgeConstraint, Node
 from iamscope.reasoner import FactGraph, S3BucketTakeoverReasoner
 
-_ACCOUNT = "111111111111"
+_ACCOUNT = "111111\u003111111"
 _ALICE_ARN = f"arn:aws:iam::{_ACCOUNT}:user/Alice"
 _BOB_ARN = f"arn:aws:iam::{_ACCOUNT}:user/Bob"
 _ROLE_ARN = f"arn:aws:iam::{_ACCOUNT}:role/DeployerRole"

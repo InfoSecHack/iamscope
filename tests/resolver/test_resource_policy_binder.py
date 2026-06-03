@@ -24,11 +24,11 @@ def _bucket_node() -> Node:
         node_type=NODE_TYPE_S3_BUCKET,
         provider_id="arn:aws:s3:::demo-bucket",
         region=REGION_GLOBAL,
-        properties={"account_id": "111111111111", "is_synthetic": False},
+        properties={"account_id": "111111\u003111111", "is_synthetic": False},
     )
 
 
-def _s3_doc(principal: object = "arn:aws:iam::222222222222:role/Partner") -> ResourcePolicyDocument:
+def _s3_doc(principal: object = "arn:aws:iam::222222\u003222222:role/Partner") -> ResourcePolicyDocument:
     return ResourcePolicyDocument(
         target_arn="arn:aws:s3:::demo-bucket",
         policy_document={
@@ -42,7 +42,7 @@ def _s3_doc(principal: object = "arn:aws:iam::222222222222:role/Partner") -> Res
             ],
         },
         policy_source="s3_bucket_policy",
-        account_id="111111111111",
+        account_id="111111\u003111111",
         region=REGION_GLOBAL,
         resource_type="S3Bucket",
     )
@@ -55,14 +55,14 @@ def _s3_deny_doc() -> ResourcePolicyDocument:
             "Statement": [
                 {
                     "Effect": "Deny",
-                    "Principal": {"AWS": "arn:aws:iam::222222222222:role/Partner"},
+                    "Principal": {"AWS": "arn:aws:iam::222222\u003222222:role/Partner"},
                     "Action": "s3:GetObject",
                     "Resource": "arn:aws:s3:::demo-bucket/*",
                 }
             ],
         },
         policy_source="s3_bucket_policy",
-        account_id="111111111111",
+        account_id="111111\u003111111",
         region=REGION_GLOBAL,
         resource_type="S3Bucket",
     )
@@ -78,7 +78,7 @@ def test_resource_policy_binder_emits_edge_and_synthetic_external_principal() ->
 
     assert len(edges) == 1
     assert edges[0].edge_type == "s3:GetObject_resource_policy"
-    assert edges[0].src.provider_id == "arn:aws:iam::222222222222:role/Partner"
+    assert edges[0].src.provider_id == "arn:aws:iam::222222\u003222222:role/Partner"
     assert edges[0].dst.provider_id == "arn:aws:s3:::demo-bucket"
     assert edges[0].features["layer"] == "resource_policy"
     assert edges[0].features["allow_controls"][0]["control_type"] == "RESOURCE_POLICY"
@@ -104,7 +104,7 @@ def test_condition_bearing_resource_policy_emits_constraint_binding() -> None:
             ],
         },
         policy_source="s3_bucket_policy",
-        account_id="111111111111",
+        account_id="111111\u003111111",
         region=REGION_GLOBAL,
         resource_type="S3Bucket",
     )
@@ -128,13 +128,13 @@ def test_condition_bearing_resource_policy_emits_constraint_binding() -> None:
 
 def test_condition_constraints_are_unique_for_kms_multi_action_reused_sid_policy() -> None:
     doc = ResourcePolicyDocument(
-        target_arn="arn:aws:kms:us-east-1:111111111111:key/abc",
+        target_arn="arn:aws:kms:us-east-1:111111\u003111111:key/abc",
         policy_document={
             "Statement": [
                 {
                     "Sid": "AllowSecretsManagerUse",
                     "Effect": "Allow",
-                    "Principal": {"AWS": "111111111111"},
+                    "Principal": {"AWS": "111111\u003111111"},
                     "Action": [
                         "kms:CreateGrant",
                         "kms:Decrypt",
@@ -145,7 +145,7 @@ def test_condition_constraints_are_unique_for_kms_multi_action_reused_sid_policy
                     "Resource": "*",
                     "Condition": {
                         "StringEquals": {
-                            "kms:CallerAccount": "111111111111",
+                            "kms:CallerAccount": "111111\u003111111",
                             "kms:ViaService": "secretsmanager.us-east-1.amazonaws.com",
                         }
                     },
@@ -153,18 +153,18 @@ def test_condition_constraints_are_unique_for_kms_multi_action_reused_sid_policy
                 {
                     "Sid": "AllowSecretsManagerUse",
                     "Effect": "Allow",
-                    "Principal": {"AWS": "111111111111"},
+                    "Principal": {"AWS": "111111\u003111111"},
                     "Action": "kms:GenerateDataKey*",
                     "Resource": "*",
                     "Condition": {
-                        "StringEquals": {"kms:CallerAccount": "111111111111"},
+                        "StringEquals": {"kms:CallerAccount": "111111\u003111111"},
                         "StringLike": {"kms:ViaService": "secretsmanager.*.amazonaws.com"},
                     },
                 },
             ],
         },
         policy_source="kms_key_policy",
-        account_id="111111111111",
+        account_id="111111\u003111111",
         region="us-east-1",
         resource_type="KMSKey",
     )
@@ -210,7 +210,7 @@ def test_resolution_export_includes_resource_policy_edge_without_schema_change()
         org_id="standalone",
         root_id="standalone",
         accounts=[
-            AccountInfo("111111111111", "standalone", "", "ACTIVE", "standalone"),
+            AccountInfo("111111\u003111111", "standalone", "", "ACTIVE", "standalone"),
         ],
     )
     nodes, edges, constraints, edge_constraints, budget_hit = _run_resolution(
@@ -248,19 +248,19 @@ def test_resolution_export_includes_resource_policy_edge_without_schema_change()
 
 def test_lambda_resource_policy_is_parsed_as_principal_to_function_edge() -> None:
     doc = ResourcePolicyDocument(
-        target_arn="arn:aws:lambda:us-east-1:111111111111:function:demo",
+        target_arn="arn:aws:lambda:us-east-1:111111\u003111111:function:demo",
         policy_document={
             "Statement": [
                 {
                     "Effect": "Allow",
                     "Principal": {"Service": "events.amazonaws.com"},
                     "Action": "lambda:InvokeFunction",
-                    "Resource": "arn:aws:lambda:us-east-1:111111111111:function:demo",
+                    "Resource": "arn:aws:lambda:us-east-1:111111\u003111111:function:demo",
                 }
             ],
         },
         policy_source="lambda_resource_policy",
-        account_id="111111111111",
+        account_id="111111\u003111111",
         region="us-east-1",
         resource_type="LambdaFunction",
     )
@@ -301,7 +301,7 @@ def test_resolution_export_does_not_claim_resource_policy_deny_support() -> None
     org_data = OrgData(
         org_id="standalone",
         root_id="standalone",
-        accounts=[AccountInfo("111111111111", "standalone", "", "ACTIVE", "standalone")],
+        accounts=[AccountInfo("111111\u003111111", "standalone", "", "ACTIVE", "standalone")],
     )
 
     nodes, edges, constraints, edge_constraints, budget_hit = _run_resolution(

@@ -344,7 +344,7 @@ class TestOIDCReportSection:
                 "sts:AssumeRoleWithWebIdentity_trust",
                 src_type="OIDCProvider",
                 src_id="token.actions.githubusercontent.com",
-                dst_id="arn:aws:iam::111111111111:role/DeployRole",
+                dst_id="arn:aws:iam::111111\u003111111:role/DeployRole",
                 naked_trust="CONDITIONED",
                 oidc_subject_pattern="repo:MyOrg/MyRepo:ref:refs/heads/main",
             ),
@@ -352,7 +352,7 @@ class TestOIDCReportSection:
                 "sts:AssumeRoleWithWebIdentity_trust",
                 src_type="OIDCProvider",
                 src_id="token.actions.githubusercontent.com",
-                dst_id="arn:aws:iam::111111111111:role/UnsafeRole",
+                dst_id="arn:aws:iam::111111\u003111111:role/UnsafeRole",
                 naked_trust="BROAD_NAKED",
                 oidc_subject_pattern=None,
             ),
@@ -376,13 +376,13 @@ class TestOIDCReportSection:
             oidc_trust_details=[
                 {
                     "provider": "token.actions.githubusercontent.com",
-                    "role": "arn:aws:iam::111111111111:role/DeployRole",
+                    "role": "arn:aws:iam::111111\u003111111:role/DeployRole",
                     "oidc_subject_pattern": "repo:MyOrg/MyRepo:*",
                     "naked_trust": "CONDITIONED",
                 },
                 {
                     "provider": "token.actions.githubusercontent.com",
-                    "role": "arn:aws:iam::111111111111:role/UnsafeRole",
+                    "role": "arn:aws:iam::111111\u003111111:role/UnsafeRole",
                     "oidc_subject_pattern": None,
                     "naked_trust": "BROAD_NAKED",
                 },
@@ -408,7 +408,7 @@ class TestOIDCReportSection:
             oidc_trust_details=[
                 {
                     "provider": "token.actions.githubusercontent.com",
-                    "role": "arn:aws:iam::111111111111:role/SafeRole",
+                    "role": "arn:aws:iam::111111\u003111111:role/SafeRole",
                     "oidc_subject_pattern": "repo:MyOrg/MyRepo:ref:refs/heads/main",
                     "naked_trust": "CONDITIONED",
                 },
@@ -426,7 +426,7 @@ class TestOIDCReportSection:
             oidc_trust_details=[
                 {
                     "provider": "cognito-identity.amazonaws.com",
-                    "role": "arn:aws:iam::111111111111:role/CognitoRole",
+                    "role": "arn:aws:iam::111111\u003111111:role/CognitoRole",
                     "oidc_subject_pattern": None,
                     "naked_trust": "BROAD_NAKED",
                 },

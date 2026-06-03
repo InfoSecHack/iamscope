@@ -25,8 +25,8 @@ Summarize what IAMScope currently has bounded evidence for, what is partially su
 
 The active PassRole-to-Lambda result is supported only at this narrow boundary:
 
-- One test-only source principal: `arn:aws:iam::516525145310:user/iamscope-passrole-active-source`.
-- One test-only target role: `arn:aws:iam::516525145310:role/iamscope-passrole-active-target-role`.
+- One test-only source principal: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-passrole-active-source`.
+- One test-only target role: `arn:aws:iam::<redacted-aws-account-id>:role/iamscope-passrole-active-target-role`.
 - One service principal: `lambda.amazonaws.com`.
 - One Lambda function name: `iamscope-passrole-active-run001`.
 - One region: `us-east-1`.
@@ -43,9 +43,9 @@ This row should be described as service-mediated PassRole-to-Lambda evidence, no
 The controlled identity Deny Run #1 static result is supported only at this narrow boundary:
 
 - One selected Env03 explicit identity-Deny candidate.
-- One source principal: `arn:aws:iam::516525145310:user/iamscope-test/env03-cc1-alice`.
+- One source principal: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-test/env03-cc1-alice`.
 - One candidate action: `iam:AddUserToGroup`.
-- One candidate resource: `arn:aws:iam::516525145310:group/iamscope-test/env03-cc1-admins`.
+- One candidate resource: `arn:aws:iam::<redacted-aws-account-id>:group/iamscope-test/env03-cc1-admins`.
 - One validation-layer ID: `controlled-identity-deny-run-001-env03-add-user-to-group`.
 - Evidence method: `static_policy_corroboration`.
 - Observed static outcome: `suppressed`.

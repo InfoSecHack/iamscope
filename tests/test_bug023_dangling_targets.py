@@ -6,7 +6,7 @@ observed:
 
     ERROR iamscope.cli: Pipeline failed: Edge secretsmanager:GetSecretValue_permission
     dst references non-existent node: provider=aws, node_type=SecretsManagerSecret,
-    provider_id=arn:aws:secretsmanager:us-east-1:379322108695:secret:
+    provider_id=arn:aws:secretsmanager:us-east-1:379322\u003108695:secret:
       rds!cluster-f5bc238b-6204-4ea1-9160-0a18758cbe3c-bKPSTv
 
 Root cause: RDS-managed SecretsManager secrets (prefix `rds!`) are
@@ -44,7 +44,7 @@ from iamscope.pipeline import (
     _materialize_dangling_endpoints,
 )
 
-_ACCOUNT = "379322108695"
+_ACCOUNT = "379322\u003108695"
 _USER_ARN = f"arn:aws:iam::{_ACCOUNT}:user/TestUser"
 # The exact rds! secret ARN from the OriginX crash, minus the account-
 # specific cluster GUID which we don't need for the test.

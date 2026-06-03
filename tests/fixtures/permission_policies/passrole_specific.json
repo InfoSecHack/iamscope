@@ -4,7 +4,7 @@
         {
             "Effect": "Allow",
             "Action": "iam:PassRole",
-            "Resource": "arn:aws:iam::111111111111:role/LambdaExec"
+            "Resource": "arn:aws:iam::111111\u003111111:role/LambdaExec"
         }
     ]
 }

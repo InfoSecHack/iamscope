@@ -46,7 +46,7 @@ def _src() -> NodeRef:
     return NodeRef(
         provider=PROVIDER_AWS,
         node_type=NODE_TYPE_IAM_USER,
-        provider_id="arn:aws:iam::111111111111:user/Alice",
+        provider_id="arn:aws:iam::111111\u003111111:user/Alice",
     )
 
 
@@ -54,7 +54,7 @@ def _dst() -> NodeRef:
     return NodeRef(
         provider=PROVIDER_AWS,
         node_type=NODE_TYPE_IAM_ROLE,
-        provider_id="arn:aws:iam::222222222222:role/ProdAdmin",
+        provider_id="arn:aws:iam::222222\u003222222:role/ProdAdmin",
     )
 
 
@@ -111,7 +111,7 @@ def _default_evidence() -> EvidenceBundle:
         statement_digests=("digest_abc123",),
         statement_sources={
             "digest_abc123": (
-                "arn:aws:iam::111111111111:policy/test",
+                "arn:aws:iam::111111\u003111111:policy/test",
                 0,
                 "stmt_0",
             ),

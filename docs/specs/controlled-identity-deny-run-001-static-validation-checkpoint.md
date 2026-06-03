@@ -10,9 +10,9 @@ This is a docs/checkpoint slice only. It does not run live AWS, call STS, call `
 
 - Validation run ID: `controlled-identity-deny-run-001-static-suppression`.
 - Selected candidate: Env03 identity-Deny group escalation candidate.
-- Source principal: `arn:aws:iam::516525145310:user/iamscope-test/env03-cc1-alice`.
+- Source principal: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-test/env03-cc1-alice`.
 - Candidate action: `iam:AddUserToGroup`.
-- Candidate resource: `arn:aws:iam::516525145310:group/iamscope-test/env03-cc1-admins`.
+- Candidate resource: `arn:aws:iam::<redacted-aws-account-id>:group/iamscope-test/env03-cc1-admins`.
 - Pattern/finding family: `iam_group_membership_escalation`.
 - Validation-layer ID: `controlled-identity-deny-run-001-env03-add-user-to-group`.
 - Native finding/path ID status: no reusable native `finding_id` or `path_id` was identified in the committed sanitized run summaries.

@@ -12,44 +12,44 @@ The positive proof is blocked because no local AWS profile currently maps to the
 
 Target role:
 
-- `arn:aws:iam::516525145310:role/arf-rt-DevRole`
+- `arn:aws:iam::<redacted-aws-account-id>:role/arf-rt-DevRole`
 
 Target trust policy allows:
 
-- `arn:aws:iam::516525145310:user/arf-rt-attacker`
+- `arn:aws:iam::<redacted-aws-account-id>:user/arf-rt-attacker`
 
 Current gap:
 
-- No local AWS profile currently resolves to `arn:aws:iam::516525145310:user/arf-rt-attacker`.
-- Therefore a positive/assumed proof against `arn:aws:iam::516525145310:role/arf-rt-DevRole` is not ready.
+- No local AWS profile currently resolves to `arn:aws:iam::<redacted-aws-account-id>:user/arf-rt-attacker`.
+- Therefore a positive/assumed proof against `arn:aws:iam::<redacted-aws-account-id>:role/arf-rt-DevRole` is not ready.
 
 ## Evidence Observed
 
 Available local profiles were observed to resolve as follows:
 
-- `iamscope-test` -> `arn:aws:iam::516525145310:user/iamscope-verify`
-- `iamscope-admin` -> `arn:aws:iam::516525145310:user/iamscope-admin`
-- `serim-dev-admin` -> `arn:aws:sts::377114445031:assumed-role/OrganizationAccountAccessRole/...`
-- `serim-prod-admin` -> `arn:aws:sts::737923406074:assumed-role/OrganizationAccountAccessRole/...`
-- `serim2-devengineer` -> `arn:aws:sts::737923406074:assumed-role/serim2-DevEngineerRole/...`
-- `serim2-jump` -> `arn:aws:sts::737923406074:assumed-role/serim2-JumpRole/...`
-- `serim2-terraform` -> `arn:aws:sts::737923406074:assumed-role/serim2-TerraformRole/...`
+- `iamscope-test` -> `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-verify`
+- `iamscope-admin` -> `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-admin`
+- `serim-dev-admin` -> `arn:aws:sts::<redacted-aws-account-id>:assumed-role/OrganizationAccountAccessRole/...`
+- `serim-prod-admin` -> `arn:aws:sts::<redacted-aws-account-id>:assumed-role/OrganizationAccountAccessRole/...`
+- `serim2-devengineer` -> `arn:aws:sts::<redacted-aws-account-id>:assumed-role/serim2-DevEngineerRole/...`
+- `serim2-jump` -> `arn:aws:sts::<redacted-aws-account-id>:assumed-role/serim2-JumpRole/...`
+- `serim2-terraform` -> `arn:aws:sts::<redacted-aws-account-id>:assumed-role/serim2-TerraformRole/...`
 - `serim-management-admin` errored.
 
 This review records the observed mapping only. It does not rerun AWS discovery and does not require AWS credentials.
 
 ## Trust-Policy Mismatch
 
-The target role trusts `arn:aws:iam::516525145310:user/arf-rt-attacker`.
+The target role trusts `arn:aws:iam::<redacted-aws-account-id>:user/arf-rt-attacker`.
 
 The available same-account profiles resolve to:
 
-- `arn:aws:iam::516525145310:user/iamscope-verify`
-- `arn:aws:iam::516525145310:user/iamscope-admin`
+- `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-verify`
+- `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-admin`
 
-Using either currently available same-account profile would not satisfy the trusted-principal condition for a positive proof against `arn:aws:iam::516525145310:role/arf-rt-DevRole`.
+Using either currently available same-account profile would not satisfy the trusted-principal condition for a positive proof against `arn:aws:iam::<redacted-aws-account-id>:role/arf-rt-DevRole`.
 
-The denied proof already demonstrated this boundary for `arn:aws:iam::516525145310:user/iamscope-admin`: the result was `denied` with `safe_error_category=access_denied`.
+The denied proof already demonstrated this boundary for `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-admin`: the result was `denied` with `safe_error_category=access_denied`.
 
 ## Decision
 
@@ -59,7 +59,7 @@ Do not force the positive proof by changing IAM users, roles, permissions, or tr
 
 Do not run `live_probe` for the positive proof with a mismatched source principal.
 
-Do not treat a profile that resolves to a different principal as evidence for `arn:aws:iam::516525145310:user/arf-rt-attacker`.
+Do not treat a profile that resolves to a different principal as evidence for `arn:aws:iam::<redacted-aws-account-id>:user/arf-rt-attacker`.
 
 ## Safe Options
 
@@ -91,7 +91,7 @@ What it still would not prove: downstream authorization, production readiness, b
 
 ### C. Configure A Local Profile For The Existing Trusted Principal Outside IAMScope
 
-Evidence value: potentially useful if `arn:aws:iam::516525145310:user/arf-rt-attacker` already exists and is intended for this test.
+Evidence value: potentially useful if `arn:aws:iam::<redacted-aws-account-id>:user/arf-rt-attacker` already exists and is intended for this test.
 
 Safety risk: moderate. Local credential/profile setup can still create accidental production or persistence risk if not reviewed.
 

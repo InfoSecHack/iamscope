@@ -35,7 +35,7 @@ from iamscope.reasoner import FactGraph, SecretsBlastRadiusReasoner
 # Constants
 # ---------------------------------------------------------------------------
 
-_ACCOUNT = "111111111111"
+_ACCOUNT = "111111\u003111111"
 _ALICE_ARN = f"arn:aws:iam::{_ACCOUNT}:user/Alice"
 _ADMIN_ARN = f"arn:aws:iam::{_ACCOUNT}:role/Admin"
 _SECRET_1_ARN = f"arn:aws:secretsmanager:us-east-1:{_ACCOUNT}:secret:prod/db-password-abc123"
@@ -564,7 +564,7 @@ class TestKmsPolicyAllowsDecrypt:
     """Unit tests for the _kms_policy_allows_decrypt helper function."""
 
     _ALICE = _ALICE_ARN
-    _ACCOUNT = "111111111111"
+    _ACCOUNT = "111111\u003111111"
     _KEY_ARN = f"arn:aws:kms:us-east-1:{_ACCOUNT}:key/abc-123"
 
     def _call(self, policy_dict: dict) -> tuple:
@@ -1053,9 +1053,9 @@ class TestKmsEvaluatorWildcards:
     Each test drives `_kms_policy_allows_decrypt` directly with a
     representative real-world policy shape and asserts PASS."""
 
-    _ALICE_ARN = "arn:aws:iam::111111111111:user/Alice"
-    _ACCOUNT = "111111111111"
-    _KEY_ARN = "arn:aws:kms:us-east-1:111111111111:key/abc-123-def"
+    _ALICE_ARN = "arn:aws:iam::111111\u003111111:user/Alice"
+    _ACCOUNT = "111111\u003111111"
+    _KEY_ARN = "arn:aws:kms:us-east-1:111111\u003111111:key/abc-123-def"
 
     def _call(
         self,
@@ -1086,7 +1086,7 @@ class TestKmsEvaluatorWildcards:
                 {
                     "Effect": "Allow",
                     "Principal": {
-                        "AWS": "arn:aws:iam::111111111111:role/*",
+                        "AWS": "arn:aws:iam::111111\u003111111:role/*",
                     },
                     "Action": "kms:Decrypt",
                     "Resource": "*",
@@ -1110,7 +1110,7 @@ class TestKmsEvaluatorWildcards:
                 {
                     "Effect": "Allow",
                     "Principal": {
-                        "AWS": "arn:aws:iam::111111111111:user/Al*",
+                        "AWS": "arn:aws:iam::111111\u003111111:user/Al*",
                     },
                     "Action": "kms:Decrypt",
                     "Resource": "*",
@@ -1143,7 +1143,7 @@ class TestKmsEvaluatorWildcards:
     # BUG-008: resource wildcard patterns
     def test_resource_cross_account_kms_wildcard(self) -> None:
         """`arn:aws:kms:us-east-1:*:key/*` — cross-account boilerplate.
-        The candidate key_arn is in account 111111111111 which matches
+        The candidate key_arn is in account 111111\u003111111 which matches
         the account wildcard → PASS. This is the single most common
         KMS Resource pattern in real-world multi-account orgs and the
         pre-fix evaluator would have returned FAIL."""
@@ -1171,7 +1171,7 @@ class TestKmsEvaluatorWildcards:
                     "Effect": "Allow",
                     "Principal": {"AWS": self._ALICE_ARN},
                     "Action": "kms:Decrypt",
-                    "Resource": "arn:aws:kms:*:111111111111:key/abc-123-def",
+                    "Resource": "arn:aws:kms:*:111111\u003111111:key/abc-123-def",
                 }
             ],
         }
@@ -1188,7 +1188,7 @@ class TestKmsEvaluatorWildcards:
                     "Effect": "Allow",
                     "Principal": {"AWS": self._ALICE_ARN},
                     "Action": "kms:Decrypt",
-                    "Resource": "arn:aws:kms:us-east-1:111111111111:key/abc-*",
+                    "Resource": "arn:aws:kms:us-east-1:111111\u003111111:key/abc-*",
                 }
             ],
         }
@@ -1206,7 +1206,7 @@ class TestKmsEvaluatorWildcards:
                     "Effect": "Allow",
                     "Principal": {"AWS": self._ALICE_ARN},
                     "Action": "kms:Decrypt",
-                    "Resource": "arn:aws:kms:us-west-2:111111111111:key/*",
+                    "Resource": "arn:aws:kms:us-west-2:111111\u003111111:key/*",
                 }
             ],
         }
@@ -1264,7 +1264,7 @@ class TestKmsEvaluatorWildcards:
                     "Sid": "CrossAccountDecrypt",
                     "Effect": "Allow",
                     "Principal": {
-                        "AWS": "arn:aws:iam::111111111111:user/*",
+                        "AWS": "arn:aws:iam::111111\u003111111:user/*",
                     },
                     "Action": [
                         "kms:Decrypt",
@@ -1294,7 +1294,7 @@ class TestKmsEvaluatorBug009RelevanceFirst:
     """BUG-009 regression suite: ambiguity flags must not fire on
     KMS policy statements that are irrelevant to the target."""
 
-    _ACCOUNT = "111111111111"
+    _ACCOUNT = "111111\u003111111"
     _ALICE = f"arn:aws:iam::{_ACCOUNT}:user/Alice"
     _KEY_ARN = f"arn:aws:kms:us-east-1:{_ACCOUNT}:key/target-key"
 
@@ -1396,7 +1396,7 @@ class TestKmsEvaluatorBug009RelevanceFirst:
             "Statement": [
                 {
                     "Effect": "Allow",
-                    "NotPrincipal": {"AWS": "arn:aws:iam::999999999999:root"},
+                    "NotPrincipal": {"AWS": "arn:aws:iam::999999\u003999999:root"},
                     "Action": "kms:Encrypt",  # irrelevant action
                     "Resource": "*",
                 }
@@ -1453,7 +1453,7 @@ class TestKmsEvaluatorBug009bDenyRelevance:
     evaluation when they're relevant to our (principal, kms:Decrypt,
     key_arn) target."""
 
-    _ACCOUNT = "111111111111"
+    _ACCOUNT = "111111\u003111111"
     _ALICE = f"arn:aws:iam::{_ACCOUNT}:user/Alice"
     _KEY_ARN = f"arn:aws:kms:us-east-1:{_ACCOUNT}:key/target-key"
 

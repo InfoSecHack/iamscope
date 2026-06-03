@@ -5,7 +5,7 @@
             "Sid": "AllowAssumeSpecific",
             "Effect": "Allow",
             "Action": "sts:AssumeRole",
-            "Resource": "arn:aws:iam::222222222222:role/ProdDeploy"
+            "Resource": "arn:aws:iam::222222\u003222222:role/ProdDeploy"
         }
     ]
 }

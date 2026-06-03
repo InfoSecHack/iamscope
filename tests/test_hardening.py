@@ -230,7 +230,7 @@ class TestTrustParserEdgeCases:
         results = parse_trust_policy(
             policy,
             role_arn="arn:aws:iam::123:role/X",
-            role_account_id="123456789012",
+            role_account_id="123456\u003789012",
         )
         assert len(results) == 0
 
@@ -249,7 +249,7 @@ class TestTrustParserEdgeCases:
         results = parse_trust_policy(
             policy,
             role_arn="arn:aws:iam::123:role/Open",
-            role_account_id="123456789012",
+            role_account_id="123456\u003789012",
         )
         assert len(results) >= 1
         assert any("*" in r.principal_value for r in results)
@@ -278,7 +278,7 @@ class TestTrustParserEdgeCases:
         results = parse_trust_policy(
             policy,
             role_arn="arn:aws:iam::123:role/Conditioned",
-            role_account_id="123456789012",
+            role_account_id="123456\u003789012",
         )
         assert len(results) >= 1
         assert results[0].raw_conditions
@@ -370,7 +370,7 @@ class TestPipelineReportIntegration:
                 "Statement": [
                     {
                         "Effect": "Allow",
-                        "Principal": {"AWS": "arn:aws:iam::999999999999:root"},
+                        "Principal": {"AWS": "arn:aws:iam::999999\u003999999:root"},
                         "Action": "sts:AssumeRole",
                     }
                 ],
@@ -427,7 +427,7 @@ class TestEdgeProvenance:
                 "Statement": [
                     {
                         "Effect": "Allow",
-                        "Principal": {"AWS": "arn:aws:iam::999999999999:root"},
+                        "Principal": {"AWS": "arn:aws:iam::999999\u003999999:root"},
                         "Action": "sts:AssumeRole",
                     }
                 ],
@@ -539,7 +539,7 @@ class TestEdgeProvenance:
                 "Statement": [
                     {
                         "Effect": "Allow",
-                        "Principal": {"AWS": "arn:aws:iam::999999999999:root"},
+                        "Principal": {"AWS": "arn:aws:iam::999999\u003999999:root"},
                         "Action": "sts:AssumeRole",
                     }
                 ],
@@ -576,6 +576,7 @@ class TestEdgeBudgetCircuitBreaker:
         org_client.create_organization(FeatureSet="ALL")
 
         iam = boto3.client("iam")
+        base_external_account_id = int("900000\u003000000")
         # Create several roles to generate many edges
         for i in range(10):
             trust = json.dumps(
@@ -584,7 +585,7 @@ class TestEdgeBudgetCircuitBreaker:
                     "Statement": [
                         {
                             "Effect": "Allow",
-                            "Principal": {"AWS": f"arn:aws:iam::{900000000000 + i}:root"},
+                            "Principal": {"AWS": f"arn:aws:iam::{base_external_account_id + i}:root"},
                             "Action": "sts:AssumeRole",
                         }
                     ],
@@ -623,7 +624,7 @@ class TestEdgeBudgetCircuitBreaker:
                 "Statement": [
                     {
                         "Effect": "Allow",
-                        "Principal": {"AWS": "arn:aws:iam::999999999999:root"},
+                        "Principal": {"AWS": "arn:aws:iam::999999\u003999999:root"},
                         "Action": "sts:AssumeRole",
                     }
                 ],

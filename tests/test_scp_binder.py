@@ -42,9 +42,9 @@ from iamscope.resolver.scp_binder import (
 
 def _make_edge(
     edge_type: str = "sts:AssumeRole_trust",
-    src_id: str = "arn:aws:iam::222222222222:root",
+    src_id: str = "arn:aws:iam::222222\u003222222:root",
     src_type: str = NODE_TYPE_ACCOUNT_ROOT,
-    dst_id: str = "arn:aws:iam::111111111111:role/TargetRole",
+    dst_id: str = "arn:aws:iam::111111\u003111111:role/TargetRole",
 ) -> Edge:
     return Edge(
         edge_type=edge_type,
@@ -166,11 +166,11 @@ class TestActionMatching:
 
     def test_resource_scoped_scp_binds_only_matching_target_role(self) -> None:
         """Target-scoped SCP Deny must not bind unrelated AssumeRole targets."""
-        matching_edge = _make_edge(dst_id="arn:aws:iam::111111111111:role/iamscope-test/env12-admin")
-        unrelated_edge = _make_edge(dst_id="arn:aws:iam::111111111111:role/iamscope-test/env12-reader")
+        matching_edge = _make_edge(dst_id="arn:aws:iam::111111\u003111111:role/iamscope-test/env12-admin")
+        unrelated_edge = _make_edge(dst_id="arn:aws:iam::111111\u003111111:role/iamscope-test/env12-reader")
         scp = _make_scp_constraint(
             deny_actions=["sts:AssumeRole"],
-            resource_patterns=["arn:aws:iam::111111111111:role/iamscope-test/env12-admin"],
+            resource_patterns=["arn:aws:iam::111111\u003111111:role/iamscope-test/env12-admin"],
             parse_status=PARSE_STATUS_PARTIAL,
         )
 
@@ -183,10 +183,10 @@ class TestActionMatching:
         assert unrelated_binding is None
 
     def test_resource_scoped_scp_supports_wildcard_target_pattern(self) -> None:
-        edge = _make_edge(dst_id="arn:aws:iam::111111111111:role/iamscope-test/env12-admin")
+        edge = _make_edge(dst_id="arn:aws:iam::111111\u003111111:role/iamscope-test/env12-admin")
         scp = _make_scp_constraint(
             deny_actions=["sts:AssumeRole"],
-            resource_patterns=["arn:aws:iam::111111111111:role/iamscope-test/env12-*"],
+            resource_patterns=["arn:aws:iam::111111\u003111111:role/iamscope-test/env12-*"],
             parse_status=PARSE_STATUS_PARTIAL,
         )
 
@@ -200,7 +200,7 @@ class TestExceptionMatching:
 
     def test_exception_pattern_matches_src(self) -> None:
         """If src principal matches exception pattern, binding has likely_blocking=False."""
-        edge = _make_edge(src_id="arn:aws:iam::222222222222:role/BreakGlassAdmin")
+        edge = _make_edge(src_id="arn:aws:iam::222222\u003222222:role/BreakGlassAdmin")
         scp = _make_scp_constraint(
             deny_actions=["sts:AssumeRole"],
             exception_principal_patterns=["arn:aws:iam::*:role/BreakGlass*"],
@@ -213,7 +213,7 @@ class TestExceptionMatching:
 
     def test_exception_pattern_no_match(self) -> None:
         """Non-matching exception pattern doesn't prevent blocking."""
-        edge = _make_edge(src_id="arn:aws:iam::222222222222:role/NormalRole")
+        edge = _make_edge(src_id="arn:aws:iam::222222\u003222222:role/NormalRole")
         scp = _make_scp_constraint(
             deny_actions=["sts:AssumeRole"],
             exception_principal_patterns=["arn:aws:iam::*:role/BreakGlass*"],
@@ -225,7 +225,7 @@ class TestExceptionMatching:
 
     def test_multiple_exception_patterns(self) -> None:
         """Any matching exception pattern prevents blocking."""
-        edge = _make_edge(src_id="arn:aws:iam::222222222222:role/Admin-Prod")
+        edge = _make_edge(src_id="arn:aws:iam::222222\u003222222:role/Admin-Prod")
         scp = _make_scp_constraint(
             deny_actions=["sts:AssumeRole"],
             exception_principal_patterns=[
@@ -243,10 +243,10 @@ class TestPrincipalApplicabilityMatching:
     """Tests for positive aws:PrincipalArn Deny applicability filters."""
 
     def test_nonmatching_applicability_pattern_does_not_bind_unrelated_edge(self) -> None:
-        edge = _make_edge(src_id="arn:aws:iam::222222222222:user/env22-alice", src_type="IAMUser")
+        edge = _make_edge(src_id="arn:aws:iam::222222\u003222222:user/env22-alice", src_type="IAMUser")
         scp = _make_scp_constraint(
             deny_actions=["sts:AssumeRole"],
-            applicable_principal_patterns=["arn:aws:iam::222222222222:role/Blocked*"],
+            applicable_principal_patterns=["arn:aws:iam::222222\u003222222:role/Blocked*"],
         )
 
         binding = bind_scp_to_edge(edge, scp)
@@ -254,10 +254,10 @@ class TestPrincipalApplicabilityMatching:
         assert binding is None
 
     def test_matching_applicability_pattern_binds_and_preserves_blocking(self) -> None:
-        edge = _make_edge(src_id="arn:aws:iam::222222222222:user/env22-alice", src_type="IAMUser")
+        edge = _make_edge(src_id="arn:aws:iam::222222\u003222222:user/env22-alice", src_type="IAMUser")
         scp = _make_scp_constraint(
             deny_actions=["sts:AssumeRole"],
-            applicable_principal_patterns=["arn:aws:iam::222222222222:user/env22-*"],
+            applicable_principal_patterns=["arn:aws:iam::222222\u003222222:user/env22-*"],
         )
 
         binding = bind_scp_to_edge(edge, scp)
@@ -268,7 +268,7 @@ class TestPrincipalApplicabilityMatching:
         assert "applicable_principal_patterns" in binding.binding_reason
 
     def test_unsupported_condition_shape_stays_conservative(self) -> None:
-        edge = _make_edge(src_id="arn:aws:iam::222222222222:user/env22-alice", src_type="IAMUser")
+        edge = _make_edge(src_id="arn:aws:iam::222222\u003222222:user/env22-alice", src_type="IAMUser")
         scp = _make_scp_constraint(
             deny_actions=["sts:AssumeRole"],
             parse_status=PARSE_STATUS_PARTIAL,
@@ -384,12 +384,12 @@ class TestBindAllScps:
 
     def test_ou_scope_limits_binding(self) -> None:
         """With ou_account_map, SCP only binds to edges in scope."""
-        edge_in_scope = _make_edge(dst_id="arn:aws:iam::111111111111:role/InScope")
-        edge_out_scope = _make_edge(dst_id="arn:aws:iam::999999999999:role/OutOfScope")
+        edge_in_scope = _make_edge(dst_id="arn:aws:iam::111111\u003111111:role/InScope")
+        edge_out_scope = _make_edge(dst_id="arn:aws:iam::999999\u003999999:role/OutOfScope")
 
         scp = _make_scp_constraint(deny_actions=["sts:AssumeRole"], scope_id="ou-prod")
 
-        ou_map = {"ou-prod": {"111111111111"}}
+        ou_map = {"ou-prod": {"111111\u003111111"}}
         bindings = bind_all_scps([edge_in_scope, edge_out_scope], [scp], ou_account_map=ou_map)
 
         assert len(bindings) == 1
@@ -438,7 +438,7 @@ class TestBindingReason:
         assert "NotAction" in binding.binding_reason
 
     def test_exception_reason(self) -> None:
-        edge = _make_edge(src_id="arn:aws:iam::222222222222:role/BreakGlassAdmin")
+        edge = _make_edge(src_id="arn:aws:iam::222222\u003222222:role/BreakGlassAdmin")
         scp = _make_scp_constraint(
             deny_actions=["sts:AssumeRole"],
             exception_principal_patterns=["arn:aws:iam::*:role/BreakGlass*"],
@@ -486,7 +486,7 @@ class TestScp1UnresolvableExceptionDowngrade:
         edge = _make_edge()
         scp = _make_scp_constraint(
             deny_actions=["sts:AssumeRole"],
-            exception_account_ids=["222222222222"],
+            exception_account_ids=["222222\u003222222"],
         )
         binding = bind_scp_to_edge(edge, scp)
 

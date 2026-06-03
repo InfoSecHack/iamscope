@@ -19,8 +19,8 @@ from iamscope.identity.deterministic_ids import finding_id
 # Canonical fixture used across multiple tests.
 _PATTERN_ID = "passrole_lambda"
 _PATTERN_VERSION = "1.0.0"
-_SOURCE_ARN = "arn:aws:iam::111111111111:user/Alice"
-_TARGET_ARN = "arn:aws:iam::222222222222:role/ProdAdmin"
+_SOURCE_ARN = "arn:aws:iam::111111\u003111111:user/Alice"
+_TARGET_ARN = "arn:aws:iam::222222\u003222222:role/ProdAdmin"
 _BUNDLE_DIGEST = "a" * 64  # placeholder SHA-256 hex string
 
 
@@ -82,8 +82,8 @@ class TestFindingIdDeterminism:
             _BUNDLE_DIGEST,
         )
         # Computed via canonical_id("passrole_lambda", "1.0.0",
-        #   "arn:aws:iam::111111111111:user/alice",
-        #   "arn:aws:iam::222222222222:role/prodadmin", 64*"a")
+        #   "arn:aws:iam::111111 111111:user/alice",
+        #   "arn:aws:iam::222222 222222:role/prodadmin", 64*"a")
         # using the sha256_null_separated_v2 algorithm. The v1→v2 bump
         # in v0.2.37 changed the `edge_id` formula only; `finding_id`'s
         # formula (pattern_id, pattern_version, source_provider_id,
@@ -156,7 +156,7 @@ class TestFindingIdSensitivity:
         fid_b = finding_id(
             _PATTERN_ID,
             _PATTERN_VERSION,
-            "arn:aws:iam::111111111111:user/Bob",
+            "arn:aws:iam::111111\u003111111:user/Bob",
             _TARGET_ARN,
             _BUNDLE_DIGEST,
         )
@@ -174,7 +174,7 @@ class TestFindingIdSensitivity:
             _PATTERN_ID,
             _PATTERN_VERSION,
             _SOURCE_ARN,
-            "arn:aws:iam::222222222222:role/Other",
+            "arn:aws:iam::222222\u003222222:role/Other",
             _BUNDLE_DIGEST,
         )
         assert fid_a != fid_b

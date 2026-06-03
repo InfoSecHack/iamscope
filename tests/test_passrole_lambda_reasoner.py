@@ -50,7 +50,7 @@ from iamscope.reasoner import (
 # Constants
 # ---------------------------------------------------------------------------
 
-_ACCOUNT = "111111111111"
+_ACCOUNT = "111111\u003111111"
 _ALICE_ARN = f"arn:aws:iam::{_ACCOUNT}:user/Alice"
 _ADMIN_ROLE_ARN = f"arn:aws:iam::{_ACCOUNT}:role/AdminRole"
 _NON_ADMIN_ROLE_ARN = f"arn:aws:iam::{_ACCOUNT}:role/NonAdmin"

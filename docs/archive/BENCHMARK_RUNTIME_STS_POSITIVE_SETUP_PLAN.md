@@ -4,7 +4,7 @@
 
 This plan designs the safest test-only setup path for a future positive/assumed single-case STS proof.
 
-The plan exists because the positive proof protocol requires a source principal that is trusted by the target role and explicitly allowed to call `sts:AssumeRole`, but the current local AWS profiles do not resolve to the principal trusted by `arn:aws:iam::516525145310:role/arf-rt-DevRole`.
+The plan exists because the positive proof protocol requires a source principal that is trusted by the target role and explicitly allowed to call `sts:AssumeRole`, but the current local AWS profiles do not resolve to the principal trusted by `arn:aws:iam::<redacted-aws-account-id>:role/arf-rt-DevRole`.
 
 This is design/planning only. It does not run live AWS, call STS AssumeRole, create IAM users, create IAM roles, modify trust policies, modify permission policies, run Terraform, add live AWS environments, implement setup logic, change the STS executor, change the dry-run validator, add raw artifacts, commit `/tmp` outputs, add CI gates, add pass/fail benchmark labels, add composite scoring, claim production readiness, claim broad IAMScope correctness, or claim broad runtime exploitability.
 
@@ -31,18 +31,18 @@ The setup plan must not be used as permission to make ad hoc IAM or credential c
 
 Existing target role:
 
-- `arn:aws:iam::516525145310:role/arf-rt-DevRole`
+- `arn:aws:iam::<redacted-aws-account-id>:role/arf-rt-DevRole`
 
 Existing target trust policy allows:
 
-- `arn:aws:iam::516525145310:user/arf-rt-attacker`
+- `arn:aws:iam::<redacted-aws-account-id>:user/arf-rt-attacker`
 
 Observed same-account local profiles resolve to:
 
-- `iamscope-test` -> `arn:aws:iam::516525145310:user/iamscope-verify`
-- `iamscope-admin` -> `arn:aws:iam::516525145310:user/iamscope-admin`
+- `iamscope-test` -> `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-verify`
+- `iamscope-admin` -> `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-admin`
 
-No local AWS profile currently resolves to `arn:aws:iam::516525145310:user/arf-rt-attacker`, so a positive proof against `arf-rt-DevRole` is not ready.
+No local AWS profile currently resolves to `arn:aws:iam::<redacted-aws-account-id>:user/arf-rt-attacker`, so a positive proof against `arf-rt-DevRole` is not ready.
 
 ## Candidate Setup Options
 
@@ -52,9 +52,9 @@ This option uses the already trusted source principal for the existing target ro
 
 Requirements:
 
-- `arn:aws:iam::516525145310:user/arf-rt-attacker` already exists.
+- `arn:aws:iam::<redacted-aws-account-id>:user/arf-rt-attacker` already exists.
 - Credentials for that user are already intended for this test.
-- The user has explicit `sts:AssumeRole` permission for `arn:aws:iam::516525145310:role/arf-rt-DevRole`.
+- The user has explicit `sts:AssumeRole` permission for `arn:aws:iam::<redacted-aws-account-id>:role/arf-rt-DevRole`.
 - No IAM policy changes are required.
 - No trust policy changes are required.
 - The local profile name is dedicated and clearly test-only.
@@ -210,7 +210,7 @@ If a redacted setup summary is ever committed, it requires a separate artifact-p
 
 The denied proof remains valid and must not be weakened or reinterpreted.
 
-The denied proof showed only that `arn:aws:iam::516525145310:user/iamscope-admin` could not assume `arn:aws:iam::516525145310:role/arf-rt-DevRole` under the exact tested conditions.
+The denied proof showed only that `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-admin` could not assume `arn:aws:iam::<redacted-aws-account-id>:role/arf-rt-DevRole` under the exact tested conditions.
 
 A future positive proof would add only credentials-obtained path evidence for one test principal and one test role under explicit conditions.
 

@@ -40,8 +40,8 @@ from iamscope.parser.trust_policy import parse_trust_policy
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures" / "trust_policies"
 
-ROLE_ARN = "arn:aws:iam::111111111111:role/TargetRole"
-ROLE_ACCOUNT = "111111111111"
+ROLE_ARN = "arn:aws:iam::111111\u003111111:role/TargetRole"
+ROLE_ACCOUNT = "111111\u003111111"
 
 
 def _load_fixture(name: str) -> dict:
@@ -61,7 +61,7 @@ class TestSameAccountTrust:
         assert len(results) == 1
         r = results[0]
         assert r.principal_type == "AWS"
-        assert r.principal_value == "arn:aws:iam::111111111111:role/AdminRole"
+        assert r.principal_value == "arn:aws:iam::111111\u003111111:role/AdminRole"
         assert r.resolved_node_type == NODE_TYPE_IAM_ROLE
         assert r.trust_scope == TRUST_SCOPE_SPECIFIC_ROLE
         assert r.cross_account is False
@@ -91,7 +91,7 @@ class TestCrossAccountTrust:
 
         assert len(results) == 1
         r = results[0]
-        assert r.principal_value == "arn:aws:iam::222222222222:role/CrossAccountRole"
+        assert r.principal_value == "arn:aws:iam::222222\u003222222:role/CrossAccountRole"
         assert r.resolved_node_type == NODE_TYPE_IAM_ROLE
         assert r.trust_scope == TRUST_SCOPE_SPECIFIC_ROLE
         assert r.cross_account is True
@@ -260,7 +260,7 @@ class TestMultipleStatements:
         assert len(results) == 1
         r = results[0]
         assert r.statement_index == 1
-        assert r.principal_value == "arn:aws:iam::222222222222:role/AllowedRole"
+        assert r.principal_value == "arn:aws:iam::222222\u003222222:role/AllowedRole"
         assert r.effect == "Allow"
 
 
@@ -280,15 +280,15 @@ class TestMultiplePrincipals:
 
         # Check all principals resolved
         provider_ids = {r.principal_value for r in results}
-        assert "arn:aws:iam::222222222222:role/RoleA" in provider_ids
-        assert "arn:aws:iam::333333333333:role/RoleB" in provider_ids
-        assert "arn:aws:iam::444444444444:root" in provider_ids
+        assert "arn:aws:iam::222222\u003222222:role/RoleA" in provider_ids
+        assert "arn:aws:iam::333333\u003333333:role/RoleB" in provider_ids
+        assert "arn:aws:iam::444444\u003444444:root" in provider_ids
 
         # Check node types
         types = {r.principal_value: r.resolved_node_type for r in results}
-        assert types["arn:aws:iam::222222222222:role/RoleA"] == NODE_TYPE_IAM_ROLE
-        assert types["arn:aws:iam::333333333333:role/RoleB"] == NODE_TYPE_IAM_ROLE
-        assert types["arn:aws:iam::444444444444:root"] == NODE_TYPE_ACCOUNT_ROOT
+        assert types["arn:aws:iam::222222\u003222222:role/RoleA"] == NODE_TYPE_IAM_ROLE
+        assert types["arn:aws:iam::333333\u003333333:role/RoleB"] == NODE_TYPE_IAM_ROLE
+        assert types["arn:aws:iam::444444\u003444444:root"] == NODE_TYPE_ACCOUNT_ROOT
 
 
 class TestConditions:
@@ -507,7 +507,7 @@ class TestOIDCSubjectExtraction:
                 {
                     "Effect": "Allow",
                     "Principal": {
-                        "Federated": "arn:aws:iam::111111111111:oidc-provider/token.actions.githubusercontent.com"
+                        "Federated": "arn:aws:iam::111111\u003111111:oidc-provider/token.actions.githubusercontent.com"
                     },
                     "Action": "sts:AssumeRoleWithWebIdentity",
                     "Condition": {"StringLike": {"token.actions.githubusercontent.com:sub": "repo:MyOrg/MyRepo:*"}},
@@ -528,14 +528,14 @@ class TestARNPartitionSupport:
             "Statement": [
                 {
                     "Effect": "Allow",
-                    "Principal": {"AWS": "arn:aws-us-gov:iam::222222222222:role/GovCloudRole"},
+                    "Principal": {"AWS": "arn:aws-us-gov:iam::222222\u003222222:role/GovCloudRole"},
                     "Action": "sts:AssumeRole",
                 }
             ],
         }
         results = parse_trust_policy(policy, ROLE_ARN, ROLE_ACCOUNT)
         assert len(results) == 1
-        assert results[0].principal_value == "arn:aws-us-gov:iam::222222222222:role/GovCloudRole"
+        assert results[0].principal_value == "arn:aws-us-gov:iam::222222\u003222222:role/GovCloudRole"
         assert results[0].resolved_node_type == NODE_TYPE_IAM_ROLE
         assert results[0].cross_account is True
 
@@ -546,7 +546,7 @@ class TestARNPartitionSupport:
             "Statement": [
                 {
                     "Effect": "Allow",
-                    "Principal": {"AWS": "arn:aws-cn:iam::333333333333:root"},
+                    "Principal": {"AWS": "arn:aws-cn:iam::333333\u003333333:root"},
                     "Action": "sts:AssumeRole",
                 }
             ],
@@ -563,7 +563,7 @@ class TestARNPartitionSupport:
             "Statement": [
                 {
                     "Effect": "Allow",
-                    "Principal": {"AWS": "arn:aws:iam::222222222222:root"},
+                    "Principal": {"AWS": "arn:aws:iam::222222\u003222222:root"},
                     "Action": "sts:AssumeRole",
                 }
             ],

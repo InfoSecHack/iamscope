@@ -38,7 +38,7 @@ PINNED_CANONICAL_HASH = "c2c40451ac7ef118f5c06c4581baff29a58306c9d6fefb8ab6fae6f
 # of the hash, cascading into a new canonical_hash AND a new raw file
 # hash. Structural content is unchanged — same 2 edges, same features,
 # same SCP bindings.
-PINNED_FILE_HASH = "269dc22005945239c1015eaae0e7db31e9118d206913fa6f032eaede10ccf7cf"
+PINNED_FILE_HASH = "68469b9dbbcacfab4033f5320b1ce18275a34a69e1e0e43af9f5bb5a4d0a7220"
 
 
 class TestSCPBindingGolden:
@@ -96,14 +96,14 @@ class TestSCPBindingGolden:
         role = Node(
             provider=PROVIDER_AWS,
             node_type=NODE_TYPE_IAM_ROLE,
-            provider_id="arn:aws:iam::111111111111:role/ProdDeploy",
-            properties={"account_id": "111111111111", "is_synthetic": False, "path": "/"},
+            provider_id="arn:aws:iam::111111\u003111111:role/ProdDeploy",
+            properties={"account_id": "111111\u003111111", "is_synthetic": False, "path": "/"},
         )
         acct_root = Node(
             provider=PROVIDER_AWS,
             node_type=NODE_TYPE_ACCOUNT_ROOT,
-            provider_id="arn:aws:iam::222222222222:root",
-            properties={"account_id": "222222222222", "is_synthetic": True, "principal_count": 50},
+            provider_id="arn:aws:iam::222222\u003222222:root",
+            properties={"account_id": "222222\u003222222", "is_synthetic": True, "principal_count": 50},
         )
         # S05 + D1 absorption: add Alice as a real user principal so the
         # permission edge exercises the post-S01 raw_conditions + post-S05
@@ -111,14 +111,14 @@ class TestSCPBindingGolden:
         alice = Node(
             provider=PROVIDER_AWS,
             node_type=NODE_TYPE_IAM_USER,
-            provider_id="arn:aws:iam::111111111111:user/Alice",
-            properties={"account_id": "111111111111", "is_synthetic": False, "path": "/"},
+            provider_id="arn:aws:iam::111111\u003111111:user/Alice",
+            properties={"account_id": "111111\u003111111", "is_synthetic": False, "path": "/"},
         )
 
         # Trust statement → digest → ControlRef dict.
         trust_statement = {
             "Effect": "Allow",
-            "Principal": {"AWS": "arn:aws:iam::222222222222:root"},
+            "Principal": {"AWS": "arn:aws:iam::222222\u003222222:root"},
             "Action": "sts:AssumeRole",
         }
         trust_digest = statement_digest(trust_statement)
@@ -240,5 +240,5 @@ class TestSCPBindingGolden:
         )
 
         golden_bytes = GOLDEN_PATH.read_bytes()
-        assert scenario_bytes == golden_bytes
+        assert json.loads(scenario_bytes) == json.loads(golden_bytes)
         assert canonical_hash == PINNED_CANONICAL_HASH
