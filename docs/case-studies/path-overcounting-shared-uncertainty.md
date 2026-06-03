@@ -136,4 +136,4 @@ It also does not use percentages, composite scores, or accuracy claims.
 
 Recommended next slice: no further path-overcounting demo scaffolding; use the PassRole-to-Lambda controlled live validation case study for current live evidence.
 
-This next slice should group inconclusive findings by uncertainty class from the local fixture/report output without changing verdicts, reasoner logic, schemas, or benchmark semantics.
+The path-overcounting demo should remain a local synthetic teaching demo unless a future review explicitly reopens it.
