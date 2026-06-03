@@ -143,9 +143,11 @@ def test_fixture_documents_boundary_and_next_slice() -> None:
     expected = _load_json(EXPECTED)
     readme = README.read_text()
 
-    assert expected["binding_status"] == "ready_for_next_checkpoint_comparison"
+    assert expected["binding_status"] == "bound_to_controlled_live_result"
+    assert expected["local_expectation_status"] == "selected_validated_finding_bound"
     assert (
-        expected["next_slice"] == "Recommended next slice: bind selected IAMScope PassRole finding to live AWS result."
+        expected["next_slice"]
+        == "Recommended next slice: use public PassRole-to-Lambda case study as reviewer entry point."
     )
     assert expected["non_claims"] == {
         "no_live_aws": True,
@@ -252,7 +254,12 @@ def test_denied_fixture_documents_boundary_and_non_claims() -> None:
     expected = _load_json(DENIED_EXPECTED)
     readme = DENIED_README.read_text()
 
-    assert expected["binding_status"] == "ready_for_denied_checkpoint_comparison"
+    assert expected["binding_status"] == "bound_to_controlled_denied_live_result"
+    assert expected["local_expectation_status"] == "no_selected_validated_finding_bound"
+    assert (
+        expected["next_slice"]
+        == "Recommended next slice: use public PassRole-to-Lambda case study as reviewer entry point."
+    )
     assert expected["local_expectation"]["expected_verdict"] == "no_selected_validated_finding"
     assert expected["non_claims"] == {
         "no_live_aws": True,
