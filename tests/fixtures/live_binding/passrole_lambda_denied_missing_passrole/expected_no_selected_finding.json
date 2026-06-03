@@ -1,0 +1,31 @@
+{
+  "binding_status": "ready_for_denied_checkpoint_comparison",
+  "fixture_id": "passrole_lambda_denied_missing_passrole_001",
+  "local_expectation": {
+    "expected_reasoner": "PassRoleLambdaReasoner",
+    "expected_selected_validated_finding_emitted": false,
+    "expected_selected_passrole_lambda_finding_count": 0,
+    "expected_verdict": "no_selected_validated_finding",
+    "missing_required_evidence": "source_has_passrole_to_target",
+    "reason": "The denied source has lambda:CreateFunction and the execution role trusts Lambda, but the fixture intentionally omits iam:PassRole_permission from the denied source to the target role."
+  },
+  "next_slice": "Recommended next slice: create denied live binding checkpoint.",
+  "non_claims": {
+    "no_live_aws": true,
+    "no_lambda_invocation_behavior": true,
+    "no_admin_equivalent_execution_role_claim": true,
+    "no_broad_iamscope_correctness": true,
+    "no_broad_passrole_correctness": true,
+    "no_generic_deny_correctness": true,
+    "no_exploitability_proof": true,
+    "no_downstream_authorization_proof": true,
+    "no_production_readiness": true,
+    "no_composite_benchmark_score": true,
+    "no_pass_fail_benchmark_label": true
+  },
+  "selected_path": {
+    "attempted_action": "lambda:CreateFunction",
+    "source_principal_arn": "arn:aws:iam::000000000000:role/IAMScopeLiveBindingDeniedSourceRole",
+    "target_role_arn": "arn:aws:iam::000000000000:role/IAMScopeLiveBindingLambdaExecutionRole"
+  }
+}

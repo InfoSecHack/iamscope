@@ -1,0 +1,136 @@
+{
+  "account_id": "000000000000",
+  "aws_calls_made": 0,
+  "constraints": [],
+  "description": "Sanitized local denied fixture for binding missing-PassRole live denial to no selected IAMScope PassRole-to-Lambda finding.",
+  "edge_constraints": [],
+  "edges": [
+    {
+      "dst": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/IAMScopeLiveBindingLambdaExecutionRole",
+        "region": "-"
+      },
+      "edge_id": "ee650f233a6ed64f2e59a9e0f86a3c9d5bb0735730b8bcf021ecbd2a6d2fbaba",
+      "edge_type": "lambda:CreateFunction_permission",
+      "features": {
+        "allow_controls": [
+          {
+            "control_type": "PERMISSION",
+            "digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+            "policy_arn": "arn:aws:iam::000000000000:policy/IAMScopeLiveBindingDeniedSanitizedPolicy",
+            "statement_index": 0,
+            "summary": "lambda:CreateFunction"
+          }
+        ],
+        "effect": "Allow",
+        "has_conditions": false,
+        "is_wildcard_resource": false,
+        "layer": "permission",
+        "raw_conditions": {},
+        "resource_pattern": "arn:aws:lambda:us-east-1:000000000000:function:iamscope-live-passrole-lambda-test-redacted",
+        "statement_index": 0
+      },
+      "region": "-",
+      "src": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/IAMScopeLiveBindingDeniedSourceRole",
+        "region": "-"
+      }
+    },
+    {
+      "dst": {
+        "node_type": "IAMRole",
+        "provider": "aws",
+        "provider_id": "arn:aws:iam::000000000000:role/IAMScopeLiveBindingLambdaExecutionRole",
+        "region": "-"
+      },
+      "edge_id": "4e82d4996c7212e2ab5e5ef7088fba44653dde7d70ace38f1e182f55ffacb86b",
+      "edge_type": "sts:AssumeRole_trust",
+      "features": {
+        "allow_controls": [
+          {
+            "control_type": "TRUST",
+            "digest": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+            "policy_arn": "arn:aws:iam::000000000000:role/IAMScopeLiveBindingLambdaExecutionRole",
+            "statement_index": 0,
+            "summary": "lambda.amazonaws.com trust"
+          }
+        ],
+        "effect": "Allow",
+        "has_conditions": false,
+        "is_wildcard_principal": false,
+        "layer": "trust",
+        "principal_type": "Service",
+        "raw_conditions": {},
+        "statement_index": 0
+      },
+      "region": "-",
+      "src": {
+        "node_type": "AWSService",
+        "provider": "aws",
+        "provider_id": "lambda.amazonaws.com",
+        "region": "-"
+      }
+    }
+  ],
+  "fixture_id": "passrole_lambda_denied_missing_passrole_001",
+  "generation_mode": "local_reasoner_fixture",
+  "live_aws_used": false,
+  "nodes": [
+    {
+      "node_id": "8333d429ff01cd4e221057d52b64796ad32a7d358126bbd9a4874a00d140f090",
+      "node_type": "IAMRole",
+      "properties": {
+        "account_id": "000000000000",
+        "sanitized": true
+      },
+      "provider": "aws",
+      "provider_id": "arn:aws:iam::000000000000:role/IAMScopeLiveBindingDeniedSourceRole",
+      "region": "-"
+    },
+    {
+      "node_id": "9a8beffce76dcd9a52962f1be19c603a4bc97287d51b54296eec70942325d4ec",
+      "node_type": "IAMRole",
+      "properties": {
+        "account_id": "000000000000",
+        "sanitized": true
+      },
+      "provider": "aws",
+      "provider_id": "arn:aws:iam::000000000000:role/IAMScopeLiveBindingLambdaExecutionRole",
+      "region": "-"
+    },
+    {
+      "node_id": "dd76780b75405f72452650208a1129ca4dc959c43bcea761cbc3686e576d16d0",
+      "node_type": "AWSService",
+      "properties": {},
+      "provider": "aws",
+      "provider_id": "lambda.amazonaws.com",
+      "region": "-"
+    }
+  ],
+  "redaction": {
+    "raw_live_account_id_committed": false,
+    "raw_live_role_arn_committed": false,
+    "raw_tmp_result_committed": false
+  },
+  "scenario_hash": "badc0ffee0ddf00dbadc0ffee0ddf00dbadc0ffee0ddf00dbadc0ffee0ddf00d",
+  "scope_boundary": {
+    "represents_admin_equivalent_execution_role": false,
+    "represents_downstream_authorization": false,
+    "represents_exploitability": false,
+    "represents_lambda_invocation": false,
+    "represents_missing_passrole_denial": true,
+    "represents_service_mediated_create_function": true
+  },
+  "selected_path": {
+    "attempted_action": "lambda:CreateFunction",
+    "candidate_function_arn": "arn:aws:lambda:us-east-1:000000000000:function:iamscope-live-passrole-lambda-test-redacted",
+    "live_behavior_alignment": "service-mediated CreateFunction with missing PassRole evidence plus Lambda trust only",
+    "service_principal": "lambda.amazonaws.com",
+    "source_principal_arn": "arn:aws:iam::000000000000:role/IAMScopeLiveBindingDeniedSourceRole",
+    "target_role_arn": "arn:aws:iam::000000000000:role/IAMScopeLiveBindingLambdaExecutionRole"
+  }
+}
