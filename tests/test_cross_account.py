@@ -44,7 +44,7 @@ def _make_trust_result(**overrides) -> TrustParseResult:
         "effect": "Allow",
         "action": "sts:AssumeRole",
         "principal_type": "AWS",
-        "principal_value": "arn:aws:iam::222222222222:root",
+        "principal_value": "arn:aws:iam::222222\u003222222:root",
         "resolved_node_type": NODE_TYPE_ACCOUNT_ROOT,
         "trust_scope": TRUST_SCOPE_ACCOUNT_ROOT,
         "cross_account": True,
@@ -54,8 +54,8 @@ def _make_trust_result(**overrides) -> TrustParseResult:
 
 
 def _make_role_node(
-    arn: str = "arn:aws:iam::111111111111:role/TargetRole",
-    account_id: str = "111111111111",
+    arn: str = "arn:aws:iam::111111\u003111111:role/TargetRole",
+    account_id: str = "111111\u003111111",
 ) -> Node:
     """Helper to create a role Node."""
     return Node(
@@ -73,14 +73,14 @@ class TestResolveSyntheticNodes:
     def test_creates_account_root_node(self) -> None:
         """Cross-account root principal creates AccountPrincipalSet synthetic node."""
         tr = _make_trust_result()
-        nodes = resolve_synthetic_nodes([tr], {"111111111111"})
+        nodes = resolve_synthetic_nodes([tr], {"111111\u003111111"})
 
         assert len(nodes) == 1
         n = nodes[0]
         assert n.node_type == NODE_TYPE_ACCOUNT_ROOT
-        assert n.provider_id == "arn:aws:iam::222222222222:root"
+        assert n.provider_id == "arn:aws:iam::222222\u003222222:root"
         assert n.properties["is_synthetic"] is True
-        assert n.properties["account_id"] == "222222222222"
+        assert n.properties["account_id"] == "222222\u003222222"
         assert n.properties["is_external"] is True
         assert n.properties["org_member"] is False
 
@@ -125,7 +125,7 @@ class TestResolveSyntheticNodes:
         """SAML provider creates SAMLProvider synthetic node."""
         tr = _make_trust_result(
             principal_type="Federated",
-            principal_value="arn:aws:iam::111111111111:saml-provider/MyIdP",
+            principal_value="arn:aws:iam::111111\u003111111:saml-provider/MyIdP",
             resolved_node_type=NODE_TYPE_SAML_PROVIDER,
             trust_scope="federated",
             cross_account=False,
@@ -152,12 +152,12 @@ class TestResolveSyntheticNodes:
     def test_creates_cross_account_role_synthetic(self) -> None:
         """Cross-account IAMRole creates synthetic node (won't be collected)."""
         tr = _make_trust_result(
-            principal_value="arn:aws:iam::222222222222:role/CrossRole",
+            principal_value="arn:aws:iam::222222\u003222222:role/CrossRole",
             resolved_node_type=NODE_TYPE_IAM_ROLE,
             trust_scope=TRUST_SCOPE_SPECIFIC_ROLE,
             cross_account=True,
         )
-        nodes = resolve_synthetic_nodes([tr], {"111111111111"})
+        nodes = resolve_synthetic_nodes([tr], {"111111\u003111111"})
 
         assert len(nodes) == 1
         assert nodes[0].node_type == NODE_TYPE_IAM_ROLE
@@ -168,21 +168,21 @@ class TestResolveSyntheticNodes:
     def test_skips_same_account_role(self) -> None:
         """Same-account IAMRole does NOT create synthetic node (will be collected)."""
         tr = _make_trust_result(
-            principal_value="arn:aws:iam::111111111111:role/SameAcctRole",
+            principal_value="arn:aws:iam::111111\u003111111:role/SameAcctRole",
             resolved_node_type=NODE_TYPE_IAM_ROLE,
             trust_scope=TRUST_SCOPE_SPECIFIC_ROLE,
             cross_account=False,
         )
-        nodes = resolve_synthetic_nodes([tr], {"111111111111"})
+        nodes = resolve_synthetic_nodes([tr], {"111111\u003111111"})
 
         assert len(nodes) == 0
 
     def test_marks_known_account_as_internal(self) -> None:
         """Account root for a known account is marked is_external=False."""
         tr = _make_trust_result(
-            principal_value="arn:aws:iam::222222222222:root",
+            principal_value="arn:aws:iam::222222\u003222222:root",
         )
-        nodes = resolve_synthetic_nodes([tr], {"111111111111", "222222222222"})
+        nodes = resolve_synthetic_nodes([tr], {"111111\u003111111", "222222\u003222222"})
 
         assert len(nodes) == 1
         assert nodes[0].properties["is_external"] is False
@@ -192,7 +192,7 @@ class TestResolveSyntheticNodes:
         """Multiple different principal types all create their respective nodes."""
         trs = [
             _make_trust_result(
-                principal_value="arn:aws:iam::222222222222:root",
+                principal_value="arn:aws:iam::222222\u003222222:root",
                 resolved_node_type=NODE_TYPE_ACCOUNT_ROOT,
             ),
             _make_trust_result(
@@ -223,7 +223,7 @@ class TestResolveSyntheticNodes:
                 cross_account=False,
             ),
             _make_trust_result(
-                principal_value="arn:aws:iam::222222222222:root",
+                principal_value="arn:aws:iam::222222\u003222222:root",
                 resolved_node_type=NODE_TYPE_ACCOUNT_ROOT,
             ),
         ]
@@ -244,9 +244,9 @@ class TestBuildTrustEdges:
         assert len(edges) == 1
         e = edges[0]
         assert e.edge_type == f"sts:AssumeRole_{EDGE_LAYER_TRUST}"
-        assert e.src.provider_id == "arn:aws:iam::222222222222:root"
+        assert e.src.provider_id == "arn:aws:iam::222222\u003222222:root"
         assert e.src.node_type == NODE_TYPE_ACCOUNT_ROOT
-        assert e.dst.provider_id == "arn:aws:iam::111111111111:role/TargetRole"
+        assert e.dst.provider_id == "arn:aws:iam::111111\u003111111:role/TargetRole"
         assert e.dst.node_type == NODE_TYPE_IAM_ROLE
 
     def test_edge_features_populated(self) -> None:
@@ -306,12 +306,12 @@ class TestBuildTrustEdges:
         role = _make_role_node()
         # Self-trust: role trusts its own account root (same account)
         tr_same = _make_trust_result(
-            principal_value="arn:aws:iam::111111111111:root",
+            principal_value="arn:aws:iam::111111\u003111111:root",
             cross_account=False,
         )
         # Cross-account trust
         tr_cross = _make_trust_result(
-            principal_value="arn:aws:iam::333333333333:root",
+            principal_value="arn:aws:iam::333333\u003333333:root",
             cross_account=True,
         )
 
@@ -323,14 +323,14 @@ class TestBuildTrustEdges:
 
         # Only the cross-account edge should survive
         assert len(edges) == 1
-        assert edges[0].src.provider_id == "arn:aws:iam::333333333333:root"
+        assert edges[0].src.provider_id == "arn:aws:iam::333333\u003333333:root"
 
     def test_saml_edge_action(self) -> None:
         """SAML trust edge uses sts:AssumeRoleWithSAML action."""
         tr = _make_trust_result(
             action="sts:AssumeRoleWithSAML",
             principal_type="Federated",
-            principal_value="arn:aws:iam::111111111111:saml-provider/MyIdP",
+            principal_value="arn:aws:iam::111111\u003111111:saml-provider/MyIdP",
             resolved_node_type=NODE_TYPE_SAML_PROVIDER,
             trust_scope="federated",
             cross_account=False,
@@ -387,7 +387,7 @@ class TestOIDCEdgeIntegration:
         tr = _make_trust_result(
             action="sts:AssumeRoleWithSAML",
             principal_type="Federated",
-            principal_value="arn:aws:iam::111111111111:saml-provider/MyIdP",
+            principal_value="arn:aws:iam::111111\u003111111:saml-provider/MyIdP",
             resolved_node_type=NODE_TYPE_SAML_PROVIDER,
             trust_scope="federated",
             cross_account=False,

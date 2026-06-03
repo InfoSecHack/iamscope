@@ -24,10 +24,10 @@ def minimal_role_node() -> Node:
     return Node(
         provider=PROVIDER_AWS,
         node_type=NODE_TYPE_IAM_ROLE,
-        provider_id="arn:aws:iam::111111111111:role/TestRole",
+        provider_id="arn:aws:iam::111111\u003111111:role/TestRole",
         region=REGION_GLOBAL,
         properties={
-            "account_id": "111111111111",
+            "account_id": "111111\u003111111",
             "path": "/",
             "is_synthetic": False,
         },
@@ -40,10 +40,10 @@ def minimal_account_root_node() -> Node:
     return Node(
         provider=PROVIDER_AWS,
         node_type=NODE_TYPE_ACCOUNT_ROOT,
-        provider_id="arn:aws:iam::222222222222:root",
+        provider_id="arn:aws:iam::222222\u003222222:root",
         region=REGION_GLOBAL,
         properties={
-            "account_id": "222222222222",
+            "account_id": "222222\u003222222",
             "principal_count": 50,
             "is_synthetic": True,
         },

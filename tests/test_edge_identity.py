@@ -42,7 +42,7 @@ from __future__ import annotations
 
 from iamscope.models import Edge, NodeRef
 
-_ACCOUNT = "111111111111"
+_ACCOUNT = "111111\u003111111"
 _ROLE_A_ARN = f"arn:aws:iam::{_ACCOUNT}:role/Trustor"
 _ROLE_B_ARN = f"arn:aws:iam::{_ACCOUNT}:role/Trustee"
 

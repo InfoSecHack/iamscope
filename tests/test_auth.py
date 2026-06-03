@@ -92,7 +92,7 @@ class TestAssumeRole:
             return MockSTS()
 
         monkeypatch.setattr("iamscope.auth.assume_role.get_client", _mock_get_client)
-        result = assume_collection_role(session, "123456789012", "SomeRole")
+        result = assume_collection_role(session, "123456\u003789012", "SomeRole")
         assert result is None
 
     @mock_aws

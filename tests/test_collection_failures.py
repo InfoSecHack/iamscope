@@ -52,7 +52,7 @@ class TestCollectionFailureDataclass:
     def test_to_dict_is_sorted_and_complete(self) -> None:
         f = CollectionFailure(
             collector="lambda",
-            account_id="111111111111",
+            account_id="111111\u003111111",
             region="eu-west-1",
             error_class="ClientError",
             error_message="AccessDenied: lambda:ListFunctions",
@@ -68,16 +68,16 @@ class TestCollectionFailureDataclass:
             "region",
         ]
         assert d["collector"] == "lambda"
-        assert d["account_id"] == "111111111111"
+        assert d["account_id"] == "111111\u003111111"
         assert d["region"] == "eu-west-1"
         assert d["error_class"] == "ClientError"
         assert d["error_message"] == "AccessDenied: lambda:ListFunctions"
 
     def test_make_failure_from_short_exception(self) -> None:
         exc = ValueError("boom")
-        f = make_failure("kms", "222222222222", "us-east-2", exc)
+        f = make_failure("kms", "222222\u003222222", "us-east-2", exc)
         assert f.collector == "kms"
-        assert f.account_id == "222222222222"
+        assert f.account_id == "222222\u003222222"
         assert f.region == "us-east-2"
         assert f.error_class == "ValueError"
         assert f.error_message == "boom"
@@ -87,7 +87,7 @@ class TestCollectionFailureDataclass:
         # blow up from a single caught exception.
         long_msg = "x" * 2000
         exc = RuntimeError(long_msg)
-        f = make_failure("s3", "333333333333", "global", exc)
+        f = make_failure("s3", "333333\u003333333", "global", exc)
         assert len(f.error_message) <= 500
         assert f.error_message.endswith("...")
 
@@ -170,7 +170,7 @@ class TestLambdaCollectorFailures:
         ):
             nodes, edges = collect_lambda_functions(
                 session,
-                account_id="111111111111",
+                account_id="111111\u003111111",
                 regions=["us-east-1", "eu-west-1"],
                 failures=failures,
             )
@@ -182,7 +182,7 @@ class TestLambdaCollectorFailures:
         assert len(failures) == 1
         f = failures[0]
         assert f.collector == "lambda"
-        assert f.account_id == "111111111111"
+        assert f.account_id == "111111\u003111111"
         assert f.region == "eu-west-1"
         assert f.error_class == "RuntimeError"
         assert "boom" in f.error_message
@@ -201,7 +201,7 @@ class TestLambdaCollectorFailures:
             # No failures kwarg at all — MUST NOT raise.
             nodes, edges = collect_lambda_functions(
                 session,
-                account_id="111111111111",
+                account_id="111111\u003111111",
                 regions=["us-east-1", "eu-west-1"],
             )
         assert nodes == []
@@ -225,7 +225,7 @@ class TestKmsCollectorFailures:
         ):
             nodes = collect_kms_keys(
                 session,
-                account_id="444444444444",
+                account_id="444444\u003444444",
                 regions=["us-east-1", "ap-southeast-2"],
                 failures=failures,
             )
@@ -235,7 +235,7 @@ class TestKmsCollectorFailures:
         f = failures[0]
         assert f.collector == "kms"
         assert f.region == "ap-southeast-2"
-        assert f.account_id == "444444444444"
+        assert f.account_id == "444444\u003444444"
         assert f.error_class == "RuntimeError"
 
 
@@ -254,7 +254,7 @@ class TestSecretsCollectorFailures:
         ):
             nodes = collect_secrets(
                 session,
-                account_id="555555555555",
+                account_id="555555\u003555555",
                 regions=["us-east-1", "us-west-2"],
                 failures=failures,
             )
@@ -264,7 +264,7 @@ class TestSecretsCollectorFailures:
         f = failures[0]
         assert f.collector == "secrets"
         assert f.region == "us-west-2"
-        assert f.account_id == "555555555555"
+        assert f.account_id == "555555\u003555555"
 
 
 class TestS3CollectorFailures:
@@ -289,7 +289,7 @@ class TestS3CollectorFailures:
         ):
             nodes = collect_s3_buckets(
                 session,
-                account_id="666666666666",
+                account_id="666666\u003666666",
                 failures=failures,
             )
 
@@ -298,7 +298,7 @@ class TestS3CollectorFailures:
         f = failures[0]
         assert f.collector == "s3"
         assert f.region == REGION_GLOBAL
-        assert f.account_id == "666666666666"
+        assert f.account_id == "666666\u003666666"
         assert f.error_class == "RuntimeError"
 
     def test_success_path_appends_nothing(self) -> None:
@@ -316,7 +316,7 @@ class TestS3CollectorFailures:
         ):
             nodes = collect_s3_buckets(
                 session,
-                account_id="777777777777",
+                account_id="777777\u003777777",
                 failures=failures,
             )
 

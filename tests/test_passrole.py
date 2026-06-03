@@ -27,7 +27,7 @@ def _make_pr(
     action: str = "sts:AssumeRole",
     resource: str = "*",
     is_wildcard: bool = True,
-    source_arn: str = "arn:aws:iam::111111111111:user/Admin",
+    source_arn: str = "arn:aws:iam::111111\u003111111:user/Admin",
     **overrides,
 ) -> PermissionParseResult:
     defaults = {
@@ -38,7 +38,7 @@ def _make_pr(
         "is_wildcard_resource": is_wildcard,
         "source_arn": source_arn,
         "source_node_type": NODE_TYPE_IAM_USER,
-        "source_account_id": "111111111111",
+        "source_account_id": "111111\u003111111",
         "policy_source": "inline",
         "policy_name": "test-policy",
         "action_matched_via": "exact",
@@ -48,9 +48,9 @@ def _make_pr(
 
 
 KNOWN_ROLES = [
-    "arn:aws:iam::111111111111:role/RoleA",
-    "arn:aws:iam::111111111111:role/RoleB",
-    "arn:aws:iam::111111111111:role/RoleC",
+    "arn:aws:iam::111111\u003111111:role/RoleA",
+    "arn:aws:iam::111111\u003111111:role/RoleB",
+    "arn:aws:iam::111111\u003111111:role/RoleC",
 ]
 
 
@@ -60,7 +60,7 @@ class TestSpecificResource:
     def test_specific_resource_creates_edge(self) -> None:
         """Specific resource ARN creates one _permission edge."""
         pr = _make_pr(
-            resource="arn:aws:iam::222222222222:role/ProdDeploy",
+            resource="arn:aws:iam::222222\u003222222:role/ProdDeploy",
             is_wildcard=False,
         )
         ec = ExpansionController(global_mode="warn")
@@ -70,14 +70,14 @@ class TestSpecificResource:
         assert len(nodes) == 0
         e = edges[0]
         assert e.edge_type == f"sts:AssumeRole_{EDGE_LAYER_PERMISSION}"
-        assert e.src.provider_id == "arn:aws:iam::111111111111:user/Admin"
-        assert e.dst.provider_id == "arn:aws:iam::222222222222:role/ProdDeploy"
+        assert e.src.provider_id == "arn:aws:iam::111111\u003111111:user/Admin"
+        assert e.dst.provider_id == "arn:aws:iam::222222\u003222222:role/ProdDeploy"
         assert e.features["is_wildcard_resource"] is False
 
     def test_specific_resource_registers_edge_count(self) -> None:
         """Specific resource edge is registered with expansion controller."""
         pr = _make_pr(
-            resource="arn:aws:iam::222222222222:role/ProdDeploy",
+            resource="arn:aws:iam::222222\u003222222:role/ProdDeploy",
             is_wildcard=False,
         )
         ec = ExpansionController(global_mode="warn")
@@ -138,7 +138,7 @@ class TestWarnMode:
         n = nodes[0]
         assert n.node_type == NODE_TYPE_HYPEREDGE
         assert n.properties["expansion_type"] == "wildcard_assume_role"
-        assert n.properties["account_id"] == "111111111111"
+        assert n.properties["account_id"] == "111111\u003111111"
 
 
 class TestSkipMode:
@@ -161,7 +161,7 @@ class TestPassRole:
         """Specific PassRole creates one edge."""
         pr = _make_pr(
             action="iam:PassRole",
-            resource="arn:aws:iam::111111111111:role/LambdaExec",
+            resource="arn:aws:iam::111111\u003111111:role/LambdaExec",
             is_wildcard=False,
         )
         ec = ExpansionController(global_mode="warn")
@@ -197,7 +197,7 @@ class TestHardLimits:
     def test_over_500_forces_warn(self) -> None:
         """>500 would-be expansions forces warn mode even if expand requested."""
         # Create 501 known roles
-        many_roles = [f"arn:aws:iam::111111111111:role/Role{i:04d}" for i in range(501)]
+        many_roles = [f"arn:aws:iam::111111\u003111111:role/Role{i:04d}" for i in range(501)]
         pr = _make_pr()
         ec = ExpansionController(global_mode="expand")
         edges, nodes = build_permission_edges([pr], ec, many_roles)
@@ -215,7 +215,7 @@ class TestMixedGrants:
     def test_mixed_specific_and_wildcard(self) -> None:
         """Specific + wildcard grants in same batch."""
         pr_specific = _make_pr(
-            resource="arn:aws:iam::222222222222:role/ProdDeploy",
+            resource="arn:aws:iam::222222\u003222222:role/ProdDeploy",
             is_wildcard=False,
         )
         pr_wildcard = _make_pr()
@@ -229,7 +229,7 @@ class TestMixedGrants:
         # Specific edge points to actual role
         specific = [e for e in edges if not e.features.get("suppressed")]
         assert len(specific) == 1
-        assert specific[0].dst.provider_id == "arn:aws:iam::222222222222:role/ProdDeploy"
+        assert specific[0].dst.provider_id == "arn:aws:iam::222222\u003222222:role/ProdDeploy"
 
 
 class TestEdgeFeatures:
@@ -238,7 +238,7 @@ class TestEdgeFeatures:
     def test_features_include_permission_metadata(self) -> None:
         """Edge features include permission source tracking."""
         pr = _make_pr(
-            resource="arn:aws:iam::222222222222:role/Target",
+            resource="arn:aws:iam::222222\u003222222:role/Target",
             is_wildcard=False,
             policy_source="managed",
             policy_name="AdminAccess",
@@ -259,7 +259,7 @@ class TestDeterminism:
 
     def test_output_sorted_by_edge_id(self) -> None:
         """Output edges are sorted by edge_id."""
-        prs = [_make_pr(resource=f"arn:aws:iam::222222222222:role/Role{i}", is_wildcard=False) for i in range(5)]
+        prs = [_make_pr(resource=f"arn:aws:iam::222222\u003222222:role/Role{i}", is_wildcard=False) for i in range(5)]
         ec = ExpansionController(global_mode="warn")
         edges, _ = build_permission_edges(prs, ec, KNOWN_ROLES)
 
@@ -288,7 +288,7 @@ class TestCumulativePassRoleBudget:
     def test_under_warn_threshold_expands_normally(self) -> None:
         """Under 200 cumulative edges: no intervention."""
         # 50 roles × 1 grant = 50 edges, well under threshold
-        roles = [f"arn:aws:iam::111111111111:role/Role{i}" for i in range(50)]
+        roles = [f"arn:aws:iam::111111\u003111111:role/Role{i}" for i in range(50)]
         prs = [_make_pr(action="iam:PassRole")]
         ec = ExpansionController(global_mode="expand")
         edges, nodes = build_permission_edges(prs, ec, roles)
@@ -299,8 +299,8 @@ class TestCumulativePassRoleBudget:
         """Two wildcard grants from same principal exceeding cap → second forced to warn."""
         # 300 roles. First PassRole grant expands to 300 (under 500 per-expansion).
         # Second grant from same principal would bring total to 600 → forced warn.
-        roles = [f"arn:aws:iam::111111111111:role/Role{i}" for i in range(300)]
-        source = "arn:aws:iam::111111111111:user/DevOps"
+        roles = [f"arn:aws:iam::111111\u003111111:role/Role{i}" for i in range(300)]
+        source = "arn:aws:iam::111111\u003111111:user/DevOps"
         pr1 = _make_pr(action="iam:PassRole", source_arn=source)
         pr2 = _make_pr(action="sts:AssumeRole", source_arn=source)
         ec = ExpansionController(global_mode="expand")
@@ -315,14 +315,14 @@ class TestCumulativePassRoleBudget:
 
     def test_different_principals_have_independent_budgets(self) -> None:
         """Different source principals track independently."""
-        roles = [f"arn:aws:iam::111111111111:role/Role{i}" for i in range(300)]
+        roles = [f"arn:aws:iam::111111\u003111111:role/Role{i}" for i in range(300)]
         pr1 = _make_pr(
             action="iam:PassRole",
-            source_arn="arn:aws:iam::111111111111:user/UserA",
+            source_arn="arn:aws:iam::111111\u003111111:user/UserA",
         )
         pr2 = _make_pr(
             action="iam:PassRole",
-            source_arn="arn:aws:iam::111111111111:user/UserB",
+            source_arn="arn:aws:iam::111111\u003111111:user/UserB",
         )
         ec = ExpansionController(global_mode="expand")
         edges, nodes = build_permission_edges([pr1, pr2], ec, roles)
@@ -333,7 +333,7 @@ class TestCumulativePassRoleBudget:
 
     def test_warn_threshold_logged(self) -> None:
         """Between 200-500 cumulative: warn logged but still expands."""
-        roles = [f"arn:aws:iam::111111111111:role/Role{i}" for i in range(250)]
+        roles = [f"arn:aws:iam::111111\u003111111:role/Role{i}" for i in range(250)]
         prs = [_make_pr(action="iam:PassRole")]
         ec = ExpansionController(global_mode="expand")
         edges, nodes = build_permission_edges(prs, ec, roles)
@@ -344,8 +344,8 @@ class TestCumulativePassRoleBudget:
 
     def test_exact_cap_boundary(self) -> None:
         """Exactly at 500 cumulative: no intervention (cap is >500)."""
-        roles = [f"arn:aws:iam::111111111111:role/Role{i}" for i in range(250)]
-        source = "arn:aws:iam::111111111111:user/DevOps"
+        roles = [f"arn:aws:iam::111111\u003111111:role/Role{i}" for i in range(250)]
+        source = "arn:aws:iam::111111\u003111111:user/DevOps"
         pr1 = _make_pr(action="iam:PassRole", source_arn=source)
         pr2 = _make_pr(action="sts:AssumeRole", source_arn=source)
         ec = ExpansionController(global_mode="expand")
@@ -378,7 +378,7 @@ class TestRawConditionsPropagation:
         """
         pr = _make_pr(
             action="iam:PassRole",
-            resource="arn:aws:iam::222222222222:role/LambdaExec",
+            resource="arn:aws:iam::222222\u003222222:role/LambdaExec",
             is_wildcard=False,
             has_conditions=True,
             raw_conditions=self._COND,
@@ -444,7 +444,7 @@ class TestRawConditionsPropagation:
         """
         pr = _make_pr(
             action="iam:PassRole",
-            resource="arn:aws:iam::222222222222:role/LambdaExec",
+            resource="arn:aws:iam::222222\u003222222:role/LambdaExec",
             is_wildcard=False,
             has_conditions=False,
             raw_conditions={},
@@ -467,11 +467,11 @@ class TestRawConditionsPropagation:
         """
         specific = _make_pr(
             action="iam:PassRole",
-            resource="arn:aws:iam::222222222222:role/LambdaExec",
+            resource="arn:aws:iam::222222\u003222222:role/LambdaExec",
             is_wildcard=False,
             has_conditions=True,
             raw_conditions=self._COND,
-            source_arn="arn:aws:iam::111111111111:user/Alice",
+            source_arn="arn:aws:iam::111111\u003111111:user/Alice",
         )
         wildcard_expand = _make_pr(
             action="sts:AssumeRole",
@@ -479,7 +479,7 @@ class TestRawConditionsPropagation:
             is_wildcard=True,
             has_conditions=False,
             raw_conditions={},
-            source_arn="arn:aws:iam::111111111111:user/Bob",
+            source_arn="arn:aws:iam::111111\u003111111:user/Bob",
         )
         wildcard_warn = _make_pr(
             action="iam:PassRole",
@@ -487,7 +487,7 @@ class TestRawConditionsPropagation:
             is_wildcard=True,
             has_conditions=True,
             raw_conditions=self._COND,
-            source_arn="arn:aws:iam::111111111111:user/Carol",
+            source_arn="arn:aws:iam::111111\u003111111:user/Carol",
         )
         # Mixed config: assume_role expands, passrole warns. Exercises all three
         # emitter branches in one pass.
@@ -525,7 +525,7 @@ class TestTyp1NodeTypeInference:
         from iamscope.collector.passrole import _infer_node_type_from_arn
         from iamscope.constants import NODE_TYPE_LAMBDA_FUNCTION
 
-        arn = "arn:aws:lambda:us-east-1:111111111111:function:MyFunc"
+        arn = "arn:aws:lambda:us-east-1:111111\u003111111:function:MyFunc"
         assert _infer_node_type_from_arn(arn) == NODE_TYPE_LAMBDA_FUNCTION
         # Wildcard form still canonical
         wildcard = "arn:aws:lambda:*:*:function:*"
@@ -536,7 +536,7 @@ class TestTyp1NodeTypeInference:
         from iamscope.collector.passrole import _infer_node_type_from_arn
         from iamscope.constants import NODE_TYPE_ECS_CLUSTER
 
-        arn = "arn:aws:ecs:us-east-1:111111111111:cluster/prod"
+        arn = "arn:aws:ecs:us-east-1:111111\u003111111:cluster/prod"
         assert _infer_node_type_from_arn(arn) == NODE_TYPE_ECS_CLUSTER
 
     def test_ec2_instance_arn_maps_to_ec2_instance(self) -> None:
@@ -548,7 +548,7 @@ class TestTyp1NodeTypeInference:
         from iamscope.collector.passrole import _infer_node_type_from_arn
         from iamscope.constants import NODE_TYPE_EC2_INSTANCE
 
-        arn = "arn:aws:ec2:us-east-1:111111111111:instance/i-0abc123def"
+        arn = "arn:aws:ec2:us-east-1:111111\u003111111:instance/i-0abc123def"
         assert _infer_node_type_from_arn(arn) == NODE_TYPE_EC2_INSTANCE
 
     def test_secrets_manager_arn_maps_to_secret(self) -> None:
@@ -556,7 +556,7 @@ class TestTyp1NodeTypeInference:
         from iamscope.collector.passrole import _infer_node_type_from_arn
         from iamscope.constants import NODE_TYPE_SECRETS_MANAGER_SECRET
 
-        arn = "arn:aws:secretsmanager:us-east-1:111111111111:secret:db-creds-xYz9Q"
+        arn = "arn:aws:secretsmanager:us-east-1:111111\u003111111:secret:db-creds-xYz9Q"
         assert _infer_node_type_from_arn(arn) == NODE_TYPE_SECRETS_MANAGER_SECRET
 
     def test_role_arn_still_maps_to_iam_role(self) -> None:
@@ -568,7 +568,7 @@ class TestTyp1NodeTypeInference:
         from iamscope.collector.passrole import _infer_node_type_from_arn
         from iamscope.constants import NODE_TYPE_IAM_ROLE
 
-        arn = "arn:aws:iam::222222222222:role/LambdaExec"
+        arn = "arn:aws:iam::222222\u003222222:role/LambdaExec"
         assert _infer_node_type_from_arn(arn) == NODE_TYPE_IAM_ROLE
 
     def test_unknown_arn_falls_back_to_iam_role(self) -> None:
@@ -587,7 +587,7 @@ class TestTyp1NodeTypeInference:
         from iamscope.collector.passrole import _infer_node_type_from_arn
         from iamscope.constants import NODE_TYPE_IAM_ROLE
 
-        arn = "arn:aws:dynamodb:us-east-1:111111111111:table/my-table"
+        arn = "arn:aws:dynamodb:us-east-1:111111\u003111111:table/my-table"
         assert _infer_node_type_from_arn(arn) == NODE_TYPE_IAM_ROLE
 
     def test_s3_bucket_arn_maps_to_s3_bucket(self) -> None:

@@ -12,13 +12,13 @@ Known local profile identities from prior discovery:
 
 | Profile | Observed identity |
 | --- | --- |
-| `iamscope-test` | `arn:aws:iam::516525145310:user/iamscope-verify` |
-| `iamscope-admin` | `arn:aws:iam::516525145310:user/iamscope-admin` |
-| `serim-dev-admin` | `arn:aws:sts::377114445031:assumed-role/OrganizationAccountAccessRole/...` |
-| `serim-prod-admin` | `arn:aws:sts::737923406074:assumed-role/OrganizationAccountAccessRole/...` |
-| `serim2-devengineer` | `arn:aws:sts::737923406074:assumed-role/serim2-DevEngineerRole/...` |
-| `serim2-jump` | `arn:aws:sts::737923406074:assumed-role/serim2-JumpRole/...` |
-| `serim2-terraform` | `arn:aws:sts::737923406074:assumed-role/serim2-TerraformRole/...` |
+| `iamscope-test` | `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-verify` |
+| `iamscope-admin` | `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-admin` |
+| `serim-dev-admin` | `arn:aws:sts::<redacted-aws-account-id>:assumed-role/OrganizationAccountAccessRole/...` |
+| `serim-prod-admin` | `arn:aws:sts::<redacted-aws-account-id>:assumed-role/OrganizationAccountAccessRole/...` |
+| `serim2-devengineer` | `arn:aws:sts::<redacted-aws-account-id>:assumed-role/serim2-DevEngineerRole/...` |
+| `serim2-jump` | `arn:aws:sts::<redacted-aws-account-id>:assumed-role/serim2-JumpRole/...` |
+| `serim2-terraform` | `arn:aws:sts::<redacted-aws-account-id>:assumed-role/serim2-TerraformRole/...` |
 
 This slice did not rerun identity discovery. It uses the prior mapping as input.
 
@@ -52,7 +52,7 @@ aws iam get-role \
 Observed result:
 
 ```text
-arn:aws:iam::516525145310:role/arf-rt-DevRole
+arn:aws:iam::<redacted-aws-account-id>:role/arf-rt-DevRole
 ```
 
 No `sts:AssumeRole` call was made, no `live_probe` was run, and no AWS resources were modified.
@@ -64,9 +64,9 @@ No `sts:AssumeRole` call was made, no `live_probe` was run, and no AWS resources
 - Candidate status: selected.
 - Environment label: `controlled-sts-denied-proof-summary`.
 - Source profile: `iamscope-admin`.
-- Exact source principal ARN: `arn:aws:iam::516525145310:user/iamscope-admin`.
-- Exact target role ARN: `arn:aws:iam::516525145310:role/arf-rt-DevRole`.
-- Expected account ID: `516525145310`.
+- Exact source principal ARN: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-admin`.
+- Exact target role ARN: `arn:aws:iam::<redacted-aws-account-id>:role/arf-rt-DevRole`.
+- Expected account ID: `<redacted-aws-account-id>`.
 - Predicted behavior: `denied`.
 - Target role existence: confirmed by read-only IAM `get-role` lookup.
 - Native IAMScope `finding_id`: unavailable.
@@ -84,8 +84,8 @@ Evidence source documents:
 
 The committed sanitized proof checkpoint records this denied single-case proof as:
 
-- Source principal: `arn:aws:iam::516525145310:user/iamscope-admin`
-- Target role: `arn:aws:iam::516525145310:role/arf-rt-DevRole`
+- Source principal: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-admin`
+- Target role: `arn:aws:iam::<redacted-aws-account-id>:role/arf-rt-DevRole`
 - Expected outcome: `denied`
 - Observed result: `denied`
 - `credentials_obtained=false`
@@ -94,16 +94,16 @@ The committed sanitized proof checkpoint records this denied single-case proof a
 ### Rejected Candidate: Env06 Run #1 path
 
 - Candidate status: rejected for current live profile matching.
-- Planned source: `arn:aws:iam::516525145310:user/iamscope-test/env06-alice`.
-- Current `iamscope-test` profile identity from prior discovery: `arn:aws:iam::516525145310:user/iamscope-verify`.
+- Planned source: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-test/env06-alice`.
+- Current `iamscope-test` profile identity from prior discovery: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-verify`.
 - Target role lookup for checked `env06-admin` names did not resolve in the prior checkpoint.
 - Reason rejected: documented `environment_mismatch`.
 
 ### Rejected Candidate: sanitized positive STS proof path
 
 - Candidate status: rejected for current live profile matching.
-- Source principal in sanitized evidence: `arn:aws:iam::516525145310:user/iamscope-positive-source`.
-- Target role in sanitized evidence: `arn:aws:iam::516525145310:role/iamscope-positive-target-role`.
+- Source principal in sanitized evidence: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-positive-source`.
+- Target role in sanitized evidence: `arn:aws:iam::<redacted-aws-account-id>:role/iamscope-positive-target-role`.
 - Reason rejected: source principal does not match any currently available live profile identity from the prior mapping.
 
 ### Rejected Candidate: available assumed-role profiles
@@ -117,9 +117,9 @@ The committed sanitized proof checkpoint records this denied single-case proof a
 The selected candidate is the `iamscope-admin` denied STS path:
 
 ```text
-arn:aws:iam::516525145310:user/iamscope-admin
+arn:aws:iam::<redacted-aws-account-id>:user/iamscope-admin
   -- sts:AssumeRole expected denied -->
-arn:aws:iam::516525145310:role/arf-rt-DevRole
+arn:aws:iam::<redacted-aws-account-id>:role/arf-rt-DevRole
 ```
 
 Selection rationale:
@@ -146,8 +146,8 @@ That ID must not be presented as an IAMScope-native `finding_id` or `path_id`.
 
 Abort any future pre-live or live execution if any of these are true:
 
-- The `iamscope-admin` profile no longer resolves to `arn:aws:iam::516525145310:user/iamscope-admin`.
-- The target role ARN differs from `arn:aws:iam::516525145310:role/arf-rt-DevRole`.
+- The `iamscope-admin` profile no longer resolves to `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-admin`.
+- The target role ARN differs from `arn:aws:iam::<redacted-aws-account-id>:role/arf-rt-DevRole`.
 - The target role cannot be read by safe IAM lookup immediately before planning.
 - The future probe plan contains more than one probe.
 - The future probe plan changes expected outcome from `denied` without a new selection review.

@@ -228,9 +228,9 @@ This example uses placeholder values and sanitized summaries only:
     "prediction_source": "sanitized policy summary",
     "source_document": "docs/specs/controlled-identity-deny-validation-report-schema.md"
   },
-  "source_principal_arn": "arn:aws:iam::123456789012:user/example-identity-deny-source",
+  "source_principal_arn": "arn:aws:iam::<redacted-aws-account-id>:user/example-identity-deny-source",
   "candidate_action": "iam:AddUserToGroup",
-  "candidate_resource": "arn:aws:iam::123456789012:group/example-admins",
+  "candidate_resource": "arn:aws:iam::<redacted-aws-account-id>:group/example-admins",
   "allow_basis": {
     "allow_present": true,
     "allow_source_type": "identity_policy",
@@ -257,7 +257,7 @@ This example uses placeholder values and sanitized summaries only:
   },
   "predicted_behavior": {
     "predicted_action": "iam:AddUserToGroup",
-    "predicted_resource": "arn:aws:iam::123456789012:group/example-admins",
+    "predicted_resource": "arn:aws:iam::<redacted-aws-account-id>:group/example-admins",
     "predicted_outcome": "suppressed",
     "prediction_basis": "Structurally allowed action/resource is suppressed by explicit identity Deny.",
     "prediction_caveats": ["Static validation example."]

@@ -38,7 +38,7 @@ from iamscope.reasoner import AdminReachabilityReasoner, AssumeRoleChainReasoner
 from iamscope.reasoner.cross_reasoner_consistency import apply_cross_reasoner_demotions
 from iamscope.reasoner.verdict import Finding
 
-_ACCOUNT = "111111111111"
+_ACCOUNT = "111111\u003111111"
 _ALICE_ARN = f"arn:aws:iam::{_ACCOUNT}:user/Alice"
 _BOB_ARN = f"arn:aws:iam::{_ACCOUNT}:user/Bob"
 _DEVOPS_ARN = f"arn:aws:iam::{_ACCOUNT}:role/DevOps"

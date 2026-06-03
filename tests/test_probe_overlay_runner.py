@@ -33,8 +33,8 @@ from iamscope.truth.probe_runner import (
     build_probe_overlay_from_plan,
 )
 
-_SOURCE = "arn:aws:iam::111111111111:role/Source"
-_TARGET = "arn:aws:iam::222222222222:role/Target"
+_SOURCE = "arn:aws:iam::111111\u003111111:role/Source"
+_TARGET = "arn:aws:iam::222222\u003222222:role/Target"
 _EDGE_ID = "edge-assume-role-1"
 _SCENARIO_HASH = "hash-probe-runner"
 

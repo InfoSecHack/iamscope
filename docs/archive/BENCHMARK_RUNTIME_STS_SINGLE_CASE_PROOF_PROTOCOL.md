@@ -254,8 +254,8 @@ A single live STS AssumeRole proof run has now been performed under the single-c
 Sanitized proof summary:
 
 - One live STS AssumeRole call was attempted.
-- Source principal: `arn:aws:iam::516525145310:user/iamscope-admin`.
-- Target role: `arn:aws:iam::516525145310:role/arf-rt-DevRole`.
+- Source principal: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-admin`.
+- Target role: `arn:aws:iam::<redacted-aws-account-id>:role/arf-rt-DevRole`.
 - Expected outcome: `denied`.
 - Observed result: `denied`.
 - Safe error category: `access_denied`.

@@ -31,16 +31,16 @@ def _org_data() -> OrgData:
         org_id="o-example",
         root_id="r-root",
         accounts=[
-            AccountInfo("111111111111", "dev", "dev@example.com", "ACTIVE", "ou-dev"),
-            AccountInfo("222222222222", "prod", "prod@example.com", "ACTIVE", "ou-prod"),
+            AccountInfo("111111\u003111111", "dev", "dev@example.com", "ACTIVE", "ou-dev"),
+            AccountInfo("222222\u003222222", "prod", "prod@example.com", "ACTIVE", "ou-prod"),
         ],
         scp_constraints=[_constraint()],
         ou_account_map={
-            "r-root": {"111111111111", "222222222222"},
-            "ou-dev": {"111111111111"},
-            "ou-prod": {"222222222222"},
-            "111111111111": {"111111111111"},
-            "222222222222": {"222222222222"},
+            "r-root": {"111111\u003111111", "222222\u003222222"},
+            "ou-dev": {"111111\u003111111"},
+            "ou-prod": {"222222\u003222222"},
+            "111111\u003111111": {"111111\u003111111"},
+            "222222\u003222222": {"222222\u003222222"},
         },
     )
 
@@ -48,8 +48,8 @@ def _org_data() -> OrgData:
 def test_account_confounding_positive_and_negative() -> None:
     controls = normalize_effective_org_controls(_org_data())
 
-    prod = judge_account_confounding("222222222222", controls)
-    dev = judge_account_confounding("111111111111", controls)
+    prod = judge_account_confounding("222222\u003222222", controls)
+    dev = judge_account_confounding("111111\u003111111", controls)
 
     assert prod.confounded is True
     assert prod.contributing_scps == ("p-deny-prod-assume",)
@@ -61,8 +61,8 @@ def test_edge_confounding_cites_bound_inherited_scp() -> None:
     edge = {
         "edge_id": "edge-1",
         "edge_type": "sts:AssumeRole_trust",
-        "src": {"provider_id": "arn:aws:iam::111111111111:role/Dev"},
-        "dst": {"provider_id": "arn:aws:iam::222222222222:role/Prod"},
+        "src": {"provider_id": "arn:aws:iam::111111\u003111111:role/Dev"},
+        "dst": {"provider_id": "arn:aws:iam::222222\u003222222:role/Prod"},
     }
     constraint = _constraint().to_dict()
     edge_constraints = [{"edge_id": "edge-1", "constraint_id": constraint["constraint_id"]}]
@@ -83,10 +83,10 @@ def test_edge_confounding_ignores_account_attached_scp() -> None:
     edge = {
         "edge_id": "edge-1",
         "edge_type": "sts:AssumeRole_trust",
-        "src": {"provider_id": "arn:aws:iam::111111111111:role/Dev"},
-        "dst": {"provider_id": "arn:aws:iam::222222222222:role/Prod"},
+        "src": {"provider_id": "arn:aws:iam::111111\u003111111:role/Dev"},
+        "dst": {"provider_id": "arn:aws:iam::222222\u003222222:role/Prod"},
     }
-    constraint = _constraint(scope_type="ACCOUNT", scope_id="222222222222").to_dict()
+    constraint = _constraint(scope_type="ACCOUNT", scope_id="222222\u003222222").to_dict()
     edge_constraints = [{"edge_id": "edge-1", "constraint_id": constraint["constraint_id"]}]
 
     judgment = judge_edge_confounding(edge, [constraint], edge_constraints)

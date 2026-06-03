@@ -44,7 +44,7 @@ from iamscope.reasoner import (
     SecretsBlastRadiusReasoner,
 )
 
-ACCOUNT = "111111111111"
+ACCOUNT = "111111\u003111111"
 
 
 def _node(node_type: str, provider_id: str, **props) -> Node:

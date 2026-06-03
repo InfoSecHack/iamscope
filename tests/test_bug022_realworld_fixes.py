@@ -45,7 +45,7 @@ from iamscope.parser.permission_policy import (
 )
 from iamscope.parser.trust_policy import _resolve_aws_principal
 
-_ACCOUNT = "379322108695"
+_ACCOUNT = "379322\u003108695"
 _USER_ARN = f"arn:aws:iam::{_ACCOUNT}:user/TestUser"
 
 
@@ -280,23 +280,23 @@ class TestBug022bTrustPolicyPrincipalRecognition:
         is an assumed-role session ARN. Must resolve to the
         underlying role and classify as IAM_ROLE with
         SPECIFIC_ROLE trust scope."""
-        value = "arn:aws:sts::180294176532:assumed-role/AWSAFTAdmin/AWSAFT-Session"
+        value = "arn:aws:sts::180294\u003176532:assumed-role/AWSAFTAdmin/AWSAFT-Session"
         result = _resolve_aws_principal(value)
         assert result is not None
         principal_type, principal_value, node_type, trust_scope = result
         assert principal_type == "AWS"
-        assert principal_value == "arn:aws:iam::180294176532:role/AWSAFTAdmin"
+        assert principal_value == "arn:aws:iam::180294\u003176532:role/AWSAFTAdmin"
         assert node_type == NODE_TYPE_IAM_ROLE
         assert trust_scope == TRUST_SCOPE_SPECIFIC_ROLE
 
     def test_assumed_role_arn_session_name_with_path(self) -> None:
         """Session names can contain characters that look path-like.
         The parser must still extract the role name correctly."""
-        value = "arn:aws:sts::123456789012:assumed-role/MyRole/AWSServiceRoleForSomething"
+        value = "arn:aws:sts::123456\u003789012:assumed-role/MyRole/AWSServiceRoleForSomething"
         result = _resolve_aws_principal(value)
         assert result is not None
         _, principal_value, node_type, _ = result
-        assert principal_value == "arn:aws:iam::123456789012:role/MyRole"
+        assert principal_value == "arn:aws:iam::123456\u003789012:role/MyRole"
         assert node_type == NODE_TYPE_IAM_ROLE
 
     def test_bare_aroa_principal_id_recognized(self) -> None:
@@ -327,7 +327,7 @@ class TestBug022bTrustPolicyPrincipalRecognition:
 
     def test_normal_role_arn_still_works(self) -> None:
         """Guard: BUG-022b must not regress the common case."""
-        value = "arn:aws:iam::123456789012:role/ProdDeploy"
+        value = "arn:aws:iam::123456\u003789012:role/ProdDeploy"
         result = _resolve_aws_principal(value)
         assert result is not None
         _, principal_value, node_type, trust_scope = result
@@ -338,7 +338,7 @@ class TestBug022bTrustPolicyPrincipalRecognition:
     def test_account_root_still_works(self) -> None:
         """Guard: 12-digit bare account ID must still resolve to
         account root, not get confused with a bare principal ID."""
-        value = "123456789012"
+        value = "123456\u003789012"
         result = _resolve_aws_principal(value)
         assert result is not None
         _, _, node_type, _ = result

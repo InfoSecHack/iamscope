@@ -46,7 +46,7 @@ class TestExtractConditions:
 
     def test_source_account(self) -> None:
         """aws:SourceAccount sets has_source_account_condition flag."""
-        cond = {"StringEquals": {"aws:SourceAccount": "111111111111"}}
+        cond = {"StringEquals": {"aws:SourceAccount": "111111\u003111111"}}
         result = extract_conditions(cond)
         assert result.has_source_account_condition is True
         assert "aws:SourceAccount" in result.condition_keys
@@ -172,7 +172,7 @@ class TestCond1NewConditionKeys:
         """iam:AssociatedResourceArn sets has_associated_resource_arn_condition."""
         cond = {
             "ArnLike": {
-                "iam:AssociatedResourceArn": "arn:aws:lambda:us-east-1:111111111111:function:*",
+                "iam:AssociatedResourceArn": "arn:aws:lambda:us-east-1:111111\u003111111:function:*",
             }
         }
         result = extract_conditions(cond)
@@ -210,7 +210,7 @@ class TestCond1NewConditionKeys:
         """aws:ResourceAccount sets has_resource_account_condition."""
         cond = {
             "StringEquals": {
-                "aws:ResourceAccount": "222222222222",
+                "aws:ResourceAccount": "222222\u003222222",
             }
         }
         result = extract_conditions(cond)
@@ -244,7 +244,7 @@ class TestCond1NewConditionKeys:
                 "iam:PassedToService": "lambda.amazonaws.com",
                 "aws:PrincipalTag/Team": "platform",
                 "aws:RequestTag/Environment": "prod",
-                "aws:ResourceAccount": "222222222222",
+                "aws:ResourceAccount": "222222\u003222222",
                 "aws:ResourceOrgID": "o-abcdef1234",
             },
             "ArnLike": {

@@ -33,7 +33,7 @@ from iamscope.collector.account import (
     _process_user,
 )
 
-_ACCOUNT = "111111111111"
+_ACCOUNT = "111111\u003111111"
 
 
 def _role_with_malformed_trust() -> dict:

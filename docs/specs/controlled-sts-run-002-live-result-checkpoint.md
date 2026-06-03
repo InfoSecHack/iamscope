@@ -12,8 +12,8 @@ This is docs/checkpoint only. It does not run live AWS, call STS AssumeRole, run
 - Plan path: `/tmp/iamscope-controlled-sts-validation-run-002/controlled-sts-run-002-plan.json`
 - Result JSON path: `/tmp/iamscope-controlled-sts-validation-run-002/controlled-sts-run-002-live-result.json`
 - Result Markdown path: `/tmp/iamscope-controlled-sts-validation-run-002/controlled-sts-run-002-live-result.md`
-- Source principal: `arn:aws:iam::516525145310:user/iamscope-admin`
-- Target role: `arn:aws:iam::516525145310:role/arf-rt-DevRole`
+- Source principal: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-admin`
+- Target role: `arn:aws:iam::<redacted-aws-account-id>:role/arf-rt-DevRole`
 - Expected outcome: `denied`
 - Observed outcome: `denied`
 - Safe error category: `access_denied`

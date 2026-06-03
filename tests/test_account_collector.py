@@ -41,7 +41,7 @@ def account_setup():
 
     Resources:
     - Role: ProdDeploy
-      - Trust: cross-account from 222222222222 + lambda service
+      - Trust: cross-account from 222222\u003222222 + lambda service
       - Inline policy: CrossAccountAccess (sts:AssumeRole → specific role)
       - Managed policy: PassRoleAccess (iam:PassRole → *)
     - Role: AWSServiceRoleForOrganizations (service-linked, should be skipped)
@@ -63,7 +63,7 @@ def account_setup():
                 "Statement": [
                     {
                         "Effect": "Allow",
-                        "Principal": {"AWS": "arn:aws:iam::222222222222:root"},
+                        "Principal": {"AWS": "arn:aws:iam::222222\u003222222:root"},
                         "Action": "sts:AssumeRole",
                     },
                     {
@@ -84,7 +84,7 @@ def account_setup():
                     {
                         "Effect": "Allow",
                         "Action": "sts:AssumeRole",
-                        "Resource": "arn:aws:iam::333333333333:role/Target",
+                        "Resource": "arn:aws:iam::333333\u003333333:role/Target",
                     }
                 ],
             }
@@ -229,7 +229,7 @@ class TestPermissionParsing:
         assert len(inline_prs) >= 1
         # Should have sts:AssumeRole → specific target
         assert any(pr.action == "sts:AssumeRole" for pr in inline_prs)
-        assert any("333333333333" in pr.resource_pattern for pr in inline_prs)
+        assert any("333333\u003333333" in pr.resource_pattern for pr in inline_prs)
 
     def test_role_managed_permissions_parsed(self, account_setup) -> None:
         """Role managed policy (PassRoleAccess) produces permission results."""

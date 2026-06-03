@@ -25,7 +25,7 @@ def _trace_entry(step: int = 1) -> TraceEntry:
     return TraceEntry(
         step=step,
         action="check_has_action",
-        inputs=("arn:aws:iam::111111111111:user/Alice", "iam:PassRole"),
+        inputs=("arn:aws:iam::111111\u003111111:user/Alice", "iam:PassRole"),
         result="PASS",
         reason="inline policy grants exact resource ARN",
     )
@@ -44,7 +44,7 @@ def _make_bundle(
 ) -> EvidenceBundle:
     """Construct a minimal valid EvidenceBundle with sensible defaults."""
     if statement_sources is None:
-        statement_sources = {d: ("arn:aws:iam::111111111111:policy/test", 0, "stmt_0") for d in statement_digests}
+        statement_sources = {d: ("arn:aws:iam::111111\u003111111:policy/test", 0, "stmt_0") for d in statement_digests}
     if reasoning_trace is None:
         reasoning_trace = (_trace_entry(1),)
     return EvidenceBundle(

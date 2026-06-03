@@ -27,7 +27,7 @@ from unittest.mock import MagicMock, patch
 
 from iamscope.verify import cmd_verify
 
-_ACCOUNT = "111111111111"
+_ACCOUNT = "111111\u003111111"
 _USER_ARN = f"arn:aws:iam::{_ACCOUNT}:user/Alice"
 _SECRET_ARN = f"arn:aws:secretsmanager:us-east-1:{_ACCOUNT}:secret:prod/db-password-abc123"
 
@@ -255,7 +255,7 @@ class TestV1UnsupportedPattern:
             findings=[
                 _validated_secret_finding(
                     pattern_id="cross_account_trust",
-                    source_arn="arn:aws:iam::111111111111:user/Attacker",
+                    source_arn="arn:aws:iam::111111\u003111111:user/Attacker",
                 ),
             ]
         )

@@ -58,13 +58,13 @@ def _scenario_with_roles() -> dict[str, Any]:
                 "node_id": "node-start",
                 "provider": "aws",
                 "node_type": "IAMRole",
-                "provider_id": "arn:aws:iam::111111111111:role/Start",
+                "provider_id": "arn:aws:iam::111111\u003111111:role/Start",
             },
             {
                 "node_id": "node-target",
                 "provider": "aws",
                 "node_type": "IAMRole",
-                "provider_id": "arn:aws:iam::222222222222:role/Target",
+                "provider_id": "arn:aws:iam::222222\u003222222:role/Target",
             },
         ],
         "edges": [],
@@ -113,8 +113,8 @@ def test_plain_scenario_accepts_explicit_objective_args() -> None:
 
     prepared = wrapper.prepare_scenario_for_arf(
         raw,
-        start_role_arn="arn:aws:iam::111111111111:role/Start",
-        target_role_arn="arn:aws:iam::222222222222:role/Target",
+        start_role_arn="arn:aws:iam::111111\u003111111:role/Start",
+        target_role_arn="arn:aws:iam::222222\u003222222:role/Target",
         max_depth=4,
     )
     normalized = wrapper.normalize_for_arf_rt(prepared)
@@ -124,15 +124,15 @@ def test_plain_scenario_accepts_explicit_objective_args() -> None:
     assert prepared["objectives"] == [
         {
             "objective_type": "reachability",
-            "start_nodes": ["arn:aws:iam::111111111111:role/Start"],
-            "target_nodes": ["arn:aws:iam::222222222222:role/Target"],
+            "start_nodes": ["arn:aws:iam::111111\u003111111:role/Start"],
+            "target_nodes": ["arn:aws:iam::222222\u003222222:role/Target"],
             "max_depth": 4,
             "k": 5,
         }
     ]
     assert normalized["objectives"][0]["objective_type"] == "REACHABILITY"
-    assert normalized["objectives"][0]["start_nodes"][0]["provider_id"] == "arn:aws:iam::111111111111:role/Start"
-    assert normalized["objectives"][0]["target_nodes"][0]["provider_id"] == "arn:aws:iam::222222222222:role/Target"
+    assert normalized["objectives"][0]["start_nodes"][0]["provider_id"] == "arn:aws:iam::111111\u003111111:role/Start"
+    assert normalized["objectives"][0]["target_nodes"][0]["provider_id"] == "arn:aws:iam::222222\u003222222:role/Target"
     assert normalized["objectives"][0]["max_depth"] == 4
 
 
@@ -162,8 +162,8 @@ def test_objective_bearing_scenario_is_preserved() -> None:
         "objectives": [
             {
                 "objective_type": "reachability",
-                "start_nodes": ["arn:aws:iam::111111111111:role/Start"],
-                "target_nodes": ["arn:aws:iam::222222222222:role/Target"],
+                "start_nodes": ["arn:aws:iam::111111\u003111111:role/Start"],
+                "target_nodes": ["arn:aws:iam::222222\u003222222:role/Target"],
                 "max_depth": 5,
                 "k": 3,
             }
@@ -250,7 +250,7 @@ def test_edge_constraint_preflight_prunes_arf_unsupported_constraints() -> None:
             "provider": "aws",
             "constraint_type": "RESOURCE_POLICY_CONDITION",
             "scope_type": "RESOURCE",
-            "scope_id": "arn:aws:kms:us-east-1:111111111111:key/demo",
+            "scope_id": "arn:aws:kms:us-east-1:111111\u003111111:key/demo",
             "properties": {"statement_digest": "abc"},
         }
     )
@@ -392,8 +392,8 @@ def test_missing_arf_runtime_dependency_fails_actionably(
                 "objectives": [
                     {
                         "objective_type": "reachability",
-                        "start_nodes": ["arn:aws:iam::111111111111:role/Start"],
-                        "target_nodes": ["arn:aws:iam::222222222222:role/Target"],
+                        "start_nodes": ["arn:aws:iam::111111\u003111111:role/Start"],
+                        "target_nodes": ["arn:aws:iam::222222\u003222222:role/Target"],
                         "max_depth": 6,
                         "k": 5,
                     }

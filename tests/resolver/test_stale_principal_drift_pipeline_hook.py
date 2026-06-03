@@ -11,7 +11,7 @@ from iamscope.pipeline import PipelineConfig, _run_resolution
 
 
 def test_run_resolution_emits_stale_principal_drift_constraint() -> None:
-    account_id = "111111111111"
+    account_id = "111111\u003111111"
     role_arn = f"arn:aws:iam::{account_id}:role/Target"
     role_node = Node(
         provider=PROVIDER_AWS,

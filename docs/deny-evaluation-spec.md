@@ -712,7 +712,7 @@ service-specific behavior, not a universal IAM rule.
 syntax — the Principal field does not support wildcards within ARN
 components. The only valid wildcards in Principal are:
 - `"Principal": "*"` (any principal, any account)
-- `"Principal": {"AWS": "arn:aws:iam::123456789012:root"}` (account
+- `"Principal": {"AWS": "arn:aws:iam::<redacted-aws-account-id>:root"}` (account
   root = any principal in that account)
 
 ARN-level wildcards like `arn:aws:iam::*:role/Admin*` are NOT

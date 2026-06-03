@@ -33,10 +33,10 @@ from iamscope.resolver.identity_deny_binder import (
     build_identity_deny_constraints,
 )
 
-PRINCIPAL_ARN = "arn:aws:iam::111111111111:user/Admin"
-OTHER_PRINCIPAL_ARN = "arn:aws:iam::111111111111:user/Other"
-TARGET_ROLE_ARN = "arn:aws:iam::222222222222:role/ProdDeploy"
-POLICY_ARN = "arn:aws:iam::111111111111:policy/DenyPolicy"
+PRINCIPAL_ARN = "arn:aws:iam::111111\u003111111:user/Admin"
+OTHER_PRINCIPAL_ARN = "arn:aws:iam::111111\u003111111:user/Other"
+TARGET_ROLE_ARN = "arn:aws:iam::222222\u003222222:role/ProdDeploy"
+POLICY_ARN = "arn:aws:iam::111111\u003111111:policy/DenyPolicy"
 
 
 def _deny_result(
@@ -185,7 +185,7 @@ class TestBindIdentityDenyToEdge:
         edge = _edge(dst_id=TARGET_ROLE_ARN)
         constraint = _constraint(
             _deny_result(
-                resource_patterns=["arn:aws:iam::222222222222:role/Other"],
+                resource_patterns=["arn:aws:iam::222222\u003222222:role/Other"],
             )
         )
 
@@ -293,17 +293,17 @@ class TestPipelineIdentityDenyWiring:
             node_type=NODE_TYPE_IAM_USER,
             provider_id=PRINCIPAL_ARN,
             region=REGION_GLOBAL,
-            properties={"account_id": "111111111111"},
+            properties={"account_id": "111111\u003111111"},
         )
         target_node = Node(
             provider=PROVIDER_AWS,
             node_type=NODE_TYPE_IAM_ROLE,
             provider_id=TARGET_ROLE_ARN,
             region=REGION_GLOBAL,
-            properties={"account_id": "222222222222"},
+            properties={"account_id": "222222\u003222222"},
         )
         acct = AccountData(
-            account_id="111111111111",
+            account_id="111111\u003111111",
             nodes=[source_node, target_node],
             permission_results=[
                 PermissionParseResult(
@@ -314,7 +314,7 @@ class TestPipelineIdentityDenyWiring:
                     is_wildcard_resource=False,
                     source_arn=PRINCIPAL_ARN,
                     source_node_type=NODE_TYPE_IAM_USER,
-                    source_account_id="111111111111",
+                    source_account_id="111111\u003111111",
                     policy_source="inline",
                     policy_name="AllowAssumeRole",
                 ),
@@ -327,7 +327,7 @@ class TestPipelineIdentityDenyWiring:
             root_id="standalone",
             accounts=[
                 AccountInfo(
-                    account_id="111111111111",
+                    account_id="111111\u003111111",
                     name="standalone",
                     email="",
                     status="ACTIVE",

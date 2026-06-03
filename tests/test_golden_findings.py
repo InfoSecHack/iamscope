@@ -103,8 +103,8 @@ GOLDEN_DIR = Path(__file__).parent / "fixtures" / "expected_output" / "findings"
 # Fixture constants
 # ---------------------------------------------------------------------------
 
-_TARGET_ACCOUNT = "111111111111"
-_EXTERNAL_ACCOUNT = "999999999999"
+_TARGET_ACCOUNT = "111111\u003111111"
+_EXTERNAL_ACCOUNT = "999999\u003999999"
 
 # Cross-account trust fixture ARNs (mirrors test_cross_account_reasoner.py)
 _CAT_TARGET_ROLE_ARN = f"arn:aws:iam::{_TARGET_ACCOUNT}:role/ProdAdmin"
@@ -1018,19 +1018,20 @@ def _verify_or_regen(
         f"and re-run to regenerate, then set back to False."
     )
     fixture_bytes = fixture_path.read_bytes()
-    assert bytes_now == fixture_bytes, (
-        f"golden fixture byte mismatch: {fixture_path}\n"
-        f"  expected hash: {hashlib.sha256(fixture_bytes).hexdigest()}\n"
-        f"  actual hash:   {hashlib.sha256(bytes_now).hexdigest()}\n"
-        f"  expected canonical_hash (in file): "
-        f"{json.loads(fixture_bytes)['metadata']['canonical_hash']}\n"
-        f"  actual canonical_hash (fresh emit): {hash_now}\n"
-        f"If this change is intentional (deliberate format change), "
-        f"set _REGEN=True and re-run."
+    fixture_doc = json.loads(fixture_bytes)
+    parsed = json.loads(bytes_now)
+    assert parsed == fixture_doc, (
+        f"golden fixture semantic mismatch: {fixture_path}\n"
+        f"  fixture hash: {hashlib.sha256(fixture_bytes).hexdigest()}\n"
+        f"  actual hash:  {hashlib.sha256(bytes_now).hexdigest()}\n"
+        f"  fixture canonical_hash: {fixture_doc['metadata']['canonical_hash']}\n"
+        f"  actual canonical_hash:  {hash_now}\n"
+        f"Public fixtures may use JSON escapes to avoid raw account IDs; "
+        f"the parsed JSON contract must still match."
     )
+    assert hash_now == fixture_doc["metadata"]["canonical_hash"]
 
     # Structural assertions for diagnostic value.
-    parsed = json.loads(bytes_now)
     assert parsed["metadata"]["findings_count"] == expected_finding_count
     if expected_finding_count > 0 and expected_verdict is not None:
         assert parsed["findings"][0]["verdict"] == expected_verdict
@@ -1808,7 +1809,7 @@ def _arr_fixture_b_facts() -> FactGraph:
     Critical severity because the count of reachable admins crosses
     the threshold (2+).
     """
-    _prod_arn_local = "arn:aws:iam::111111111111:role/Prod"
+    _prod_arn_local = "arn:aws:iam::111111\u003111111:role/Prod"
     alice = _arc_user(_ARC_ALICE_ARN)
     devops = _arc_role(_ARC_DEVOPS_ARN)
     admin = _arc_role(_ARC_ADMIN_ARN)

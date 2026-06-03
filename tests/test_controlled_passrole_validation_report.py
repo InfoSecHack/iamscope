@@ -20,10 +20,10 @@ def _base_report(*, predicted_outcome: str = "allowed", observed_outcome: str = 
         "input_bundle_reference": "frozen-sanitized-passrole-bundle",
         "finding_reference": {
             "validation_layer_id": "validation-layer-passrole-test-001",
-            "source_principal_arn": "arn:aws:iam::123456789012:user/example-source",
-            "target_role_arn": "arn:aws:iam::123456789012:role/example-service-role",
+            "source_principal_arn": "arn:aws:iam::123456\u003789012:user/example-source",
+            "target_role_arn": "arn:aws:iam::123456\u003789012:role/example-service-role",
             "service_principal": "lambda.amazonaws.com",
-            "expected_account_id": "123456789012",
+            "expected_account_id": "123456\u003789012",
             "reasoner_or_finding_type": "passrole_lambda",
             "prediction_source": "selected sanitized IAMScope PassRole summary",
             "source_document": "docs/example/sanitized-passrole-selection.md",
@@ -32,7 +32,7 @@ def _base_report(*, predicted_outcome: str = "allowed", observed_outcome: str = 
         "predicted_behavior": {
             "predicted_action": "iam:PassRole",
             "predicted_service_principal": "lambda.amazonaws.com",
-            "predicted_target_role_arn": "arn:aws:iam::123456789012:role/example-service-role",
+            "predicted_target_role_arn": "arn:aws:iam::123456\u003789012:role/example-service-role",
             "predicted_outcome": predicted_outcome,
             "prediction_basis": "sanitized permission and trust summary",
             "prediction_caveats": ["selected path only", "controlled test environment only"],

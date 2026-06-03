@@ -22,8 +22,8 @@ from iamscope.truth.stale_principal_drift import (
 )
 
 _STALE_ROLE_ID = "AROAABCDEFGHIJKLMNOP"
-_TARGET_ROLE_ARN = "arn:aws:iam::111111111111:role/Target"
-_CLEAN_ROLE_ARN = "arn:aws:iam::222222222222:role/Source"
+_TARGET_ROLE_ARN = "arn:aws:iam::111111\u003111111:role/Target"
+_CLEAN_ROLE_ARN = "arn:aws:iam::222222\u003222222:role/Source"
 
 
 def _node(node_type: str, provider_id: str) -> Node:

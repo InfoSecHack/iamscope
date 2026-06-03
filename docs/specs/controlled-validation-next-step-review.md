@@ -10,8 +10,8 @@ This is docs/review only. It does not run live AWS, call STS AssumeRole, run `li
 
 - Controlled STS Run #1: `environment_mismatch`; no live execution.
 - Controlled STS Run #2: selected live-profile-matched `iamscope-admin` denied candidate; live result `denied/access_denied`; `outcome_classification=corroborated`.
-- Run #2 source: `arn:aws:iam::516525145310:user/iamscope-admin`.
-- Run #2 target: `arn:aws:iam::516525145310:role/arf-rt-DevRole`.
+- Run #2 source: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-admin`.
+- Run #2 target: `arn:aws:iam::<redacted-aws-account-id>:role/arf-rt-DevRole`.
 - Run #2 credentials obtained: `false`.
 - Run #2 downstream AWS actions: none.
 - Earlier standalone STS executor proofs include one denied case and one assumed case, but those are bounded runtime-probe evidence and are not controlled finding/path validation for a current selected IAMScope path.

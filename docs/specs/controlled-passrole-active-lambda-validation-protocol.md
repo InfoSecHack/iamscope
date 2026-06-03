@@ -15,11 +15,11 @@ The expected active result for this protocol is `allowed` only if Lambda accepts
 ## Selected Test-Only Case
 
 - Validation run ID: `controlled-passrole-run-001-lambda-createfunction-active`.
-- Source principal: `arn:aws:iam::516525145310:user/iamscope-passrole-positive-source`.
+- Source principal: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-passrole-positive-source`.
 - Source local profile: `iamscope-passrole-positive-source`.
-- Target role: `arn:aws:iam::516525145310:role/iamscope-passrole-target-role`.
+- Target role: `arn:aws:iam::<redacted-aws-account-id>:role/iamscope-passrole-target-role`.
 - Service principal: `lambda.amazonaws.com`.
-- Expected account ID: `516525145310`.
+- Expected account ID: `<redacted-aws-account-id>`.
 - Predicted action: `iam:PassRole`.
 - Predicted outcome: `allowed`.
 - Active evidence method: `lambda_createfunction_non_invoked_cleanup`.
@@ -29,7 +29,7 @@ The expected active result for this protocol is `allowed` only if Lambda accepts
 
 The source principal must have only the permissions needed for the active validation path:
 
-- `iam:PassRole` on exactly `arn:aws:iam::516525145310:role/iamscope-passrole-target-role`, constrained with `iam:PassedToService=lambda.amazonaws.com`.
+- `iam:PassRole` on exactly `arn:aws:iam::<redacted-aws-account-id>:role/iamscope-passrole-target-role`, constrained with `iam:PassedToService=lambda.amazonaws.com`.
 - `lambda:CreateFunction` on exactly the selected test function ARN pattern if AWS supports that resource scope for the selected call context; if service semantics require broader create scope, the future setup checklist must document the narrowest supported alternative and why.
 - `lambda:GetFunction` on exactly the selected test function ARN pattern.
 - `lambda:GetFunctionConfiguration` on exactly the selected test function ARN pattern.
@@ -88,7 +88,7 @@ The future active validation should create exactly one temporary Lambda function
 - Function name: `iamscope-passrole-run001-createfunction-active`.
 - Runtime: `python3.12` unless the future pre-live plan selects another currently supported runtime.
 - Handler: `index.handler`.
-- Role: `arn:aws:iam::516525145310:role/iamscope-passrole-target-role`.
+- Role: `arn:aws:iam::<redacted-aws-account-id>:role/iamscope-passrole-target-role`.
 - Code package: a minimal ZIP created under `/tmp/iamscope-controlled-passrole-run-001-active/` only.
 - Minimal code content: an `index.py` handler returning a static JSON-compatible object.
 - Timeout: `3` seconds.
@@ -112,7 +112,7 @@ The function must not be invoked. No event source mapping, trigger, function URL
 A separately approved active validation slice may follow this procedure:
 
 1. Confirm explicit approval for active validation.
-2. Confirm source profile identity matches `arn:aws:iam::516525145310:user/iamscope-passrole-positive-source`.
+2. Confirm source profile identity matches `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-passrole-positive-source`.
 3. Confirm target role exists and trust is scoped to `lambda.amazonaws.com`.
 4. Confirm the source has only the required scoped permissions.
 5. Build the minimal Lambda ZIP under `/tmp/iamscope-controlled-passrole-run-001-active/`.

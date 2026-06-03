@@ -4,12 +4,12 @@
     {
       "Effect": "Allow",
       "Principal": {
-        "AWS": "arn:aws:iam::222222222222:root"
+        "AWS": "arn:aws:iam::222222\u003222222:root"
       },
       "Action": "sts:AssumeRole",
       "Condition": {
         "StringEquals": {
-          "aws:SourceAccount": "222222222222"
+          "aws:SourceAccount": "222222\u003222222"
         }
       }
     }

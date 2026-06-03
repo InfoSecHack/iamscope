@@ -18,18 +18,18 @@ DEG04_CASE_ID = "deg04_missing_edge_constraints"
 DEG05_CASE_ID = "deg05_malformed_policy_parse"
 DEG06_CASE_ID = "deg06_partial_account_collection"
 DEG07_CASE_ID = "deg07_missing_required_artifacts"
-DEG01_ALICE_ARN = "arn:aws:iam::123456789012:user/iamscope-test/deg01-alice"
-DEG01_ADMIN_ARN = "arn:aws:iam::123456789012:role/iamscope-test/deg01-admin"
-DEG02_ALICE_ARN = "arn:aws:iam::123456789012:user/iamscope-test/deg02-alice"
-DEG02_ADMIN_ARN = "arn:aws:iam::123456789012:role/iamscope-test/deg02-admin"
-DEG03_ALICE_ARN = "arn:aws:iam::123456789012:user/iamscope-test/deg03-alice"
-DEG03_ADMINS_ARN = "arn:aws:iam::123456789012:group/iamscope-test/deg03-admins"
-DEG04_ALICE_ARN = "arn:aws:iam::123456789012:user/iamscope-test/deg04-alice"
-DEG04_ADMIN_ARN = "arn:aws:iam::123456789012:role/iamscope-test/deg04-admin"
-DEG05_ALICE_ARN = "arn:aws:iam::123456789012:user/iamscope-test/deg05-alice"
-DEG05_ADMIN_ARN = "arn:aws:iam::123456789012:role/iamscope-test/deg05-admin"
-DEG06_CALLER_ACCOUNT_ID = "111122223333"
-DEG06_TARGET_ACCOUNT_ID = "444455556666"
+DEG01_ALICE_ARN = "arn:aws:iam::123456\u003789012:user/iamscope-test/deg01-alice"
+DEG01_ADMIN_ARN = "arn:aws:iam::123456\u003789012:role/iamscope-test/deg01-admin"
+DEG02_ALICE_ARN = "arn:aws:iam::123456\u003789012:user/iamscope-test/deg02-alice"
+DEG02_ADMIN_ARN = "arn:aws:iam::123456\u003789012:role/iamscope-test/deg02-admin"
+DEG03_ALICE_ARN = "arn:aws:iam::123456\u003789012:user/iamscope-test/deg03-alice"
+DEG03_ADMINS_ARN = "arn:aws:iam::123456\u003789012:group/iamscope-test/deg03-admins"
+DEG04_ALICE_ARN = "arn:aws:iam::123456\u003789012:user/iamscope-test/deg04-alice"
+DEG04_ADMIN_ARN = "arn:aws:iam::123456\u003789012:role/iamscope-test/deg04-admin"
+DEG05_ALICE_ARN = "arn:aws:iam::123456\u003789012:user/iamscope-test/deg05-alice"
+DEG05_ADMIN_ARN = "arn:aws:iam::123456\u003789012:role/iamscope-test/deg05-admin"
+DEG06_CALLER_ACCOUNT_ID = "111122\u003223333"
+DEG06_TARGET_ACCOUNT_ID = "444455\u003556666"
 DEG06_ALICE_ARN = f"arn:aws:iam::{DEG06_CALLER_ACCOUNT_ID}:user/iamscope-test/deg06-alice"
 DEG06_ADMIN_ARN = f"arn:aws:iam::{DEG06_TARGET_ACCOUNT_ID}:role/iamscope-test/deg06-admin"
 
@@ -52,9 +52,9 @@ def _make_deg07_archive(
     run_log = "\n".join(
         [
             "Resources deployed:",
-            "  alice_arn : arn:aws:iam::123456789012:user/iamscope-test/deg07-alice",
-            "  admin_arn : arn:aws:iam::123456789012:role/iamscope-test/deg07-admin",
-            "  account_id : 123456789012",
+            "  alice_arn : arn:aws:iam::123456\u003789012:user/iamscope-test/deg07-alice",
+            "  admin_arn : arn:aws:iam::123456\u003789012:role/iamscope-test/deg07-admin",
+            "  account_id : 123456\u003789012",
             "scenario validation: PASS",
             "benchmark semantic assertion: SKIP (degradation fixture)",
         ]
@@ -193,8 +193,8 @@ def test_missing_artifact_key_is_explicit_artifact_insufficient() -> None:
         "environment": "synthetic/deg07_missing_required_artifacts",
         "tool_claims": [],
         "context": {
-            "source_provider_id": "arn:aws:iam::123456789012:user/iamscope-test/deg07-alice",
-            "target_provider_id": "arn:aws:iam::123456789012:role/iamscope-test/deg07-admin",
+            "source_provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/deg07-alice",
+            "target_provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/deg07-admin",
         },
         "artifact_status": {
             "scenario_validation": "pass",

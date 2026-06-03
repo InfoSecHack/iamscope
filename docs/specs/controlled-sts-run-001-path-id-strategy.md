@@ -13,9 +13,9 @@ Committed sanitized benchmark evidence identifies the selected controlled enviro
 - Environment label: `acceptance/env06_ar_validated_admin`
 - Case ID: `env06_validated_admin_reachability`
 - Run ID: `iamscope-benchmark-env06-20260425T003000Z`
-- Account ID: `516525145310`
-- Source principal ARN: `arn:aws:iam::516525145310:user/iamscope-test/env06-alice`
-- Target role ARN: `arn:aws:iam::516525145310:role/iamscope-test/env06-admin`
+- Account ID: `<redacted-aws-account-id>`
+- Source principal ARN: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-test/env06-alice`
+- Target role ARN: `arn:aws:iam::<redacted-aws-account-id>:role/iamscope-test/env06-admin`
 - Predicted action: `sts:AssumeRole`
 - Predicted behavior: `assumed`
 
@@ -90,9 +90,9 @@ Future controlled STS validation artifacts should use these fields:
 
 - `validation_id`: `controlled-sts-run-001-env06-admin-reachability-assume-role`
 - `environment_label`: `acceptance/env06_ar_validated_admin`
-- `finding_reference.source_principal_arn`: `arn:aws:iam::516525145310:user/iamscope-test/env06-alice`
-- `finding_reference.target_role_arn`: `arn:aws:iam::516525145310:role/iamscope-test/env06-admin`
-- `finding_reference.expected_account_id`: `516525145310`
+- `finding_reference.source_principal_arn`: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-test/env06-alice`
+- `finding_reference.target_role_arn`: `arn:aws:iam::<redacted-aws-account-id>:role/iamscope-test/env06-admin`
+- `finding_reference.expected_account_id`: `<redacted-aws-account-id>`
 - `finding_reference.reasoner_or_finding_type`: `admin_reachability`
 - `predicted_behavior.predicted_action`: `sts:AssumeRole`
 - `predicted_behavior.predicted_outcome`: `assumed`

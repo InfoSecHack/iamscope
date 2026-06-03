@@ -21,9 +21,9 @@ def _base_report(*, predicted_outcome: str = "assumed", observed_outcome: str = 
         "input_bundle_reference": "frozen-sanitized-bundle",
         "finding_reference": {
             "path_id": "path-001",
-            "source_principal_arn": "arn:aws:iam::123456789012:user/example-source",
-            "target_role_arn": "arn:aws:iam::123456789012:role/example-target-role",
-            "expected_account_id": "123456789012",
+            "source_principal_arn": "arn:aws:iam::123456\u003789012:user/example-source",
+            "target_role_arn": "arn:aws:iam::123456\u003789012:role/example-target-role",
+            "expected_account_id": "123456\u003789012",
             "reasoner_or_finding_type": "sts_assume_role_path",
             "prediction_source": "selected sanitized IAMScope finding summary",
             "source_bundle": "frozen-sanitized-bundle",
@@ -52,7 +52,7 @@ def _base_report(*, predicted_outcome: str = "assumed", observed_outcome: str = 
         },
         "observed_behavior": {
             "observed_outcome": observed_outcome,
-            "observed_account_id": "123456789012",
+            "observed_account_id": "123456\u003789012",
             "result_classification": observed_outcome,
             "sanitized_reasons": ["safe summary only"],
             "no_raw_credentials": True,

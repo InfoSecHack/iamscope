@@ -34,7 +34,7 @@ def _set_required_env(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("IAMSCOPE_LIVE_AWS_ACK", ACK_VALUE)
     monkeypatch.setenv("AWS_PROFILE", "iamscope-test-profile")
     monkeypatch.setenv("AWS_REGION", "us-east-1")
-    monkeypatch.setenv("IAMSCOPE_EXPECTED_AWS_ACCOUNT_ID", "123456789012")
+    monkeypatch.setenv("IAMSCOPE_EXPECTED_AWS_ACCOUNT_ID", "123456\u003789012")
 
 
 def test_runner_refuses_without_acknowledgement(
@@ -43,10 +43,10 @@ def test_runner_refuses_without_acknowledgement(
     monkeypatch.delenv("IAMSCOPE_LIVE_AWS_ACK", raising=False)
     monkeypatch.setenv("AWS_PROFILE", "iamscope-test-profile")
     monkeypatch.setenv("AWS_REGION", "us-east-1")
-    monkeypatch.setenv("IAMSCOPE_EXPECTED_AWS_ACCOUNT_ID", "123456789012")
+    monkeypatch.setenv("IAMSCOPE_EXPECTED_AWS_ACCOUNT_ID", "123456\u003789012")
 
     with pytest.raises(runner.ConfigError, match="IAMSCOPE_LIVE_AWS_ACK"):
-        runner.load_config(["--role-arn", "arn:aws:iam::123456789012:role/test", "--out", str(tmp_path)])
+        runner.load_config(["--role-arn", "arn:aws:iam::123456\u003789012:role/test", "--out", str(tmp_path)])
 
 
 def test_runner_refuses_without_expected_account_id(
@@ -58,14 +58,14 @@ def test_runner_refuses_without_expected_account_id(
     monkeypatch.delenv("IAMSCOPE_EXPECTED_AWS_ACCOUNT_ID", raising=False)
 
     with pytest.raises(runner.ConfigError, match="IAMSCOPE_EXPECTED_AWS_ACCOUNT_ID"):
-        runner.load_config(["--role-arn", "arn:aws:iam::123456789012:role/test", "--out", str(tmp_path)])
+        runner.load_config(["--role-arn", "arn:aws:iam::123456\u003789012:role/test", "--out", str(tmp_path)])
 
 
 def test_runner_refuses_repository_output_path(monkeypatch: pytest.MonkeyPatch, runner: ModuleType) -> None:
     _set_required_env(monkeypatch)
 
     with pytest.raises(runner.ConfigError, match="repository tree"):
-        runner.load_config(["--role-arn", "arn:aws:iam::123456789012:role/test", "--out", str(REPO_ROOT)])
+        runner.load_config(["--role-arn", "arn:aws:iam::123456\u003789012:role/test", "--out", str(REPO_ROOT)])
 
 
 def test_config_parsing_uses_terraform_outputs_without_aws_credentials(
@@ -77,7 +77,7 @@ def test_config_parsing_uses_terraform_outputs_without_aws_credentials(
         json.dumps(
             {
                 "lambda_execution_role_arn": {
-                    "value": "arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-lambda-exec-role"
+                    "value": "arn:aws:iam::123456\u003789012:role/iamscope-live-passrole-lambda-test-lambda-exec-role"
                 }
             }
         )
@@ -87,7 +87,7 @@ def test_config_parsing_uses_terraform_outputs_without_aws_credentials(
 
     assert config.aws_profile == "iamscope-test-profile"
     assert config.aws_region == "us-east-1"
-    assert config.expected_account_id == "123456789012"
+    assert config.expected_account_id == "123456\u003789012"
     assert config.role_arn.endswith("iamscope-live-passrole-lambda-test-lambda-exec-role")
     assert config.validation_mode == "allowed"
     assert config.expected_observed_aws_result == "create_function_succeeded"
@@ -102,10 +102,10 @@ def test_denied_config_parsing_uses_terraform_outputs_without_aws_credentials(
         json.dumps(
             {
                 "lambda_execution_role_arn": {
-                    "value": "arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-lambda-exec-role"
+                    "value": "arn:aws:iam::123456\u003789012:role/iamscope-live-passrole-lambda-test-lambda-exec-role"
                 },
                 "denied_source_role_arn": {
-                    "value": "arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-denied-source-role"
+                    "value": "arn:aws:iam::123456\u003789012:role/iamscope-live-passrole-lambda-test-denied-source-role"
                 },
             }
         )
@@ -141,7 +141,7 @@ def test_denied_mode_requires_denied_source_role(
                 "--mode",
                 "denied_missing_passrole",
                 "--role-arn",
-                "arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-lambda-exec-role",
+                "arn:aws:iam::123456\u003789012:role/iamscope-live-passrole-lambda-test-lambda-exec-role",
                 "--out",
                 str(tmp_path / "out"),
             ]
@@ -152,12 +152,12 @@ def test_result_shape_preserves_non_claims_and_redaction(runner: ModuleType, tmp
     config = runner.LiveValidationConfig(
         aws_profile="iamscope-test-profile",
         aws_region="us-east-1",
-        expected_account_id="123456789012",
-        role_arn="arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-lambda-exec-role",
+        expected_account_id="123456\u003789012",
+        role_arn="arn:aws:iam::123456\u003789012:role/iamscope-live-passrole-lambda-test-lambda-exec-role",
         output_dir=tmp_path,
-        function_name="iamscope-live-passrole-lambda-test-20260602000000",
+        function_name="iamscope-live-passrole-lambda-test-202606\u00302000000",
         expected_iamscope_verdict="validated",
-        source_principal_arn="arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-source",
+        source_principal_arn="arn:aws:iam::123456\u003789012:role/iamscope-live-passrole-lambda-test-source",
     )
 
     result = runner.build_result(
@@ -170,7 +170,7 @@ def test_result_shape_preserves_non_claims_and_redaction(runner: ModuleType, tmp
     assert result["attempted_action"] == "lambda:CreateFunction"
     assert result["validation_mode"] == "allowed"
     assert result["expected_observed_aws_result"] == "create_function_succeeded"
-    assert result["account_id"] == "123456789012"
+    assert result["account_id"] == "123456\u003789012"
     assert result["observed_aws_result"] == "create_function_succeeded"
     assert result["safety"]["lambda_invoke_function_called"] is False
     assert result["safety"]["triggers_created"] is False
@@ -189,15 +189,15 @@ def test_denied_result_shape_preserves_expected_denial_and_non_claims(runner: Mo
     config = runner.LiveValidationConfig(
         aws_profile="iamscope-test-profile",
         aws_region="us-east-1",
-        expected_account_id="123456789012",
-        role_arn="arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-lambda-exec-role",
+        expected_account_id="123456\u003789012",
+        role_arn="arn:aws:iam::123456\u003789012:role/iamscope-live-passrole-lambda-test-lambda-exec-role",
         output_dir=tmp_path,
-        function_name="iamscope-live-passrole-lambda-test-20260602000000",
+        function_name="iamscope-live-passrole-lambda-test-202606\u00302000000",
         expected_iamscope_verdict=None,
-        source_principal_arn="arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-denied-source-role",
+        source_principal_arn="arn:aws:iam::123456\u003789012:role/iamscope-live-passrole-lambda-test-denied-source-role",
         validation_mode="denied_missing_passrole",
         expected_observed_aws_result="access_denied",
-        denied_source_role_arn="arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-denied-source-role",
+        denied_source_role_arn="arn:aws:iam::123456\u003789012:role/iamscope-live-passrole-lambda-test-denied-source-role",
     )
 
     result = runner.build_result(
@@ -277,7 +277,7 @@ def test_denied_mode_classifies_access_denied_without_creating_function(
 
     class FakeStsClient:
         def get_caller_identity(self) -> dict[str, str]:
-            return {"Account": "123456789012"}
+            return {"Account": "123456\u003789012"}
 
         def assume_role(self, **kwargs: object) -> dict[str, dict[str, str]]:
             assert str(kwargs["RoleArn"]).endswith("iamscope-live-passrole-lambda-test-denied-source-role")
@@ -318,15 +318,15 @@ def test_denied_mode_classifies_access_denied_without_creating_function(
     config = runner.LiveValidationConfig(
         aws_profile="iamscope-test-profile",
         aws_region="us-east-1",
-        expected_account_id="123456789012",
-        role_arn="arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-lambda-exec-role",
+        expected_account_id="123456\u003789012",
+        role_arn="arn:aws:iam::123456\u003789012:role/iamscope-live-passrole-lambda-test-lambda-exec-role",
         output_dir=tmp_path,
-        function_name="iamscope-live-passrole-lambda-test-20260602000000",
+        function_name="iamscope-live-passrole-lambda-test-202606\u00302000000",
         expected_iamscope_verdict=None,
-        source_principal_arn="arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-denied-source-role",
+        source_principal_arn="arn:aws:iam::123456\u003789012:role/iamscope-live-passrole-lambda-test-denied-source-role",
         validation_mode="denied_missing_passrole",
         expected_observed_aws_result="access_denied",
-        denied_source_role_arn="arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-denied-source-role",
+        denied_source_role_arn="arn:aws:iam::123456\u003789012:role/iamscope-live-passrole-lambda-test-denied-source-role",
     )
 
     result = runner.run_live_validation(config)
@@ -344,10 +344,10 @@ def test_cleanup_failure_exits_nonzero_after_writing_result(
     config = runner.LiveValidationConfig(
         aws_profile="iamscope-test-profile",
         aws_region="us-east-1",
-        expected_account_id="123456789012",
-        role_arn="arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-lambda-exec-role",
+        expected_account_id="123456\u003789012",
+        role_arn="arn:aws:iam::123456\u003789012:role/iamscope-live-passrole-lambda-test-lambda-exec-role",
         output_dir=tmp_path,
-        function_name="iamscope-live-passrole-lambda-test-20260602000000",
+        function_name="iamscope-live-passrole-lambda-test-202606\u00302000000",
         expected_iamscope_verdict="validated",
         source_principal_arn=None,
     )
@@ -372,15 +372,15 @@ def test_denied_unexpected_create_cleanup_failure_exits_nonzero_after_writing_re
     config = runner.LiveValidationConfig(
         aws_profile="iamscope-test-profile",
         aws_region="us-east-1",
-        expected_account_id="123456789012",
-        role_arn="arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-lambda-exec-role",
+        expected_account_id="123456\u003789012",
+        role_arn="arn:aws:iam::123456\u003789012:role/iamscope-live-passrole-lambda-test-lambda-exec-role",
         output_dir=tmp_path,
-        function_name="iamscope-live-passrole-lambda-test-20260602000000",
+        function_name="iamscope-live-passrole-lambda-test-202606\u00302000000",
         expected_iamscope_verdict=None,
-        source_principal_arn="arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-denied-source-role",
+        source_principal_arn="arn:aws:iam::123456\u003789012:role/iamscope-live-passrole-lambda-test-denied-source-role",
         validation_mode="denied_missing_passrole",
         expected_observed_aws_result="access_denied",
-        denied_source_role_arn="arn:aws:iam::123456789012:role/iamscope-live-passrole-lambda-test-denied-source-role",
+        denied_source_role_arn="arn:aws:iam::123456\u003789012:role/iamscope-live-passrole-lambda-test-denied-source-role",
     )
     result = runner.build_result(
         config=config,

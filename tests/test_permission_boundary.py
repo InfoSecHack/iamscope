@@ -242,7 +242,7 @@ class TestPipelineIntegration:
                 "Statement": [
                     {
                         "Effect": "Allow",
-                        "Principal": {"AWS": "arn:aws:iam::999999999999:root"},
+                        "Principal": {"AWS": "arn:aws:iam::999999\u003999999:root"},
                         "Action": "sts:AssumeRole",
                     }
                 ],
@@ -281,8 +281,8 @@ class TestBND1ActionIntersection:
     @staticmethod
     def _bind(boundary_arn: str, allowed_actions: list[str], edge_type: str, parse_status: str = "complete") -> list:
         """Helper: build a node + edge + boundary constraint and bind them."""
-        src_id = "arn:aws:iam::111111111111:role/Src"
-        dst_id = "arn:aws:iam::222222222222:role/Dst"
+        src_id = "arn:aws:iam::111111\u003111111:role/Src"
+        dst_id = "arn:aws:iam::222222\u003222222:role/Dst"
         # Boundary applies to src for permission edges, dst for trust edges.
         constrained_id = src_id if "_permission" in edge_type else dst_id
         node = _make_node(constrained_id, boundary_arn=boundary_arn)
@@ -320,7 +320,7 @@ class TestBND1ActionIntersection:
     def test_boundary_allows_action_not_blocking(self) -> None:
         """complete + action in allowed_actions → False / complete."""
         ecs = self._bind(
-            boundary_arn="arn:aws:iam::111111111111:policy/AllowPassRole",
+            boundary_arn="arn:aws:iam::111111\u003111111:policy/AllowPassRole",
             allowed_actions=["iam:PassRole"],
             edge_type="iam:PassRole_permission",
         )
@@ -331,7 +331,7 @@ class TestBND1ActionIntersection:
     def test_boundary_denies_action_exact_miss_blocking(self) -> None:
         """complete + action NOT in allowed_actions → True / complete (exact miss)."""
         ecs = self._bind(
-            boundary_arn="arn:aws:iam::111111111111:policy/S3Only",
+            boundary_arn="arn:aws:iam::111111\u003111111:policy/S3Only",
             allowed_actions=["s3:GetObject"],
             edge_type="iam:PassRole_permission",
         )
@@ -343,7 +343,7 @@ class TestBND1ActionIntersection:
     def test_boundary_denies_wildcard_miss_blocking(self) -> None:
         """Exit-criterion spot-check: boundary ["s3:*"] against lambda:CreateFunction."""
         ecs = self._bind(
-            boundary_arn="arn:aws:iam::111111111111:policy/S3Wildcard",
+            boundary_arn="arn:aws:iam::111111\u003111111:policy/S3Wildcard",
             allowed_actions=["s3:*"],
             edge_type="lambda:CreateFunction_permission",
         )
@@ -354,7 +354,7 @@ class TestBND1ActionIntersection:
     def test_parse_status_partial_emits_needs_review(self) -> None:
         """parse_status != complete → False / needs_review regardless of actions."""
         ecs = self._bind(
-            boundary_arn="arn:aws:iam::111111111111:policy/Partial",
+            boundary_arn="arn:aws:iam::111111\u003111111:policy/Partial",
             allowed_actions=[],  # would otherwise block everything
             edge_type="iam:PassRole_permission",
             parse_status="partial",
@@ -367,7 +367,7 @@ class TestBND1ActionIntersection:
     def test_wildcard_service_matches_action(self) -> None:
         """complete + lambda:* matches lambda:CreateFunction → False / complete."""
         ecs = self._bind(
-            boundary_arn="arn:aws:iam::111111111111:policy/LambdaWildcard",
+            boundary_arn="arn:aws:iam::111111\u003111111:policy/LambdaWildcard",
             allowed_actions=["lambda:*"],
             edge_type="lambda:CreateFunction_permission",
         )
@@ -382,7 +382,7 @@ class TestBND1ActionIntersection:
         wildcard is the only way to universally permit.
         """
         ecs = self._bind(
-            boundary_arn="arn:aws:iam::111111111111:policy/FullAdmin",
+            boundary_arn="arn:aws:iam::111111\u003111111:policy/FullAdmin",
             allowed_actions=["*"],
             edge_type="iam:PassRole_permission",
         )
@@ -393,7 +393,7 @@ class TestBND1ActionIntersection:
     def test_action_case_insensitive_match(self) -> None:
         """Case insensitivity: IAM:PassRole in allowed matches iam:PassRole edge."""
         ecs = self._bind(
-            boundary_arn="arn:aws:iam::111111111111:policy/MixedCase",
+            boundary_arn="arn:aws:iam::111111\u003111111:policy/MixedCase",
             allowed_actions=["IAM:PassRole"],
             edge_type="iam:PassRole_permission",
         )
@@ -404,7 +404,7 @@ class TestBND1ActionIntersection:
     def test_empty_allowed_actions_blocks_everything(self) -> None:
         """Empty allowed_actions + complete → every action blocked."""
         ecs = self._bind(
-            boundary_arn="arn:aws:iam::111111111111:policy/Nothing",
+            boundary_arn="arn:aws:iam::111111\u003111111:policy/Nothing",
             allowed_actions=[],
             edge_type="iam:PassRole_permission",
             parse_status="complete",
@@ -415,18 +415,18 @@ class TestBND1ActionIntersection:
 
     def test_boundary_resource_miss_blocks_action(self) -> None:
         """Action match is not enough: Resource must match the edge target."""
-        src_id = "arn:aws:iam::111111111111:role/Src"
-        dst_id = "arn:aws:iam::222222222222:role/Dst"
-        node = _make_node(src_id, boundary_arn="arn:aws:iam::111111111111:policy/OtherRoleOnly")
+        src_id = "arn:aws:iam::111111\u003111111:role/Src"
+        dst_id = "arn:aws:iam::222222\u003222222:role/Dst"
+        node = _make_node(src_id, boundary_arn="arn:aws:iam::111111\u003111111:policy/OtherRoleOnly")
         edge = _make_edge("sts:AssumeRole_permission", src_id, dst_id)
         constraints = build_permission_boundary_constraints(
             {
-                "arn:aws:iam::111111111111:policy/OtherRoleOnly": {
+                "arn:aws:iam::111111\u003111111:policy/OtherRoleOnly": {
                     "Statement": [
                         {
                             "Effect": "Allow",
                             "Action": "sts:AssumeRole",
-                            "Resource": "arn:aws:iam::222222222222:role/Other",
+                            "Resource": "arn:aws:iam::222222\u003222222:role/Other",
                         }
                     ],
                 },
@@ -442,13 +442,13 @@ class TestBND1ActionIntersection:
 
     def test_boundary_resource_match_allows_action(self) -> None:
         """Resource-aware intersection permits matching action and target ARN."""
-        src_id = "arn:aws:iam::111111111111:role/Src"
-        dst_id = "arn:aws:iam::222222222222:role/Dst"
-        node = _make_node(src_id, boundary_arn="arn:aws:iam::111111111111:policy/DstOnly")
+        src_id = "arn:aws:iam::111111\u003111111:role/Src"
+        dst_id = "arn:aws:iam::222222\u003222222:role/Dst"
+        node = _make_node(src_id, boundary_arn="arn:aws:iam::111111\u003111111:policy/DstOnly")
         edge = _make_edge("sts:AssumeRole_permission", src_id, dst_id)
         constraints = build_permission_boundary_constraints(
             {
-                "arn:aws:iam::111111111111:policy/DstOnly": {
+                "arn:aws:iam::111111\u003111111:policy/DstOnly": {
                     "Statement": [
                         {
                             "Effect": "Allow",
@@ -468,13 +468,13 @@ class TestBND1ActionIntersection:
 
     def test_boundary_conditional_allow_is_needs_review(self) -> None:
         """Conditional boundary allows are not treated as unconditional proof."""
-        src_id = "arn:aws:iam::111111111111:role/Src"
-        dst_id = "arn:aws:iam::222222222222:role/Dst"
-        node = _make_node(src_id, boundary_arn="arn:aws:iam::111111111111:policy/Conditional")
+        src_id = "arn:aws:iam::111111\u003111111:role/Src"
+        dst_id = "arn:aws:iam::222222\u003222222:role/Dst"
+        node = _make_node(src_id, boundary_arn="arn:aws:iam::111111\u003111111:policy/Conditional")
         edge = _make_edge("sts:AssumeRole_permission", src_id, dst_id)
         constraints = build_permission_boundary_constraints(
             {
-                "arn:aws:iam::111111111111:policy/Conditional": {
+                "arn:aws:iam::111111\u003111111:policy/Conditional": {
                     "Statement": [
                         {
                             "Effect": "Allow",
@@ -496,13 +496,13 @@ class TestBND1ActionIntersection:
 
     def test_boundary_explicit_deny_blocks_even_with_allow(self) -> None:
         """Explicit Deny in the boundary wins over matching Allow."""
-        src_id = "arn:aws:iam::111111111111:role/Src"
-        dst_id = "arn:aws:iam::222222222222:role/Dst"
-        node = _make_node(src_id, boundary_arn="arn:aws:iam::111111111111:policy/DenyDst")
+        src_id = "arn:aws:iam::111111\u003111111:role/Src"
+        dst_id = "arn:aws:iam::222222\u003222222:role/Dst"
+        node = _make_node(src_id, boundary_arn="arn:aws:iam::111111\u003111111:policy/DenyDst")
         edge = _make_edge("sts:AssumeRole_permission", src_id, dst_id)
         constraints = build_permission_boundary_constraints(
             {
-                "arn:aws:iam::111111111111:policy/DenyDst": {
+                "arn:aws:iam::111111\u003111111:policy/DenyDst": {
                     "Statement": [
                         {"Effect": "Allow", "Action": "sts:AssumeRole", "Resource": "*"},
                         {"Effect": "Deny", "Action": "sts:AssumeRole", "Resource": dst_id},
@@ -525,7 +525,7 @@ class TestBND1ActionIntersection:
         binding logic handles both edge layers and both should be exercised.
         """
         ecs = self._bind(
-            boundary_arn="arn:aws:iam::222222222222:policy/AssumeRoleOnly",
+            boundary_arn="arn:aws:iam::222222\u003222222:policy/AssumeRoleOnly",
             allowed_actions=["sts:AssumeRole"],
             edge_type="sts:AssumeRole_trust",
         )

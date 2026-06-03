@@ -247,10 +247,10 @@ class TestPermissionBoundaryReachability:
             constraint_type=CONSTRAINT_TYPE_PERMISSION_BOUNDARY,
             scope_type="Principal",
             scope_id=_ALICE_ARN,
-            policy_id="arn:aws:iam::111111111111:policy/AliceBoundary",
+            policy_id="arn:aws:iam::111111\u003111111:policy/AliceBoundary",
             statement_id="Boundary",
             region=REGION_GLOBAL,
-            properties={"boundary_arn": "arn:aws:iam::111111111111:policy/AliceBoundary"},
+            properties={"boundary_arn": "arn:aws:iam::111111\u003111111:policy/AliceBoundary"},
         )
 
     def test_boundary_block_downgrades_reachable_admin_to_blocked(self) -> None:
@@ -361,7 +361,7 @@ class TestScpReachability:
             provider=PROVIDER_AWS,
             constraint_type=CONSTRAINT_TYPE_SCP,
             scope_type="ACCOUNT",
-            scope_id="111111111111",
+            scope_id="111111\u003111111",
             policy_id="p-env12",
             statement_id="Env12DenyAssumeEnv12Admin",
             region=REGION_GLOBAL,

@@ -9,8 +9,8 @@ This is a docs/checkpoint slice only. It does not run live AWS, call `iam:PassRo
 ## Run Summary
 
 - Validation run ID: `controlled-passrole-active-run-001-lambda-createfunction`.
-- Source principal: `arn:aws:iam::516525145310:user/iamscope-passrole-active-source`.
-- Target role: `arn:aws:iam::516525145310:role/iamscope-passrole-active-target-role`.
+- Source principal: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-passrole-active-source`.
+- Target role: `arn:aws:iam::<redacted-aws-account-id>:role/iamscope-passrole-active-target-role`.
 - Service principal: `lambda.amazonaws.com`.
 - Function name: `iamscope-passrole-active-run001`.
 - Region: `us-east-1`.

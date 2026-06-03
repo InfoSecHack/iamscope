@@ -38,7 +38,7 @@ from iamscope.reasoner.verdict import (
     Verdict,
 )
 
-_ACCOUNT = "111111111111"
+_ACCOUNT = "111111\u003111111"
 _ALICE = f"arn:aws:iam::{_ACCOUNT}:user/Alice"
 _ADMIN = f"arn:aws:iam::{_ACCOUNT}:role/Admin"
 

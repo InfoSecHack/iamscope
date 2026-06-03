@@ -44,13 +44,13 @@ def _validated_finding() -> dict:
         "source": {
             "provider": "aws",
             "node_type": "IAMUser",
-            "provider_id": "arn:aws:iam::111111111111:user/Alice",
+            "provider_id": "arn:aws:iam::111111\u003111111:user/Alice",
             "region": "aws-global",
         },
         "target": {
             "provider": "aws",
             "node_type": "SecretsManagerSecret",
-            "provider_id": "arn:aws:secretsmanager:us-east-1:111111111111:secret:prod/db",
+            "provider_id": "arn:aws:secretsmanager:us-east-1:111111\u003111111:secret:prod/db",
             "region": "us-east-1",
         },
         "required_checks": [
@@ -104,7 +104,7 @@ def _validated_finding() -> dict:
                 {
                     "step": 1,
                     "action": "check_principal_has_get_secret_value_permission",
-                    "inputs": ("arn:aws:iam::111111111111:user/Alice",),
+                    "inputs": ("arn:aws:iam::111111\u003111111:user/Alice",),
                     "result": "PASS",
                     "reason": "permission edge witnessed",
                 },
@@ -543,7 +543,7 @@ class TestCliIntegration:
             validated = _validated_finding()
             inconclusive = _inconclusive_finding()
             inconclusive["source"] = dict(validated["source"])
-            inconclusive["source"]["provider_id"] = "arn:aws:iam::111111111111:user/Bob"
+            inconclusive["source"]["provider_id"] = "arn:aws:iam::111111\u003111111:user/Bob"
             self._write_findings(path, [validated, inconclusive])
             rc = main(
                 [

@@ -168,7 +168,7 @@ class TestExceptionPatterns:
 
         assert len(results) == 1
         r = results[0]
-        assert sorted(r.exception_account_ids) == ["111111111111", "222222222222"]
+        assert sorted(r.exception_account_ids) == ["111111\u003111111", "222222\u003222222"]
         assert r.parse_status == PARSE_STATUS_COMPLETE
 
     def test_combined_exceptions(self) -> None:
@@ -199,8 +199,8 @@ class TestPrincipalApplicabilityPatterns:
                         "Condition": {
                             operator: {
                                 "aws:PrincipalArn": [
-                                    "arn:aws:iam::111111111111:user/env22-alice",
-                                    "arn:aws:sts::111111111111:assumed-role/Env22/*",
+                                    "arn:aws:iam::111111\u003111111:user/env22-alice",
+                                    "arn:aws:sts::111111\u003111111:assumed-role/Env22/*",
                                 ]
                             }
                         },
@@ -215,8 +215,8 @@ class TestPrincipalApplicabilityPatterns:
             assert r.parse_status == PARSE_STATUS_COMPLETE
             assert r.parse_warnings == []
             assert sorted(r.applicable_principal_patterns) == [
-                "arn:aws:iam::111111111111:user/env22-alice",
-                "arn:aws:sts::111111111111:assumed-role/Env22/*",
+                "arn:aws:iam::111111\u003111111:user/env22-alice",
+                "arn:aws:sts::111111\u003111111:assumed-role/Env22/*",
             ]
             assert r.exception_principal_patterns == []
 
@@ -282,7 +282,7 @@ class TestParseStatusDowngrades:
         assert len(results) == 1
         r = results[0]
         assert r.parse_status == PARSE_STATUS_PARTIAL
-        assert r.resource_patterns == ["arn:aws:iam::333333333333:role/ProdDeploy*"]
+        assert r.resource_patterns == ["arn:aws:iam::333333\u003333333:role/ProdDeploy*"]
         assert any("Non-wildcard" in w for w in r.parse_warnings)
 
     def test_unrecognized_condition_key_partial(self) -> None:
@@ -391,8 +391,8 @@ class TestDeterminism:
                     "Condition": {
                         "StringEquals": {
                             "aws:PrincipalArn": [
-                                "arn:aws:iam::111111111111:user/Zed",
-                                "arn:aws:iam::111111111111:user/Alice",
+                                "arn:aws:iam::111111\u003111111:user/Zed",
+                                "arn:aws:iam::111111\u003111111:user/Alice",
                             ]
                         }
                     },

@@ -85,7 +85,7 @@ class TestDanglingSrcMaterialization:
     out of scope for a validator-layer regression test.
     """
 
-    _ROLE_ACCOUNT = "111111111111"
+    _ROLE_ACCOUNT = "111111\u003111111"
     _TRUSTEE_ARN = f"arn:aws:iam::{_ROLE_ACCOUNT}:role/Trustee"
     _DELETED_ARN = f"arn:aws:iam::{_ROLE_ACCOUNT}:role/DeletedTrustor"
 

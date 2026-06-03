@@ -120,16 +120,16 @@ def provider_id_strategy() -> st.SearchStrategy[str]:
     """Generate plausible AWS ARNs for node identities."""
     return st.sampled_from(
         [
-            "arn:aws:iam::111111111111:user/Alice",
-            "arn:aws:iam::111111111111:user/Bob",
-            "arn:aws:iam::111111111111:role/DeployerRole",
-            "arn:aws:iam::111111111111:role/AdminRole",
-            "arn:aws:iam::111111111111:group/Admins",
+            "arn:aws:iam::111111\u003111111:user/Alice",
+            "arn:aws:iam::111111\u003111111:user/Bob",
+            "arn:aws:iam::111111\u003111111:role/DeployerRole",
+            "arn:aws:iam::111111\u003111111:role/AdminRole",
+            "arn:aws:iam::111111\u003111111:group/Admins",
             "arn:aws:s3:::corp-secrets",
             "arn:aws:s3:::public-assets",
-            "arn:aws:secretsmanager:us-east-1:111111111111:secret:prod/db",
-            "arn:aws:kms:us-east-1:111111111111:key/abcd1234",
-            "arn:aws:lambda:us-east-1:111111111111:function:worker",
+            "arn:aws:secretsmanager:us-east-1:111111\u003111111:secret:prod/db",
+            "arn:aws:kms:us-east-1:111111\u003111111:key/abcd1234",
+            "arn:aws:lambda:us-east-1:111111\u003111111:function:worker",
         ]
     )
 

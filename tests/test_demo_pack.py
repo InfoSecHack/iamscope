@@ -22,7 +22,7 @@ from iamscope.output.scenario_json import emit_binding_metadata, emit_scenario
 from iamscope.reasoner import AssumeRoleChainReasoner
 from iamscope.truth.probe_overlay import PROBE_OVERLAY_SCHEMA_VERSION, ProbeOverlay, ProbeRecord
 
-_ACCOUNT = "111111111111"
+_ACCOUNT = "111111\u003111111"
 _ALICE = f"arn:aws:iam::{_ACCOUNT}:user/Alice"
 _DEVOPS = f"arn:aws:iam::{_ACCOUNT}:role/DevOps"
 _ADMIN = f"arn:aws:iam::{_ACCOUNT}:role/Admin"

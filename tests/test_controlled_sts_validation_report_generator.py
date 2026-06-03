@@ -29,8 +29,8 @@ def _walk_keys(value: Any) -> list[str]:
 def test_denied_case_report_generation() -> None:
     report = build_report("denied")
 
-    assert report["finding_reference"]["source_principal_arn"] == "arn:aws:iam::516525145310:user/iamscope-admin"
-    assert report["finding_reference"]["target_role_arn"] == "arn:aws:iam::516525145310:role/arf-rt-DevRole"
+    assert report["finding_reference"]["source_principal_arn"] == "arn:aws:iam::516525\u003145310:user/iamscope-admin"
+    assert report["finding_reference"]["target_role_arn"] == "arn:aws:iam::516525\u003145310:role/arf-rt-DevRole"
     assert report["predicted_behavior"]["predicted_outcome"] == "denied"
     assert report["observed_behavior"]["observed_outcome"] == "denied"
     assert report["outcome_classification"] == "corroborated"
@@ -42,10 +42,12 @@ def test_assumed_case_report_generation() -> None:
     report = build_report("assumed")
 
     assert (
-        report["finding_reference"]["source_principal_arn"] == "arn:aws:iam::516525145310:user/iamscope-positive-source"
+        report["finding_reference"]["source_principal_arn"]
+        == "arn:aws:iam::516525\u003145310:user/iamscope-positive-source"
     )
     assert (
-        report["finding_reference"]["target_role_arn"] == "arn:aws:iam::516525145310:role/iamscope-positive-target-role"
+        report["finding_reference"]["target_role_arn"]
+        == "arn:aws:iam::516525\u003145310:role/iamscope-positive-target-role"
     )
     assert report["predicted_behavior"]["predicted_outcome"] == "assumed"
     assert report["observed_behavior"]["observed_outcome"] == "assumed"

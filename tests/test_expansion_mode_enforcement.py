@@ -27,7 +27,7 @@ def _make_pr(
     action: str = "lambda:InvokeFunction",
     resource: str = "*",
     is_wildcard: bool = True,
-    source_arn: str = "arn:aws:iam::111111111111:user/Admin",
+    source_arn: str = "arn:aws:iam::111111\u003111111:user/Admin",
 ) -> PermissionParseResult:
     """Minimal PermissionParseResult for a wildcard lambda grant.
     Follows the test_passrole.py::_make_pr() convention."""
@@ -39,7 +39,7 @@ def _make_pr(
         is_wildcard_resource=is_wildcard,
         source_arn=source_arn,
         source_node_type=NODE_TYPE_IAM_USER,
-        source_account_id="111111111111",
+        source_account_id="111111\u003111111",
         policy_source="inline",
         policy_name="test-policy",
         action_matched_via="exact",

@@ -36,7 +36,7 @@ def _make_tr(**overrides) -> TrustParseResult:
         "effect": "Allow",
         "action": "sts:AssumeRole",
         "principal_type": "AWS",
-        "principal_value": "arn:aws:iam::222222222222:root",
+        "principal_value": "arn:aws:iam::222222\u003222222:root",
         "resolved_node_type": NODE_TYPE_ACCOUNT_ROOT,
         "trust_scope": TRUST_SCOPE_ACCOUNT_ROOT,
         "cross_account": True,
@@ -83,7 +83,7 @@ class TestNarrowNaked:
     def test_cross_account_role_no_conditions(self) -> None:
         """Cross-account specific role with no conditions → NARROW_NAKED."""
         tr = _make_tr(
-            principal_value="arn:aws:iam::222222222222:role/SomeRole",
+            principal_value="arn:aws:iam::222222\u003222222:role/SomeRole",
             resolved_node_type=NODE_TYPE_IAM_ROLE,
             trust_scope=TRUST_SCOPE_SPECIFIC_ROLE,
         )
@@ -97,7 +97,7 @@ class TestNarrowNaked:
     def test_cross_account_role_with_external_id(self) -> None:
         """Cross-account role with ExternalId → NARROW_NAKED."""
         tr = _make_tr(
-            principal_value="arn:aws:iam::222222222222:role/SomeRole",
+            principal_value="arn:aws:iam::222222\u003222222:role/SomeRole",
             resolved_node_type=NODE_TYPE_IAM_ROLE,
             trust_scope=TRUST_SCOPE_SPECIFIC_ROLE,
             has_external_id=True,
@@ -129,7 +129,7 @@ class TestConditioned:
     def test_cross_account_role_with_org_id(self) -> None:
         """Cross-account role with OrgID → CONDITIONED."""
         tr = _make_tr(
-            principal_value="arn:aws:iam::222222222222:role/SomeRole",
+            principal_value="arn:aws:iam::222222\u003222222:role/SomeRole",
             resolved_node_type=NODE_TYPE_IAM_ROLE,
             trust_scope=TRUST_SCOPE_SPECIFIC_ROLE,
             has_org_id_condition=True,
@@ -148,7 +148,7 @@ class TestIntraAccount:
     def test_same_account_role(self) -> None:
         """Same-account specific role → INTRA_ACCOUNT."""
         tr = _make_tr(
-            principal_value="arn:aws:iam::111111111111:role/SameAcct",
+            principal_value="arn:aws:iam::111111\u003111111:role/SameAcct",
             resolved_node_type=NODE_TYPE_IAM_ROLE,
             trust_scope=TRUST_SCOPE_SPECIFIC_ROLE,
             cross_account=False,
@@ -168,7 +168,7 @@ class TestIntraAccount:
     def test_federated_principal(self) -> None:
         """Federated principal → INTRA_ACCOUNT."""
         tr = _make_tr(
-            principal_value="arn:aws:iam::111111111111:saml-provider/MyIdP",
+            principal_value="arn:aws:iam::111111\u003111111:saml-provider/MyIdP",
             resolved_node_type=NODE_TYPE_SAML_PROVIDER,
             trust_scope=TRUST_SCOPE_FEDERATED,
             cross_account=False,
@@ -266,7 +266,7 @@ class TestOIDCTrust:
         """SAML federated trust → still INTRA_ACCOUNT (not affected by OIDC change)."""
         tr = _make_tr(
             principal_type="Federated",
-            principal_value="arn:aws:iam::111111111111:saml-provider/MyIdP",
+            principal_value="arn:aws:iam::111111\u003111111:saml-provider/MyIdP",
             resolved_node_type=NODE_TYPE_SAML_PROVIDER,
             trust_scope=TRUST_SCOPE_FEDERATED,
             cross_account=False,

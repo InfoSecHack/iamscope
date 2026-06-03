@@ -73,9 +73,9 @@ The search intentionally distinguished identity-policy Deny from SCP Deny, permi
 ## Selected Candidate
 
 - Validation-layer ID: `controlled-identity-deny-run-001-env03-add-user-to-group`
-- Source principal: `arn:aws:iam::516525145310:user/iamscope-test/env03-cc1-alice`
+- Source principal: `arn:aws:iam::<redacted-aws-account-id>:user/iamscope-test/env03-cc1-alice`
 - Candidate action: `iam:AddUserToGroup`
-- Candidate resource: `arn:aws:iam::516525145310:group/iamscope-test/env03-cc1-admins`
+- Candidate resource: `arn:aws:iam::<redacted-aws-account-id>:group/iamscope-test/env03-cc1-admins`
 - Pattern/finding family: `iam_group_membership_escalation`
 - Expected behavior: `suppressed`
 - AWS semantic expectation: the selected action is denied because explicit identity-policy Deny overrides the structural Allow.

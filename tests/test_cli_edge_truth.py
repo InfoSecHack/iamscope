@@ -20,8 +20,8 @@ from iamscope.truth.probe_overlay import PROBE_OVERLAY_SCHEMA_VERSION, ProbeOver
 
 
 def test_edge_truth_cli_renders_confounder_and_probe_state(tmp_path: Path, capsys: CaptureFixture[str]) -> None:
-    source = "arn:aws:iam::111111111111:role/Dev"
-    target = "arn:aws:iam::222222222222:role/Prod"
+    source = "arn:aws:iam::111111\u003111111:role/Dev"
+    target = "arn:aws:iam::222222\u003222222:role/Prod"
     edge_id = "edge-1"
     scenario_hash = "hash-cli"
     constraint = Constraint(
@@ -122,7 +122,7 @@ def test_stale_drift_cli_renders_evidence_for_finding_key(tmp_path: Path, capsys
         "constraint_type": "STALE_PRINCIPAL_DRIFT",
         "scope_type": "EDGE",
         "scope_id": edge_id,
-        "policy_id": "arn:aws:iam::111111111111:role/Target",
+        "policy_id": "arn:aws:iam::111111\u003111111:role/Target",
         "statement_id": "stmt-stale",
         "region": "aws-global",
         "properties": {
@@ -131,7 +131,7 @@ def test_stale_drift_cli_renders_evidence_for_finding_key(tmp_path: Path, capsys
             "evidence_level": "complete",
             "drift_state": "stale_unique_id_suspected",
             "reason": "stale principal unique ID in trust",
-            "target": "arn:aws:iam::111111111111:role/Target",
+            "target": "arn:aws:iam::111111\u003111111:role/Target",
         },
         "status": "ACTIVE",
         "validation_status": "UNVALIDATED",
@@ -145,7 +145,7 @@ def test_stale_drift_cli_renders_evidence_for_finding_key(tmp_path: Path, capsys
                 "edge_id": edge_id,
                 "edge_type": "sts:AssumeRole_trust",
                 "src": {"provider_id": "AROAABCDEFGHIJKLMNOP"},
-                "dst": {"provider_id": "arn:aws:iam::111111111111:role/Target"},
+                "dst": {"provider_id": "arn:aws:iam::111111\u003111111:role/Target"},
             }
         ],
         "constraints": [constraint],

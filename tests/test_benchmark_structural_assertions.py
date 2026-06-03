@@ -35,8 +35,8 @@ def _env07_run_manifest(tmp_path: Path, scenario_doc: dict, findings_doc: dict) 
         "environment": "acceptance/env07_ar_validated_non_admin",
         "tool_claims": [],
         "context": {
-            "source_provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env07-alice",
-            "target_provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env07-reader",
+            "source_provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env07-alice",
+            "target_provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env07-reader",
         },
         "artifact_status": {
             "scenario_validation": "pass",
@@ -64,13 +64,13 @@ def test_structural_edge_assertion_passes(tmp_path: Path) -> None:
             "edges": [
                 {
                     "edge_type": "sts:AssumeRole_permission",
-                    "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env07-alice"},
-                    "dst": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env07-reader"},
+                    "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env07-alice"},
+                    "dst": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env07-reader"},
                 },
                 {
                     "edge_type": "sts:AssumeRole_trust",
-                    "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env07-alice"},
-                    "dst": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env07-reader"},
+                    "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env07-alice"},
+                    "dst": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env07-reader"},
                 },
             ]
         },
@@ -89,8 +89,8 @@ def test_missing_structural_edge_emits_semantic_mismatch(tmp_path: Path) -> None
             "edges": [
                 {
                     "edge_type": "sts:AssumeRole_permission",
-                    "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env07-alice"},
-                    "dst": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env07-reader"},
+                    "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env07-alice"},
+                    "dst": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env07-reader"},
                 }
             ]
         },
@@ -109,13 +109,13 @@ def test_env07_structural_plus_false_admin_absence_scores_correctly(tmp_path: Pa
             "edges": [
                 {
                     "edge_type": "sts:AssumeRole_permission",
-                    "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env07-alice"},
-                    "dst": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env07-reader"},
+                    "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env07-alice"},
+                    "dst": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env07-reader"},
                 },
                 {
                     "edge_type": "sts:AssumeRole_trust",
-                    "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env07-alice"},
-                    "dst": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env07-reader"},
+                    "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env07-alice"},
+                    "dst": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env07-reader"},
                 },
             ]
         },
@@ -124,7 +124,7 @@ def test_env07_structural_plus_false_admin_absence_scores_correctly(tmp_path: Pa
                 {
                     "pattern_id": "s3_bucket_takeover",
                     "verdict": "inconclusive",
-                    "source": {"provider_id": "arn:aws:iam::123456789012:user/other"},
+                    "source": {"provider_id": "arn:aws:iam::123456\u003789012:user/other"},
                     "target": {"provider_id": "arn:aws:s3:::example"},
                     "blockers_observed": [],
                     "required_checks": [],
@@ -157,8 +157,8 @@ def _env08_run_manifest(tmp_path: Path, scenario_doc: dict, findings_doc: dict) 
         "environment": "acceptance/env08_trust_condition_blocked_admin",
         "tool_claims": [],
         "context": {
-            "source_provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env08-alice",
-            "target_provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env08-conditioned-admin",
+            "source_provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env08-alice",
+            "target_provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env08-conditioned-admin",
         },
         "artifact_status": {
             "scenario_validation": "pass",
@@ -200,8 +200,10 @@ def test_scenario_constraint_count_passes(tmp_path: Path) -> None:
                 {
                     "pattern_id": "admin_reachability",
                     "verdict": "inconclusive",
-                    "source": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env08-alice"},
-                    "target": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env08-conditioned-admin"},
+                    "source": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env08-alice"},
+                    "target": {
+                        "provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env08-conditioned-admin"
+                    },
                     "blockers_observed": [],
                     "required_checks": [],
                 }
@@ -226,8 +228,10 @@ def test_scenario_constraint_count_failure_emits_semantic_mismatch(tmp_path: Pat
                 {
                     "pattern_id": "admin_reachability",
                     "verdict": "inconclusive",
-                    "source": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env08-alice"},
-                    "target": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env08-conditioned-admin"},
+                    "source": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env08-alice"},
+                    "target": {
+                        "provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env08-conditioned-admin"
+                    },
                     "blockers_observed": [],
                     "required_checks": [],
                 }
@@ -248,14 +252,14 @@ def test_scenario_edge_constraint_count_passes(tmp_path: Path) -> None:
                 {
                     "edge_id": "e1",
                     "edge_type": "sts:AssumeRole_permission",
-                    "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env08-alice"},
-                    "dst": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env08-conditioned-admin"},
+                    "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env08-alice"},
+                    "dst": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env08-conditioned-admin"},
                 },
                 {
                     "edge_id": "e2",
                     "edge_type": "sts:AssumeRole_trust",
-                    "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env08-alice"},
-                    "dst": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env08-conditioned-admin"},
+                    "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env08-alice"},
+                    "dst": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env08-conditioned-admin"},
                 },
             ],
             "constraints": [
@@ -274,8 +278,10 @@ def test_scenario_edge_constraint_count_passes(tmp_path: Path) -> None:
                 {
                     "pattern_id": "admin_reachability",
                     "verdict": "inconclusive",
-                    "source": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env08-alice"},
-                    "target": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env08-conditioned-admin"},
+                    "source": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env08-alice"},
+                    "target": {
+                        "provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env08-conditioned-admin"
+                    },
                     "blockers_observed": [],
                     "required_checks": [],
                 }
@@ -299,14 +305,14 @@ def test_env08_structural_and_finding_assertions_score_correctly(tmp_path: Path)
                 {
                     "edge_id": "e1",
                     "edge_type": "sts:AssumeRole_permission",
-                    "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env08-alice"},
-                    "dst": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env08-conditioned-admin"},
+                    "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env08-alice"},
+                    "dst": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env08-conditioned-admin"},
                 },
                 {
                     "edge_id": "e2",
                     "edge_type": "sts:AssumeRole_trust",
-                    "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env08-alice"},
-                    "dst": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env08-conditioned-admin"},
+                    "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env08-alice"},
+                    "dst": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env08-conditioned-admin"},
                 },
             ],
             "constraints": [
@@ -326,8 +332,10 @@ def test_env08_structural_and_finding_assertions_score_correctly(tmp_path: Path)
                 {
                     "pattern_id": "admin_reachability",
                     "verdict": "inconclusive",
-                    "source": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env08-alice"},
-                    "target": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env08-conditioned-admin"},
+                    "source": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env08-alice"},
+                    "target": {
+                        "provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env08-conditioned-admin"
+                    },
                     "blockers_observed": [],
                     "required_checks": [],
                 }
@@ -359,8 +367,8 @@ def _env14_run_manifest(tmp_path: Path, scenario_doc: dict, findings_doc: dict) 
         "environment": "acceptance/env14_permission_condition_blocked_admin",
         "tool_claims": [],
         "context": {
-            "source_provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env14-alice",
-            "target_provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env14-admin",
+            "source_provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env14-alice",
+            "target_provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env14-admin",
         },
         "artifact_status": {
             "scenario_validation": "pass",
@@ -384,8 +392,8 @@ def test_env14_conditioned_permission_edge_scores_correctly(tmp_path: Path) -> N
                 {
                     "edge_id": "e1",
                     "edge_type": "sts:AssumeRole_permission",
-                    "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env14-alice"},
-                    "dst": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env14-admin"},
+                    "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env14-alice"},
+                    "dst": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env14-admin"},
                     "features": {
                         "has_conditions": True,
                         "raw_conditions": {"Bool": {"aws:MultiFactorAuthPresent": "true"}},
@@ -394,8 +402,8 @@ def test_env14_conditioned_permission_edge_scores_correctly(tmp_path: Path) -> N
                 {
                     "edge_id": "e2",
                     "edge_type": "sts:AssumeRole_trust",
-                    "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env14-alice"},
-                    "dst": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env14-admin"},
+                    "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env14-alice"},
+                    "dst": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env14-admin"},
                     "features": {"has_conditions": False, "raw_conditions": {}},
                 },
             ],
@@ -407,8 +415,8 @@ def test_env14_conditioned_permission_edge_scores_correctly(tmp_path: Path) -> N
                 {
                     "pattern_id": "admin_reachability",
                     "verdict": "inconclusive",
-                    "source": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env14-alice"},
-                    "target": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env14-admin"},
+                    "source": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env14-alice"},
+                    "target": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env14-admin"},
                     "blockers_observed": [],
                     "required_checks": [],
                 }
@@ -429,15 +437,15 @@ def test_env14_missing_permission_condition_evidence_fails(tmp_path: Path) -> No
                 {
                     "edge_id": "e1",
                     "edge_type": "sts:AssumeRole_permission",
-                    "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env14-alice"},
-                    "dst": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env14-admin"},
+                    "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env14-alice"},
+                    "dst": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env14-admin"},
                     "features": {"has_conditions": False, "raw_conditions": {}},
                 },
                 {
                     "edge_id": "e2",
                     "edge_type": "sts:AssumeRole_trust",
-                    "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env14-alice"},
-                    "dst": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env14-admin"},
+                    "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env14-alice"},
+                    "dst": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env14-admin"},
                     "features": {"has_conditions": False, "raw_conditions": {}},
                 },
             ],
@@ -449,8 +457,8 @@ def test_env14_missing_permission_condition_evidence_fails(tmp_path: Path) -> No
                 {
                     "pattern_id": "admin_reachability",
                     "verdict": "inconclusive",
-                    "source": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env14-alice"},
-                    "target": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env14-admin"},
+                    "source": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env14-alice"},
+                    "target": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env14-admin"},
                     "blockers_observed": [],
                     "required_checks": [],
                 }
@@ -482,8 +490,8 @@ def _env15_run_manifest(tmp_path: Path, scenario_doc: dict, findings_doc: dict) 
         "environment": "acceptance/env15_env14_permission_condition_removed",
         "tool_claims": [],
         "context": {
-            "source_provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env15-alice",
-            "target_provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env15-admin",
+            "source_provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env15-alice",
+            "target_provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env15-admin",
         },
         "artifact_status": {
             "scenario_validation": "pass",
@@ -507,15 +515,15 @@ def test_env15_unconditioned_permission_mutation_scores_correctly(tmp_path: Path
                 {
                     "edge_id": "e1",
                     "edge_type": "sts:AssumeRole_permission",
-                    "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env15-alice"},
-                    "dst": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env15-admin"},
+                    "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env15-alice"},
+                    "dst": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env15-admin"},
                     "features": {"has_conditions": False, "raw_conditions": {}},
                 },
                 {
                     "edge_id": "e2",
                     "edge_type": "sts:AssumeRole_trust",
-                    "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env15-alice"},
-                    "dst": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env15-admin"},
+                    "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env15-alice"},
+                    "dst": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env15-admin"},
                     "features": {"has_conditions": False, "raw_conditions": {}},
                 },
             ],
@@ -527,8 +535,8 @@ def test_env15_unconditioned_permission_mutation_scores_correctly(tmp_path: Path
                 {
                     "pattern_id": "admin_reachability",
                     "verdict": "validated",
-                    "source": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env15-alice"},
-                    "target": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env15-admin"},
+                    "source": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env15-alice"},
+                    "target": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env15-admin"},
                     "blockers_observed": [],
                     "required_checks": [],
                 }
@@ -549,8 +557,8 @@ def test_env15_conditioned_permission_mutation_fails(tmp_path: Path) -> None:
                 {
                     "edge_id": "e1",
                     "edge_type": "sts:AssumeRole_permission",
-                    "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env15-alice"},
-                    "dst": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env15-admin"},
+                    "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env15-alice"},
+                    "dst": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env15-admin"},
                     "features": {
                         "has_conditions": True,
                         "raw_conditions": {"Bool": {"aws:MultiFactorAuthPresent": "true"}},
@@ -559,8 +567,8 @@ def test_env15_conditioned_permission_mutation_fails(tmp_path: Path) -> None:
                 {
                     "edge_id": "e2",
                     "edge_type": "sts:AssumeRole_trust",
-                    "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env15-alice"},
-                    "dst": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env15-admin"},
+                    "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env15-alice"},
+                    "dst": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env15-admin"},
                     "features": {"has_conditions": False, "raw_conditions": {}},
                 },
             ],
@@ -572,8 +580,8 @@ def test_env15_conditioned_permission_mutation_fails(tmp_path: Path) -> None:
                 {
                     "pattern_id": "admin_reachability",
                     "verdict": "validated",
-                    "source": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env15-alice"},
-                    "target": {"provider_id": "arn:aws:iam::123456789012:role/iamscope-test/env15-admin"},
+                    "source": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env15-alice"},
+                    "target": {"provider_id": "arn:aws:iam::123456\u003789012:role/iamscope-test/env15-admin"},
                     "blockers_observed": [],
                     "required_checks": [],
                 }
@@ -605,8 +613,8 @@ def _env24_run_manifest(tmp_path: Path, scenario_doc: dict, findings_doc: dict) 
         "environment": "acceptance/env24_s3_resource_policy_allow",
         "tool_claims": [],
         "context": {
-            "source_provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env24-reader",
-            "target_provider_id": "arn:aws:s3:::env24-rp-allow-123456789012-deadbeef",
+            "source_provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env24-reader",
+            "target_provider_id": "arn:aws:s3:::env24-rp-allow-123456\u003789012-deadbeef",
         },
         "artifact_status": {
             "scenario_validation": "pass",
@@ -629,18 +637,18 @@ def test_env24_resource_policy_allow_edge_scores_correctly(tmp_path: Path) -> No
             "nodes": [
                 {
                     "node_type": "IAMUser",
-                    "provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env24-reader",
+                    "provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env24-reader",
                 },
                 {
                     "node_type": "S3Bucket",
-                    "provider_id": "arn:aws:s3:::env24-rp-allow-123456789012-deadbeef",
+                    "provider_id": "arn:aws:s3:::env24-rp-allow-123456\u003789012-deadbeef",
                 },
             ],
             "edges": [
                 {
                     "edge_type": "s3:GetObject_resource_policy",
-                    "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env24-reader"},
-                    "dst": {"provider_id": "arn:aws:s3:::env24-rp-allow-123456789012-deadbeef"},
+                    "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env24-reader"},
+                    "dst": {"provider_id": "arn:aws:s3:::env24-rp-allow-123456\u003789012-deadbeef"},
                     "features": {
                         "permission_source": "resource_policy",
                         "layer": "resource_policy",
@@ -666,18 +674,18 @@ def test_env24_resource_policy_allow_edge_requires_provenance(tmp_path: Path) ->
             "nodes": [
                 {
                     "node_type": "IAMUser",
-                    "provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env24-reader",
+                    "provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env24-reader",
                 },
                 {
                     "node_type": "S3Bucket",
-                    "provider_id": "arn:aws:s3:::env24-rp-allow-123456789012-deadbeef",
+                    "provider_id": "arn:aws:s3:::env24-rp-allow-123456\u003789012-deadbeef",
                 },
             ],
             "edges": [
                 {
                     "edge_type": "s3:GetObject_resource_policy",
-                    "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env24-reader"},
-                    "dst": {"provider_id": "arn:aws:s3:::env24-rp-allow-123456789012-deadbeef"},
+                    "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env24-reader"},
+                    "dst": {"provider_id": "arn:aws:s3:::env24-rp-allow-123456\u003789012-deadbeef"},
                     "features": {
                         "permission_source": "identity_policy",
                         "layer": "resource_policy",
@@ -715,9 +723,9 @@ def _env25_run_manifest(tmp_path: Path, scenario_doc: dict, findings_doc: dict) 
         "environment": "acceptance/env25_env24_resource_policy_allow_scoped_away",
         "tool_claims": [],
         "context": {
-            "source_provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env25-reader",
-            "decoy_provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env25-decoy",
-            "target_provider_id": "arn:aws:s3:::env25-rp-scoped-away-123456789012-deadbeef",
+            "source_provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env25-reader",
+            "decoy_provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env25-decoy",
+            "target_provider_id": "arn:aws:s3:::env25-rp-scoped-away-123456\u003789012-deadbeef",
         },
         "artifact_status": {
             "scenario_validation": "pass",
@@ -742,22 +750,22 @@ def test_env25_scoped_away_resource_policy_allow_edge_scores_correctly(tmp_path:
             "nodes": [
                 {
                     "node_type": "IAMUser",
-                    "provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env25-reader",
+                    "provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env25-reader",
                 },
                 {
                     "node_type": "IAMUser",
-                    "provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env25-decoy",
+                    "provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env25-decoy",
                 },
                 {
                     "node_type": "S3Bucket",
-                    "provider_id": "arn:aws:s3:::env25-rp-scoped-away-123456789012-deadbeef",
+                    "provider_id": "arn:aws:s3:::env25-rp-scoped-away-123456\u003789012-deadbeef",
                 },
             ],
             "edges": [
                 {
                     "edge_type": "s3:GetObject_resource_policy",
-                    "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env25-decoy"},
-                    "dst": {"provider_id": "arn:aws:s3:::env25-rp-scoped-away-123456789012-deadbeef"},
+                    "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env25-decoy"},
+                    "dst": {"provider_id": "arn:aws:s3:::env25-rp-scoped-away-123456\u003789012-deadbeef"},
                     "features": {
                         "permission_source": "resource_policy",
                         "layer": "resource_policy",
@@ -785,22 +793,22 @@ def test_env25_scoped_away_resource_policy_allow_rejects_reader_edge(tmp_path: P
             "nodes": [
                 {
                     "node_type": "IAMUser",
-                    "provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env25-reader",
+                    "provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env25-reader",
                 },
                 {
                     "node_type": "IAMUser",
-                    "provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env25-decoy",
+                    "provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env25-decoy",
                 },
                 {
                     "node_type": "S3Bucket",
-                    "provider_id": "arn:aws:s3:::env25-rp-scoped-away-123456789012-deadbeef",
+                    "provider_id": "arn:aws:s3:::env25-rp-scoped-away-123456\u003789012-deadbeef",
                 },
             ],
             "edges": [
                 {
                     "edge_type": "s3:GetObject_resource_policy",
-                    "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env25-decoy"},
-                    "dst": {"provider_id": "arn:aws:s3:::env25-rp-scoped-away-123456789012-deadbeef"},
+                    "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env25-decoy"},
+                    "dst": {"provider_id": "arn:aws:s3:::env25-rp-scoped-away-123456\u003789012-deadbeef"},
                     "features": {
                         "permission_source": "resource_policy",
                         "layer": "resource_policy",
@@ -809,8 +817,8 @@ def test_env25_scoped_away_resource_policy_allow_rejects_reader_edge(tmp_path: P
                 },
                 {
                     "edge_type": "s3:GetObject_resource_policy",
-                    "src": {"provider_id": "arn:aws:iam::123456789012:user/iamscope-test/env25-reader"},
-                    "dst": {"provider_id": "arn:aws:s3:::env25-rp-scoped-away-123456789012-deadbeef"},
+                    "src": {"provider_id": "arn:aws:iam::123456\u003789012:user/iamscope-test/env25-reader"},
+                    "dst": {"provider_id": "arn:aws:s3:::env25-rp-scoped-away-123456\u003789012-deadbeef"},
                     "features": {
                         "permission_source": "resource_policy",
                         "layer": "resource_policy",
