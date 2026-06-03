@@ -64,6 +64,27 @@ def test_summary_includes_claim_boundary_passrole_summaries_and_non_claims(tmp_p
     assert "no pass/fail benchmark label" in summary
 
 
+def test_summary_includes_complex_synthetic_benchmark_section(tmp_path: Path) -> None:
+    run_public_demo_review(tmp_path, check_runner=_passing_checks)
+    summary = (tmp_path / "summary.md").read_text()
+
+    assert "## Complex synthetic benchmark" in summary
+    assert "Local-only frozen synthetic oracle: true" in summary
+    assert "Naive path-shaped candidates: 42" in summary
+    assert "Findings: 18" in summary
+    assert "`validated`: 4" in summary
+    assert "`blocked`: 5" in summary
+    assert "`precondition_only`: 3" in summary
+    assert "`inconclusive`: 6" in summary
+    assert "`shared_passrole_target_resource_scope_unknown`: 3" in summary
+    assert "`shared_cross_account_trust_condition_unknown`: 2" in summary
+    assert "`shared_boundary_or_session_policy_context_missing`: 1" in summary
+    assert "Generation mode: `frozen_synthetic_oracle`" in summary
+    assert "Generated/replayed by IAMScope: false" in summary
+    assert "This is not generated/replayed by IAMScope." in summary
+    assert "This is not a composite score or pass/fail benchmark label." in summary
+
+
 def test_manifest_includes_supported_claims_non_claims_and_checks(tmp_path: Path) -> None:
     manifest = run_public_demo_review(tmp_path, check_runner=_passing_checks)
 
@@ -79,6 +100,36 @@ def test_manifest_includes_supported_claims_non_claims_and_checks(tmp_path: Path
         "artifact_hygiene_scan",
         "path_overcounting_uncertainty_grouping",
     ]
+
+
+def test_manifest_includes_complex_synthetic_benchmark_counts(tmp_path: Path) -> None:
+    manifest = run_public_demo_review(tmp_path, check_runner=_passing_checks)
+    complex_summary = manifest["complex_synthetic_benchmark"]
+
+    assert complex_summary["fixture_id"] == "complex_shared_uncertainty_iam_benchmark_001"
+    assert complex_summary["source_tool"] == "static_fixture_authoring"
+    assert complex_summary["generation_mode"] == "frozen_synthetic_oracle"
+    assert complex_summary["local_only"] is True
+    assert complex_summary["live_aws_used"] is False
+    assert complex_summary["aws_calls_made"] == 0
+    assert complex_summary["generated_or_replayed_by_iamscope"] is False
+    assert complex_summary["reasoners_run"] == []
+    assert complex_summary["naive_candidate_count"] == 42
+    assert complex_summary["finding_count"] == 18
+    assert complex_summary["verdict_breakdown"] == {
+        "validated": 4,
+        "blocked": 5,
+        "precondition_only": 3,
+        "inconclusive": 6,
+    }
+    assert complex_summary["uncertainty_group_counts"] == {
+        "shared_passrole_target_resource_scope_unknown": 3,
+        "shared_cross_account_trust_condition_unknown": 2,
+        "shared_boundary_or_session_policy_context_missing": 1,
+    }
+    assert complex_summary["report_only"] is True
+    assert complex_summary["not_composite_score"] is True
+    assert complex_summary["not_pass_fail_benchmark_label"] is True
 
 
 def test_runner_fails_if_account_scan_produces_unexpected_output(tmp_path: Path) -> None:

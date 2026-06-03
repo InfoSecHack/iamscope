@@ -15,6 +15,9 @@ from typing import Callable, Sequence
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUT = Path("/tmp/iamscope-public-demo-review")
+COMPLEX_PASSROLE_SCOPE_CLASS = "shared_passrole_target_resource_scope_unknown"
+COMPLEX_TRUST_CONDITION_CLASS = "shared_cross_account_trust_condition_unknown"
+COMPLEX_BOUNDARY_CONTEXT_CLASS = "shared_boundary_or_session_policy_context_missing"
 
 CLAIM_BOUNDARY = (
     "IAMScope currently has a local synthetic path-overcounting teaching demo and one "
@@ -184,6 +187,36 @@ def _path_overcounting_summary() -> dict[str, object]:
     }
 
 
+def _complex_synthetic_benchmark_summary() -> dict[str, object]:
+    fixture_dir = REPO_ROOT / "tests" / "fixtures" / "demo" / "complex_shared_uncertainty_iam_benchmark"
+    naive = json.loads((fixture_dir / "naive_candidates.json").read_text(encoding="utf-8"))
+    findings = json.loads((fixture_dir / "findings.json").read_text(encoding="utf-8"))
+    uncertainty = json.loads((fixture_dir / "expected_uncertainty_groups.json").read_text(encoding="utf-8"))
+    verdicts = {"validated": 0, "blocked": 0, "precondition_only": 0, "inconclusive": 0}
+    for finding in findings["findings"]:
+        verdict = finding["verdict"]
+        if verdict in verdicts:
+            verdicts[verdict] += 1
+    group_counts = {group["uncertainty_class"]: group["count"] for group in uncertainty["groups"]}
+    return {
+        "fixture_id": findings["fixture_id"],
+        "source_tool": findings["source_tool"],
+        "generation_mode": findings["generation_mode"],
+        "local_only": True,
+        "live_aws_used": findings["live_aws_used"],
+        "aws_calls_made": findings["aws_calls_made"],
+        "generated_or_replayed_by_iamscope": findings["generated_or_replayed_by_iamscope"],
+        "reasoners_run": findings["reasoners_run"],
+        "naive_candidate_count": len(naive["candidate_paths"]),
+        "finding_count": len(findings["findings"]),
+        "verdict_breakdown": verdicts,
+        "uncertainty_group_counts": group_counts,
+        "report_only": True,
+        "not_composite_score": True,
+        "not_pass_fail_benchmark_label": True,
+    }
+
+
 def _passrole_summary() -> dict[str, object]:
     selected = json.loads(
         (
@@ -226,6 +259,7 @@ def _render_summary(
     output_dir: Path,
     checks: list[CheckResult],
     path_summary: dict[str, object],
+    complex_summary: dict[str, object],
     passrole_summary: dict[str, object],
 ) -> str:
     check_lines = "\n".join(
@@ -236,6 +270,10 @@ def _render_summary(
     links = "\n".join(f"- `{link}`" for link in EVIDENCE_LINKS)
     verdicts = path_summary["verdict_breakdown"]
     assert isinstance(verdicts, dict)
+    complex_verdicts = complex_summary["verdict_breakdown"]
+    complex_groups = complex_summary["uncertainty_group_counts"]
+    assert isinstance(complex_verdicts, dict)
+    assert isinstance(complex_groups, dict)
     allowed = passrole_summary["allowed"]
     denied = passrole_summary["denied"]
     assert isinstance(allowed, dict)
@@ -256,6 +294,27 @@ Output directory: `{output_dir}`
 - `precondition_only`: {verdicts["precondition_only"]}
 - `inconclusive`: {verdicts["inconclusive"]}
 - Top uncertainty class: `{path_summary["top_uncertainty_class"]}` with {path_summary["top_uncertainty_count"]} inconclusive paths
+
+## Complex synthetic benchmark
+
+- Fixture id: `{complex_summary["fixture_id"]}`
+- Local-only frozen synthetic oracle: true
+- Source tool: `{complex_summary["source_tool"]}`
+- Generation mode: `{complex_summary["generation_mode"]}`
+- Naive path-shaped candidates: {complex_summary["naive_candidate_count"]}
+- Findings: {complex_summary["finding_count"]}
+- `validated`: {complex_verdicts["validated"]}
+- `blocked`: {complex_verdicts["blocked"]}
+- `precondition_only`: {complex_verdicts["precondition_only"]}
+- `inconclusive`: {complex_verdicts["inconclusive"]}
+- `{COMPLEX_PASSROLE_SCOPE_CLASS}`: {complex_groups[COMPLEX_PASSROLE_SCOPE_CLASS]}
+- `{COMPLEX_TRUST_CONDITION_CLASS}`: {complex_groups[COMPLEX_TRUST_CONDITION_CLASS]}
+- `{COMPLEX_BOUNDARY_CONTEXT_CLASS}`: {complex_groups[COMPLEX_BOUNDARY_CONTEXT_CLASS]}
+- Generated/replayed by IAMScope: {str(complex_summary["generated_or_replayed_by_iamscope"]).lower()}
+- Reasoners run: {complex_summary["reasoners_run"]}
+- Report-only: true
+- This is not generated/replayed by IAMScope.
+- This is not a composite score or pass/fail benchmark label.
 
 ## PassRole-to-Lambda allowed-side summary
 
@@ -302,6 +361,7 @@ def _manifest(
     checks: list[CheckResult],
     generated_files: list[str],
     path_summary: dict[str, object],
+    complex_summary: dict[str, object],
     passrole_summary: dict[str, object],
 ) -> dict[str, object]:
     return {
@@ -324,6 +384,7 @@ def _manifest(
         ],
         "output_files_generated": generated_files,
         "path_overcounting_demo": path_summary,
+        "complex_synthetic_benchmark": complex_summary,
         "passrole_lambda_controlled_pair": passrole_summary,
         "supported_claims": SUPPORTED_CLAIMS,
         "non_claims": NON_CLAIMS,
@@ -337,6 +398,7 @@ def run_public_demo_review(output_dir: Path, *, check_runner: CheckRunner = run_
     checks = check_runner(out_abs)
     failed = [check for check in checks if not check.passed]
     path_summary = _path_overcounting_summary()
+    complex_summary = _complex_synthetic_benchmark_summary()
     passrole_summary = _passrole_summary()
     generated_files = ["summary.md", "manifest.json"]
     if (out_abs / "path-overcounting-uncertainty-groups.json").exists():
@@ -346,6 +408,7 @@ def run_public_demo_review(output_dir: Path, *, check_runner: CheckRunner = run_
         output_dir=out_abs,
         checks=checks,
         path_summary=path_summary,
+        complex_summary=complex_summary,
         passrole_summary=passrole_summary,
     )
     manifest = _manifest(
@@ -353,6 +416,7 @@ def run_public_demo_review(output_dir: Path, *, check_runner: CheckRunner = run_
         checks=checks,
         generated_files=generated_files,
         path_summary=path_summary,
+        complex_summary=complex_summary,
         passrole_summary=passrole_summary,
     )
 
