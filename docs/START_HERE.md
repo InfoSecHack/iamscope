@@ -103,6 +103,8 @@ fixture or sanitized scenario files. They should not perform live collection.
 
 Local demo: [Path Overcounting and Shared Uncertainty](case-studies/path-overcounting-shared-uncertainty.md) shows how IAMScope separates naive path-shaped rows from validated, blocked, precondition-only, and inconclusive fixture verdicts without making live AWS or replay-equivalence claims.
 
+Case study: [PassRole-to-Lambda Controlled Live Validation](case-studies/passrole-lambda-controlled-live-validation.md) summarizes the two-sided controlled live validation pair: one selected allowed `CreateFunction` match and one missing-PassRole `access_denied` no-selected-finding match.
+
 ### Live AWS Collection
 
 Live `iamscope collect` is not the default path. It is advanced/authorized only.
