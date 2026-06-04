@@ -1,0 +1,240 @@
+{
+  "expected_supported_findings": [
+    {
+      "evidence_required": "`lambda:CreateFunction`, `iam:PassRole`, Lambda trust, no selected blocker",
+      "expected_category": "validated",
+      "expected_iamscope_behavior": "Emit selected `passrole_lambda` validated finding",
+      "oracle_row_id": "oracle-v-001",
+      "pattern": "PassRole-to-Lambda allowed scoped role",
+      "reviewer_note": "Mirrors the bounded service-mediated CreateFunction evidence shape without invoking Lambda."
+    },
+    {
+      "evidence_required": "ECS task/run permission, `iam:PassRole`, ECS trust, no selected blocker",
+      "expected_category": "validated",
+      "expected_iamscope_behavior": "Emit selected PassRole-to-ECS modeled finding if supported by current reasoner set",
+      "oracle_row_id": "oracle-v-002",
+      "pattern": "PassRole-to-ECS allowed scoped role",
+      "reviewer_note": "Keeps ECS as modeled service-mediated behavior, not runtime execution proof."
+    },
+    {
+      "evidence_required": "`sts:AssumeRole` permission plus target trust",
+      "expected_category": "validated",
+      "expected_iamscope_behavior": "Emit selected AssumeRole validated finding",
+      "oracle_row_id": "oracle-v-003",
+      "pattern": "Direct AssumeRole allowed",
+      "reviewer_note": "Single-hop baseline."
+    },
+    {
+      "evidence_required": "First-hop permission/trust and second-hop permission/trust",
+      "expected_category": "validated",
+      "expected_iamscope_behavior": "Emit selected chain finding",
+      "oracle_row_id": "oracle-v-004",
+      "pattern": "Two-hop AssumeRole chain allowed",
+      "reviewer_note": "Bounded multi-hop case."
+    },
+    {
+      "evidence_required": "Source permission, target trust, modeled satisfied condition",
+      "expected_category": "validated",
+      "expected_iamscope_behavior": "Emit selected cross-account trust-shaped finding if supported by current reasoner set",
+      "oracle_row_id": "oracle-v-005",
+      "pattern": "Cross-account trust-shaped allowed with modeled condition satisfied",
+      "reviewer_note": "Uses `synthetic-account-a` and `synthetic-account-b` aliases only."
+    },
+    {
+      "evidence_required": "Service action permission, target role trust, service-mediated role use evidence",
+      "expected_category": "validated",
+      "expected_iamscope_behavior": "Emit selected service-mediated modeled finding if supported by current reasoner set",
+      "oracle_row_id": "oracle-v-006",
+      "pattern": "Service-mediated role path with modeled trust and permission evidence",
+      "reviewer_note": "No downstream service action or invocation claim."
+    },
+    {
+      "evidence_required": "PassRole/Lambda evidence plus boundary binding",
+      "expected_category": "blocked",
+      "expected_iamscope_behavior": "Emit or preserve blocked PassRole-to-Lambda result",
+      "oracle_row_id": "oracle-b-001",
+      "pattern": "Permission boundary blocks PassRole-to-Lambda",
+      "reviewer_note": "Boundary blocker should prevent validated promotion."
+    },
+    {
+      "evidence_required": "Chain evidence plus boundary binding on continuation edge",
+      "expected_category": "blocked",
+      "expected_iamscope_behavior": "Emit or preserve blocked chain result",
+      "oracle_row_id": "oracle-b-002",
+      "pattern": "Permission boundary blocks AssumeRole chain continuation",
+      "reviewer_note": "Tests chain continuation blocker attribution."
+    },
+    {
+      "evidence_required": "PassRole evidence plus SCP-like/account-guardrail binding",
+      "expected_category": "blocked",
+      "expected_iamscope_behavior": "Emit or preserve blocked PassRole result",
+      "oracle_row_id": "oracle-b-003",
+      "pattern": "SCP-like guardrail blocks PassRole",
+      "reviewer_note": "Selected benchmark behavior only, not generic SCP Deny support."
+    },
+    {
+      "evidence_required": "AssumeRole evidence plus identity-Deny evidence",
+      "expected_category": "blocked",
+      "expected_iamscope_behavior": "Emit or preserve blocked/static suppression result where supported",
+      "oracle_row_id": "oracle-b-004",
+      "pattern": "Identity-Deny suppresses AssumeRole",
+      "reviewer_note": "Static/report validation only unless future phase explicitly adds runtime proof."
+    },
+    {
+      "evidence_required": "Service permission evidence plus explicit Deny",
+      "expected_category": "blocked",
+      "expected_iamscope_behavior": "Emit or preserve blocked service-mediated result where supported",
+      "oracle_row_id": "oracle-b-005",
+      "pattern": "Explicit Deny blocks service-mediated permission",
+      "reviewer_note": "No generic Deny correctness claim."
+    },
+    {
+      "evidence_required": "Lambda create/service action exists; PassRole witness absent",
+      "expected_category": "precondition_only",
+      "expected_iamscope_behavior": "Emit no selected validated PassRole finding, or emit precondition-only where supported",
+      "oracle_row_id": "oracle-p-001",
+      "pattern": "Missing `iam:PassRole`",
+      "reviewer_note": "Aligns with denied controlled case expectation."
+    },
+    {
+      "evidence_required": "Source permissions exist; target trust to required service absent",
+      "expected_category": "precondition_only",
+      "expected_iamscope_behavior": "Avoid validated service-mediated finding",
+      "oracle_row_id": "oracle-p-002",
+      "pattern": "Missing target service trust",
+      "reviewer_note": "Target-first reasoners may emit no finding rather than precondition-only."
+    },
+    {
+      "evidence_required": "PassRole and trust exist; service action absent",
+      "expected_category": "precondition_only",
+      "expected_iamscope_behavior": "Avoid selected validated PassRole-to-Lambda finding",
+      "oracle_row_id": "oracle-p-003",
+      "pattern": "Missing `lambda:CreateFunction` or service action",
+      "reviewer_note": "No live AWS call implied."
+    },
+    {
+      "evidence_required": "Target trust exists; source permission absent",
+      "expected_category": "precondition_only",
+      "expected_iamscope_behavior": "Avoid selected validated AssumeRole finding",
+      "oracle_row_id": "oracle-p-004",
+      "pattern": "Missing `sts:AssumeRole` permission",
+      "reviewer_note": "Missing permission should not become a validated path."
+    },
+    {
+      "evidence_required": "Wildcard/resource scope evidence",
+      "expected_category": "inconclusive",
+      "expected_iamscope_behavior": "Emit inconclusive or preserve uncertainty",
+      "oracle_row_id": "oracle-i-001",
+      "pattern": "Wildcard target resource scope unknown",
+      "reviewer_note": "Keeps shared uncertainty visible."
+    },
+    {
+      "evidence_required": "Permission/trust evidence with unresolved condition key",
+      "expected_category": "inconclusive",
+      "expected_iamscope_behavior": "Emit inconclusive where supported",
+      "oracle_row_id": "oracle-i-002",
+      "pattern": "Unresolved condition key",
+      "reviewer_note": "Must not assume condition satisfaction."
+    },
+    {
+      "evidence_required": "Path evidence plus missing session/boundary context",
+      "expected_category": "inconclusive",
+      "expected_iamscope_behavior": "Emit inconclusive or retain assumption where supported",
+      "oracle_row_id": "oracle-i-003",
+      "pattern": "Session policy or permission boundary context missing",
+      "reviewer_note": "Does not prove runtime authorization."
+    },
+    {
+      "evidence_required": "Path evidence plus ambiguous SCP-like scope",
+      "expected_category": "inconclusive",
+      "expected_iamscope_behavior": "Emit inconclusive where supported",
+      "oracle_row_id": "oracle-i-004",
+      "pattern": "SCP-like scope unknown",
+      "reviewer_note": "Selected benchmark behavior only."
+    },
+    {
+      "evidence_required": "Cross-account trust-shaped evidence plus unresolved trust condition",
+      "expected_category": "inconclusive",
+      "expected_iamscope_behavior": "Emit inconclusive where supported",
+      "oracle_row_id": "oracle-i-005",
+      "pattern": "Cross-account trust condition unknown",
+      "reviewer_note": "Uses sanitized account aliases only."
+    }
+  ],
+  "metadata": {
+    "aws_calls_made": 0,
+    "fixture_id": "prod_like_aws_accuracy_oracle_v1",
+    "generated_or_replayed_by_iamscope": false,
+    "generation_mode": "local_prod_like_oracle_fixture",
+    "live_aws_used": false,
+    "local_only": true,
+    "non_claims": [
+      "not broad IAMScope correctness",
+      "not production readiness",
+      "not real production AWS",
+      "not exploitability proof",
+      "not downstream authorization proof",
+      "not Lambda invocation behavior",
+      "not generic Deny correctness",
+      "not resource-policy Deny support except unsupported/static-only row labeling",
+      "not SCP Deny support beyond selected benchmark behavior",
+      "no composite benchmark score",
+      "no pass/fail benchmark label"
+    ],
+    "phase": "phase_2_local_prod_like_oracle_fixture",
+    "phase5_status": "not_run_yet",
+    "reasoners_run": [],
+    "schema_version": "prod_like_aws_accuracy_oracle_v1.expected_findings.v1",
+    "source_tool": "static_fixture_authoring"
+  },
+  "unsupported_static_only_rows": [
+    {
+      "comparison_status_policy": "unsupported_static_only_not_false_positive_or_false_negative",
+      "expected_category": "unsupported",
+      "not_counted_as": [
+        "false_positive",
+        "false_negative",
+        "extra_finding",
+        "missing_finding"
+      ],
+      "oracle_row_id": "oracle-u-001",
+      "reviewer_note": "Not counted as false positive or false negative."
+    },
+    {
+      "comparison_status_policy": "unsupported_static_only_not_false_positive_or_false_negative",
+      "expected_category": "unsupported",
+      "not_counted_as": [
+        "false_positive",
+        "false_negative",
+        "extra_finding",
+        "missing_finding"
+      ],
+      "oracle_row_id": "oracle-u-002",
+      "reviewer_note": "Avoids overclaiming service-specific policy semantics."
+    },
+    {
+      "comparison_status_policy": "unsupported_static_only_not_false_positive_or_false_negative",
+      "expected_category": "unsupported",
+      "not_counted_as": [
+        "false_positive",
+        "false_negative",
+        "extra_finding",
+        "missing_finding"
+      ],
+      "oracle_row_id": "oracle-u-003",
+      "reviewer_note": "No Lambda invocation behavior claim."
+    },
+    {
+      "comparison_status_policy": "unsupported_static_only_not_false_positive_or_false_negative",
+      "expected_category": "unsupported",
+      "not_counted_as": [
+        "false_positive",
+        "false_negative",
+        "extra_finding",
+        "missing_finding"
+      ],
+      "oracle_row_id": "oracle-u-004",
+      "reviewer_note": "Explicit non-claim row."
+    }
+  ]
+}
