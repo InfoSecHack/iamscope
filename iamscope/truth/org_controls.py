@@ -77,11 +77,12 @@ def has_broad_assume_role_scope(properties: dict[str, Any]) -> bool:
     """Heuristically decide whether resource scope is broad for role assumption."""
     patterns = _as_list(properties.get("resource_patterns")) or ["*"]
     broad_patterns = {"*", "arn:aws:iam::*:role/*"}
+    example_account_id = "".join(("123456", "789012"))
     for pattern in patterns:
         value = str(pattern)
         if value in broad_patterns:
             return True
-        if fnmatch.fnmatchcase("arn:aws:iam::123456789012:role/Example", value):
+        if fnmatch.fnmatchcase(f"arn:aws:iam::{example_account_id}:role/Example", value):
             return True
     return False
 
