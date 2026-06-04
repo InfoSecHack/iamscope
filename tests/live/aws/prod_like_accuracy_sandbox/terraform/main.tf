@@ -66,6 +66,182 @@ locals {
     scope_guardrail    = "guardrail-scope"
   }
 
+  target_role_trust_services = {
+    lambda_exec_scoped      = ["lambda.amazonaws.com"]
+    ecs_task_scoped         = ["ecs-tasks.amazonaws.com"]
+    lambda_exec_boundary    = ["lambda.amazonaws.com"]
+    service_mediated_target = ["lambda.amazonaws.com"]
+  }
+
+  source_permission_boundary_keys = {
+    boundary_probe    = "passrole_lambda"
+    uncertainty_probe = "session_context"
+  }
+
+  source_inline_policy_specs = {
+    ci_deployer = {
+      statements = [
+        {
+          sid       = "OracleV001LambdaCreateAndOracleP001ServiceAction"
+          effect    = "Allow"
+          actions   = ["lambda:CreateFunction"]
+          resources = ["*"]
+        },
+        {
+          sid       = "OracleV001PassRoleToScopedLambdaRole"
+          effect    = "Allow"
+          actions   = ["iam:PassRole"]
+          resources = [aws_iam_role.target["lambda_exec_scoped"].arn]
+        },
+        {
+          sid       = "OracleP002PassRoleToRoleWithoutServiceTrust"
+          effect    = "Allow"
+          actions   = ["iam:PassRole", "lambda:CreateFunction"]
+          resources = [aws_iam_role.target["readonly_ops"].arn]
+        },
+        {
+          sid       = "OracleV006ServiceMediatedPolicyShape"
+          effect    = "Allow"
+          actions   = ["lambda:CreateFunction", "iam:PassRole"]
+          resources = [aws_iam_role.target["service_mediated_target"].arn]
+        },
+      ]
+    }
+    ecs_deployer = {
+      statements = [
+        {
+          sid       = "OracleV002EcsTaskRunShape"
+          effect    = "Allow"
+          actions   = ["ecs:RegisterTaskDefinition", "ecs:RunTask", "iam:PassRole"]
+          resources = [aws_iam_role.target["ecs_task_scoped"].arn]
+        },
+      ]
+    }
+    helpdesk = {
+      statements = [
+        {
+          sid       = "OracleV003DirectAssumeRole"
+          effect    = "Allow"
+          actions   = ["sts:AssumeRole"]
+          resources = [aws_iam_role.target["readonly_ops"].arn]
+        },
+        {
+          sid       = "OracleP003PassRoleWithoutServiceAction"
+          effect    = "Allow"
+          actions   = ["iam:PassRole"]
+          resources = [aws_iam_role.target["lambda_exec_scoped"].arn]
+        },
+      ]
+    }
+    build = {
+      statements = [
+        {
+          sid       = "OracleV004FirstHopAssumeRole"
+          effect    = "Allow"
+          actions   = ["sts:AssumeRole"]
+          resources = [aws_iam_role.target["prod_observer"].arn]
+        },
+      ]
+    }
+    audit = {
+      statements = [
+        {
+          sid       = "OracleV005CrossAccountShapedConditionSatisfied"
+          effect    = "Allow"
+          actions   = ["sts:AssumeRole"]
+          resources = [aws_iam_role.target["audit_b"].arn]
+          condition = {
+            test     = "StringEquals"
+            variable = "aws:PrincipalTag/IAMScopeSyntheticAccount"
+            values   = ["synthetic-account-a"]
+          }
+        },
+        {
+          sid       = "OracleI005CrossAccountTrustConditionUnknown"
+          effect    = "Allow"
+          actions   = ["sts:AssumeRole"]
+          resources = [aws_iam_role.target["audit_b"].arn]
+          condition = {
+            test     = "StringEquals"
+            variable = "aws:RequestTag/IAMScopeUnknownContext"
+            values   = ["synthetic-account-b"]
+          }
+        },
+      ]
+    }
+    boundary_probe = {
+      statements = [
+        {
+          sid       = "OracleB001BoundaryBlockedPassRoleLambdaShape"
+          effect    = "Allow"
+          actions   = ["lambda:CreateFunction", "iam:PassRole"]
+          resources = [aws_iam_role.target["lambda_exec_boundary"].arn]
+        },
+        {
+          sid       = "OracleB002BoundaryBlockedChainContinuationShape"
+          effect    = "Allow"
+          actions   = ["sts:AssumeRole"]
+          resources = [aws_iam_role.target["chain_target"].arn]
+        },
+      ]
+    }
+    deny_probe = {
+      statements = [
+        {
+          sid       = "OracleB003ScpLikeGuardrailPassRoleShape"
+          effect    = "Allow"
+          actions   = ["iam:PassRole"]
+          resources = [aws_iam_role.target["scp_passrole_target"].arn]
+        },
+        {
+          sid       = "OracleB004IdentityDenyAssumeRoleShape"
+          effect    = "Allow"
+          actions   = ["sts:AssumeRole"]
+          resources = [aws_iam_role.target["denied_assume"].arn]
+        },
+        {
+          sid       = "OracleB005ExplicitDenyServiceMediatedShape"
+          effect    = "Allow"
+          actions   = ["lambda:CreateFunction", "iam:PassRole"]
+          resources = [aws_iam_role.target["service_mediated_target"].arn]
+        },
+        {
+          sid       = "OracleI004ScpLikeScopeUnknownShape"
+          effect    = "Allow"
+          actions   = ["iam:PassRole"]
+          resources = [aws_iam_role.target["scp_passrole_target"].arn]
+        },
+      ]
+    }
+    uncertainty_probe = {
+      statements = [
+        {
+          sid       = "OracleI001WildcardResourceScopeUnknown"
+          effect    = "Allow"
+          actions   = ["iam:PassRole", "lambda:CreateFunction"]
+          resources = ["*"]
+        },
+        {
+          sid       = "OracleI002UnresolvedConditionKey"
+          effect    = "Allow"
+          actions   = ["sts:AssumeRole"]
+          resources = [aws_iam_role.target["readonly_ops"].arn]
+          condition = {
+            test     = "StringEquals"
+            variable = "aws:RequestTag/IAMScopeUnknownContext"
+            values   = ["required-but-not-collected"]
+          }
+        },
+        {
+          sid       = "OracleI003SessionBoundaryContextMissing"
+          effect    = "Allow"
+          actions   = ["sts:AssumeRole"]
+          resources = [aws_iam_role.target["chain_target"].arn]
+        },
+      ]
+    }
+  }
+
   unsupported_static_only_rows = [
     "oracle-u-001",
     "oracle-u-002",
@@ -293,26 +469,11 @@ resource "terraform_data" "safety_guards" {
   }
 }
 
-data "aws_iam_policy_document" "target_role_trust" {
-  for_each = local.target_roles
-
-  statement {
-    effect  = "Allow"
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type = "AWS"
-      identifiers = [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
-      ]
-    }
-  }
-}
-
 resource "aws_iam_user" "source" {
   for_each = local.source_principals
 
-  name = "${var.resource_prefix}${each.value}"
+  name                 = "${var.resource_prefix}${each.value}"
+  permissions_boundary = contains(keys(local.source_permission_boundary_keys), each.key) ? aws_iam_policy.permission_boundary[local.source_permission_boundary_keys[each.key]].arn : null
 
   tags = merge(local.common_tags, {
     OracleFixture = "prod_like_aws_accuracy_oracle_v1"
@@ -323,8 +484,30 @@ resource "aws_iam_user" "source" {
 resource "aws_iam_role" "target" {
   for_each = local.target_roles
 
-  name               = "${var.resource_prefix}${each.value}"
-  assume_role_policy = data.aws_iam_policy_document.target_role_trust[each.key].json
+  name = "${var.resource_prefix}${each.value}"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = concat(
+      [
+        {
+          Effect = "Allow"
+          Action = "sts:AssumeRole"
+          Principal = {
+            AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+          }
+        }
+      ],
+      [
+        for service in lookup(local.target_role_trust_services, each.key, []) : {
+          Effect = "Allow"
+          Action = "sts:AssumeRole"
+          Principal = {
+            Service = service
+          }
+        }
+      ]
+    )
+  })
 
   tags = merge(local.common_tags, {
     OracleFixture = "prod_like_aws_accuracy_oracle_v1"
@@ -377,4 +560,86 @@ resource "aws_iam_policy" "guardrail_simulation" {
     OracleFixture = "prod_like_aws_accuracy_oracle_v1"
     SandboxRole   = "guardrail-simulation"
   })
+}
+
+resource "aws_iam_user_policy" "source_relationships" {
+  for_each = local.source_inline_policy_specs
+
+  name = "${var.resource_prefix}${each.key}-oracle-relationships"
+  user = aws_iam_user.source[each.key].name
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      for statement in each.value.statements : merge(
+        {
+          Sid      = statement.sid
+          Effect   = statement.effect
+          Action   = statement.actions
+          Resource = statement.resources
+        },
+        try({
+          Condition = {
+            (statement.condition.test) = {
+              (statement.condition.variable) = statement.condition.values
+            }
+          }
+        }, {})
+      )
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "assume_chain_continuation" {
+  name = "${var.resource_prefix}prod-observer-chain-continuation"
+  role = aws_iam_role.target["prod_observer"].id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid      = "OracleV004ContinuationAssumeRoleShape"
+        Effect   = "Allow"
+        Action   = ["sts:AssumeRole"]
+        Resource = [aws_iam_role.target["chain_target"].arn]
+      }
+    ]
+  })
+}
+
+data "aws_iam_policy_document" "identity_deny" {
+  statement {
+    sid       = "OracleB004DenyAssumeRole"
+    effect    = "Deny"
+    actions   = ["sts:AssumeRole"]
+    resources = [aws_iam_role.target["denied_assume"].arn]
+  }
+
+  statement {
+    sid       = "OracleB005DenyServiceMediatedPermission"
+    effect    = "Deny"
+    actions   = ["lambda:CreateFunction", "iam:PassRole"]
+    resources = [aws_iam_role.target["service_mediated_target"].arn]
+  }
+}
+
+resource "aws_iam_policy" "identity_deny" {
+  name        = "${var.resource_prefix}identity-deny-selected-oracle-rows"
+  description = "IAMScope prod-like v1 explicit deny policy for selected blocked oracle rows."
+  policy      = data.aws_iam_policy_document.identity_deny.json
+
+  tags = merge(local.common_tags, {
+    OracleFixture = "prod_like_aws_accuracy_oracle_v1"
+    SandboxRole   = "identity-deny"
+  })
+}
+
+resource "aws_iam_user_policy_attachment" "identity_deny" {
+  user       = aws_iam_user.source["deny_probe"].name
+  policy_arn = aws_iam_policy.identity_deny.arn
+}
+
+resource "aws_iam_user_policy_attachment" "guardrail_simulation" {
+  for_each = aws_iam_policy.guardrail_simulation
+
+  user       = aws_iam_user.source["deny_probe"].name
+  policy_arn = each.value.arn
 }
