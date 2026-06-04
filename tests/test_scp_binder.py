@@ -383,9 +383,9 @@ class TestBindAllScps:
         assert len(bindings) == 1
 
     def test_ou_scope_limits_binding(self) -> None:
-        """With ou_account_map, SCP only binds to edges in scope."""
-        edge_in_scope = _make_edge(dst_id="arn:aws:iam::111111\u003111111:role/InScope")
-        edge_out_scope = _make_edge(dst_id="arn:aws:iam::999999\u003999999:role/OutOfScope")
+        """With ou_account_map, SCP only binds to source principals in scope."""
+        edge_in_scope = _make_edge(src_id="arn:aws:iam::111111\u003111111:root")
+        edge_out_scope = _make_edge(src_id="arn:aws:iam::999999\u003999999:root")
 
         scp = _make_scp_constraint(deny_actions=["sts:AssumeRole"], scope_id="ou-prod")
 
@@ -418,6 +418,112 @@ class TestBindAllScps:
 
         keys = [(b.edge_id, b.constraint_id) for b in bindings]
         assert keys == sorted(keys)
+
+
+class TestBindAllScpsSourceAccountScope:
+    """Regression coverage: SCP scope applies to the principal account, not target account."""
+
+    def _cross_account_edge(self) -> Edge:
+        return _make_edge(
+            src_id="arn:aws:iam::111111\u003111111:role/Caller",
+            src_type=NODE_TYPE_IAM_ROLE,
+            dst_id="arn:aws:iam::222222\u003222222:role/TargetRole",
+        )
+
+    def test_cross_account_source_scoped_deny_binds(self) -> None:
+        edge = self._cross_account_edge()
+        scp = _make_scp_constraint(deny_actions=["sts:AssumeRole"], scope_id="ou-source")
+        ou_map = {"ou-source": {"111111\u003111111"}}
+
+        bindings = bind_all_scps([edge], [scp], ou_account_map=ou_map)
+
+        assert len(bindings) == 1
+        assert bindings[0].edge_id == edge.edge_id
+        assert bindings[0].constraint_id == scp.constraint_id
+
+    def test_cross_account_target_scoped_deny_does_not_bind(self) -> None:
+        edge = self._cross_account_edge()
+        scp = _make_scp_constraint(deny_actions=["sts:AssumeRole"], scope_id="ou-target")
+        ou_map = {"ou-target": {"222222\u003222222"}}
+
+        bindings = bind_all_scps([edge], [scp], ou_account_map=ou_map)
+
+        assert bindings == []
+
+    def test_resource_matching_remains_target_based(self) -> None:
+        edge = self._cross_account_edge()
+        scp = _make_scp_constraint(
+            deny_actions=["sts:AssumeRole"],
+            resource_patterns=["arn:aws:iam::222222\u003222222:role/OtherRole"],
+            scope_id="ou-source",
+        )
+        ou_map = {"ou-source": {"111111\u003111111"}}
+
+        bindings = bind_all_scps([edge], [scp], ou_account_map=ou_map)
+
+        assert bindings == []
+
+    def test_principal_applicability_still_uses_source_principal(self) -> None:
+        edge = self._cross_account_edge()
+        scp = _make_scp_constraint(
+            deny_actions=["sts:AssumeRole"],
+            applicable_principal_patterns=["arn:aws:iam::111111\u003111111:role/OtherCaller"],
+            scope_id="ou-source",
+        )
+        ou_map = {"ou-source": {"111111\u003111111"}}
+
+        bindings = bind_all_scps([edge], [scp], ou_account_map=ou_map)
+
+        assert bindings == []
+
+    def test_same_account_behavior_still_binds(self) -> None:
+        edge = _make_edge(
+            src_id="arn:aws:iam::111111\u003111111:role/Caller",
+            src_type=NODE_TYPE_IAM_ROLE,
+            dst_id="arn:aws:iam::111111\u003111111:role/TargetRole",
+        )
+        scp = _make_scp_constraint(deny_actions=["sts:AssumeRole"], scope_id="ou-same")
+        ou_map = {"ou-same": {"111111\u003111111"}}
+
+        bindings = bind_all_scps([edge], [scp], ou_account_map=ou_map)
+
+        assert len(bindings) == 1
+
+    def test_ou_map_uses_source_account_not_target_account(self) -> None:
+        edge = self._cross_account_edge()
+        source_scoped_scp = _make_scp_constraint(
+            deny_actions=["sts:AssumeRole"],
+            scope_id="ou-source",
+            policy_id="p-source",
+            statement_id="source",
+        )
+        target_scoped_scp = _make_scp_constraint(
+            deny_actions=["sts:AssumeRole"],
+            scope_id="ou-target",
+            policy_id="p-target",
+            statement_id="target",
+        )
+        ou_map = {
+            "ou-source": {"111111\u003111111"},
+            "ou-target": {"222222\u003222222"},
+        }
+
+        bindings = bind_all_scps([edge], [target_scoped_scp, source_scoped_scp], ou_account_map=ou_map)
+
+        assert len(bindings) == 1
+        assert bindings[0].constraint_id == source_scoped_scp.constraint_id
+
+    def test_unavailable_source_account_does_not_fall_back_to_target_account(self) -> None:
+        edge = _make_edge(
+            src_id="__synthetic__:external-principal-set",
+            dst_id="arn:aws:iam::222222\u003222222:role/TargetRole",
+        )
+        scp = _make_scp_constraint(deny_actions=["sts:AssumeRole"], scope_id="ou-target")
+        ou_map = {"ou-target": {"222222\u003222222"}}
+
+        bindings = bind_all_scps([edge], [scp], ou_account_map=ou_map)
+
+        assert bindings == []
 
 
 class TestBindingReason:

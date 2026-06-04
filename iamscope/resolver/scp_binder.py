@@ -134,7 +134,9 @@ def bind_all_scps(
 
     For each (edge, constraint) pair, checks if the SCP's action scope
     matches the edge action. OU inheritance is handled by checking if
-    the edge's destination account is within the constraint's scope.
+    the edge's source/principal account is within the constraint's scope.
+    SCPs govern principals, not target resources; resource pattern
+    matching still uses the edge destination inside bind_scp_to_edge.
 
     Args:
         edges: All edges in the graph.
@@ -150,13 +152,18 @@ def bind_all_scps(
     bindings: list[EdgeConstraint] = []
 
     for edge in edges:
-        dst_account = _extract_account_from_ref(edge.dst)
+        src_account = _extract_account_from_ref(edge.src)
 
         for constraint in constraints:
-            # Check scope: does this SCP apply to the edge's destination account?
-            if ou_account_map is not None and dst_account:
+            # Check scope: does this SCP apply to the edge's source/principal
+            # account? If the source account is unavailable, do not fall back
+            # to the target/resource account; that would incorrectly apply
+            # target-account SCPs to external callers.
+            if ou_account_map is not None:
+                if not src_account:
+                    continue
                 scope_accounts = ou_account_map.get(constraint.scope_id, set())
-                if dst_account not in scope_accounts:
+                if src_account not in scope_accounts:
                     continue
 
             binding = bind_scp_to_edge(edge, constraint)
