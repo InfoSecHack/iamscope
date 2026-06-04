@@ -31,6 +31,19 @@ unless:
 - `live_ack` matches the required acknowledgement;
 - `resource_prefix` begins with `iamscope-prodlike-v1-`.
 
+## IAM Relationship Model
+
+The source models frozen oracle rows with IAM-only resources:
+
+- source-principal inline policies for selected allow/precondition/inconclusive shapes;
+- target-role trust policies for selected AWS service trust and direct assume-role shapes;
+- permission boundaries attached to selected test users;
+- an explicit deny policy attached to the selected deny probe user;
+- IAM-only guardrail simulation policy attachments for selected blocked/unknown rows;
+- one role inline policy for the bounded two-hop assume-role shape.
+
+Unsupported rows remain static-only and have no live resource mapping.
+
 ## Future Commands, Do Not Run Until Phase 4 Approval
 
 ```bash

@@ -97,6 +97,55 @@ def test_provider_and_tags_are_bounded_to_aws_provider() -> None:
     assert 'ManagedBy = "Terraform"' in text
 
 
+def test_terraform_contains_meaningful_iam_policy_relationships() -> None:
+    text = _terraform_text()
+
+    assert 'resource "aws_iam_user_policy" "source_relationships"' in text
+    assert 'resource "aws_iam_role_policy" "assume_chain_continuation"' in text
+    assert 'resource "aws_iam_user_policy_attachment" "identity_deny"' in text
+    assert 'resource "aws_iam_user_policy_attachment" "guardrail_simulation"' in text
+    assert "permissions_boundary =" in text
+    assert '"lambda.amazonaws.com"' in text
+    assert '"ecs-tasks.amazonaws.com"' in text
+
+
+def test_terraform_maps_oracle_rows_to_iam_policy_themes() -> None:
+    text = _terraform_text()
+
+    required_terms = {
+        "OracleV001PassRoleToScopedLambdaRole",
+        "OracleV002EcsTaskRunShape",
+        "OracleV003DirectAssumeRole",
+        "OracleV004ContinuationAssumeRoleShape",
+        "OracleV005CrossAccountShapedConditionSatisfied",
+        "OracleV006ServiceMediatedPolicyShape",
+        "OracleB001BoundaryBlockedPassRoleLambdaShape",
+        "OracleB002BoundaryBlockedChainContinuationShape",
+        "OracleB003ScpLikeGuardrailPassRoleShape",
+        "OracleB004DenyAssumeRole",
+        "OracleB005DenyServiceMediatedPermission",
+        "OracleP001ServiceAction",
+        "OracleP002PassRoleToRoleWithoutServiceTrust",
+        "OracleP003PassRoleWithoutServiceAction",
+        "oracle-p-004",
+        "OracleI001WildcardResourceScopeUnknown",
+        "OracleI002UnresolvedConditionKey",
+        "OracleI003SessionBoundaryContextMissing",
+        "OracleI004ScpLikeScopeUnknownShape",
+        "OracleI005CrossAccountTrustConditionUnknown",
+    }
+    for term in required_terms:
+        assert term in text
+
+    assert "lambda:CreateFunction" in text
+    assert "iam:PassRole" in text
+    assert "ecs:RegisterTaskDefinition" in text
+    assert "ecs:RunTask" in text
+    assert "sts:AssumeRole" in text
+    assert "Condition" in text
+    assert 'effect    = "Deny"' in text
+
+
 def test_no_raw_non_synthetic_account_ids_or_iam_arns() -> None:
     text = _all_sandbox_text()
     account_ids = set(re.findall(r"\b[0-9]{12}\b", text))
@@ -145,7 +194,25 @@ def test_no_lambda_invocation_compute_networking_or_organizations_resources() ->
     assert "aws_subnet" not in lowered
     assert "aws_internet_gateway" not in lowered
     assert "aws_route_table" not in lowered
+    assert "aws_security_group" not in lowered
+    assert "aws_s3_bucket" not in lowered
+    assert "aws_instance" not in lowered
+    assert "aws_db_instance" not in lowered
+    assert "aws_rds" not in lowered
+    assert "aws_dynamodb_table" not in lowered
     assert "aws_organizations" not in lowered
+    assert "aws_iam_service_linked_role" not in lowered
+
+
+def test_no_access_key_secret_or_raw_credential_resources() -> None:
+    text = _terraform_text().lower()
+
+    assert "aws_iam_access_key" not in text
+    assert "aws_secretsmanager_secret" not in text
+    assert "aws_ssm_parameter" not in text
+    assert "secret_access_key" not in text
+    assert "session_token" not in text
+    assert "raw_credentials" not in text
 
 
 def test_readme_warns_not_to_run_until_phase4_and_lists_non_claims() -> None:
@@ -158,6 +225,10 @@ def test_readme_warns_not_to_run_until_phase4_and_lists_non_claims() -> None:
     assert "Do not run until Phase 4 approval" in readme
     assert "expected_account_id" in readme
     assert "I_UNDERSTAND_THIS_IS_A_DEDICATED_IAMSCOPE_SANDBOX" in readme
+    assert "source-principal inline policies" in readme
+    assert "permission boundaries attached to selected test users" in readme
+    assert "explicit deny policy attached to the selected deny probe user" in readme
+    assert "Unsupported rows remain static-only" in readme
     for claim in NON_CLAIMS:
         assert claim in readme
 
