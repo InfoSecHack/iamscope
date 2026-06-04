@@ -229,43 +229,45 @@ class S3BucketTakeoverReasoner:
             )
         )
 
-        # ---- Check 3: no_scp_blocks_put_bucket_policy
-        # Each check gets its own constraint_refs accumulator so the
-        # evidence_refs attributed to check 3 are ONLY the SCPs it
-        # evaluated, not a contaminated mix of SCPs and boundaries.
-        check_3_constraint_refs: set[str] = set()
-        check_3_state, check_3_reason, check_3_blockers = self._check_scp_blockers(
-            facts,
-            witness_edge,
-            check_3_constraint_refs,
-            edge_constraint_refs,
+        # ---- Check 3: target_bucket_collected
+        # Dangling bucket nodes are materialized from policy references
+        # when collection did not directly return the resource. Preserve
+        # the signal but demote to inconclusive rather than claiming a
+        # validated takeover against an uncollected bucket.
+        is_dangling_bucket = bool(bucket.properties.get("is_dangling_reference", False))
+        check_3_state = CheckState.UNKNOWN if is_dangling_bucket else CheckState.PASS
+        check_3_reason = (
+            "target bucket was referenced by policy but not directly collected"
+            if is_dangling_bucket
+            else "target bucket was directly collected"
         )
-        blockers.extend(check_3_blockers)
         check_results.append(
             Check(
-                name="no_scp_blocks_put_bucket_policy",
-                description=("No SCP blocks s3:PutBucketPolicy on this edge with complete governance confidence"),
-                state=check_3_state,
-                evidence_refs=(
-                    tuple(sorted(check_3_constraint_refs)) if check_3_constraint_refs else (witness_edge.edge_id,)
+                name="target_bucket_collected",
+                description=(
+                    "Target S3 bucket was directly collected, not only materialized from a dangling policy reference"
                 ),
+                state=check_3_state,
+                evidence_refs=(witness_edge.edge_id,),
                 reason=check_3_reason,
             )
         )
         trace.append(
             TraceEntry(
                 step=3,
-                action="check_no_scp_blocks_put_bucket_policy",
-                inputs=(witness_edge.edge_id,),
+                action="check_target_bucket_collected",
+                inputs=(bucket.provider_id,),
                 result=check_3_state.value.upper(),
                 reason=check_3_reason,
             )
         )
-        constraint_refs.update(check_3_constraint_refs)
 
-        # ---- Check 4: no_boundary_blocks_put_bucket_policy
+        # ---- Check 4: no_scp_blocks_put_bucket_policy
+        # Each check gets its own constraint_refs accumulator so the
+        # evidence_refs attributed to this check are ONLY the SCPs it
+        # evaluated, not a contaminated mix of SCPs and boundaries.
         check_4_constraint_refs: set[str] = set()
-        check_4_state, check_4_reason, check_4_blockers = self._check_boundary_blockers(
+        check_4_state, check_4_reason, check_4_blockers = self._check_scp_blockers(
             facts,
             witness_edge,
             check_4_constraint_refs,
@@ -274,8 +276,8 @@ class S3BucketTakeoverReasoner:
         blockers.extend(check_4_blockers)
         check_results.append(
             Check(
-                name="no_boundary_blocks_put_bucket_policy",
-                description=("No permission boundary blocks s3:PutBucketPolicy on this edge"),
+                name="no_scp_blocks_put_bucket_policy",
+                description=("No SCP blocks s3:PutBucketPolicy on this edge with complete governance confidence"),
                 state=check_4_state,
                 evidence_refs=(
                     tuple(sorted(check_4_constraint_refs)) if check_4_constraint_refs else (witness_edge.edge_id,)
@@ -286,7 +288,7 @@ class S3BucketTakeoverReasoner:
         trace.append(
             TraceEntry(
                 step=4,
-                action="check_no_boundary_blocks_put_bucket_policy",
+                action="check_no_scp_blocks_put_bucket_policy",
                 inputs=(witness_edge.edge_id,),
                 result=check_4_state.value.upper(),
                 reason=check_4_reason,
@@ -294,7 +296,38 @@ class S3BucketTakeoverReasoner:
         )
         constraint_refs.update(check_4_constraint_refs)
 
-        # ---- Check 5: principal_is_actionable
+        # ---- Check 5: no_boundary_blocks_put_bucket_policy
+        check_5_constraint_refs: set[str] = set()
+        check_5_state, check_5_reason, check_5_blockers = self._check_boundary_blockers(
+            facts,
+            witness_edge,
+            check_5_constraint_refs,
+            edge_constraint_refs,
+        )
+        blockers.extend(check_5_blockers)
+        check_results.append(
+            Check(
+                name="no_boundary_blocks_put_bucket_policy",
+                description=("No permission boundary blocks s3:PutBucketPolicy on this edge"),
+                state=check_5_state,
+                evidence_refs=(
+                    tuple(sorted(check_5_constraint_refs)) if check_5_constraint_refs else (witness_edge.edge_id,)
+                ),
+                reason=check_5_reason,
+            )
+        )
+        trace.append(
+            TraceEntry(
+                step=5,
+                action="check_no_boundary_blocks_put_bucket_policy",
+                inputs=(witness_edge.edge_id,),
+                result=check_5_state.value.upper(),
+                reason=check_5_reason,
+            )
+        )
+        constraint_refs.update(check_5_constraint_refs)
+
+        # ---- Check 6: principal_is_actionable
         # Filter out service principals and root. Service principals
         # (*.amazonaws.com) represent infrastructure, not attacker-
         # controlled entities. Root accounts are always "admin" and
@@ -316,7 +349,7 @@ class S3BucketTakeoverReasoner:
         )
         trace.append(
             TraceEntry(
-                step=5,
+                step=6,
                 action="check_principal_is_actionable",
                 inputs=(principal.provider_id,),
                 result="PASS",

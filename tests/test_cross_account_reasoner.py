@@ -21,6 +21,9 @@ from typing import Any
 
 from iamscope.constants import (
     ACTION_CLASS_STS_ASSUME_ROLE,
+    CONSTRAINT_TYPE_PERMISSION_BOUNDARY,
+    CONSTRAINT_TYPE_SCP,
+    CONSTRAINT_TYPE_TRUST_CONDITION,
     NAKED_BROAD,
     NAKED_CONDITIONED,
     NAKED_CRITICAL,
@@ -41,7 +44,7 @@ from iamscope.constants import (
     SEVERITY_MEDIUM,
     VALIDATED_STATE_DENIED,
 )
-from iamscope.models import Edge, EdgeConstraint, Node
+from iamscope.models import Constraint, Edge, EdgeConstraint, Node
 from iamscope.reasoner import (
     CheckState,
     CrossAccountTrustReasoner,
@@ -233,17 +236,43 @@ def _edge_constraint(
     )
 
 
+def _constraint(
+    *,
+    constraint_id: str,
+    constraint_type: str,
+    parse_status: str = "complete",
+) -> Constraint:
+    return Constraint(
+        provider=PROVIDER_AWS,
+        constraint_type=constraint_type,
+        scope_type="OU",
+        scope_id="ou-prod-12345",
+        policy_id=constraint_id,
+        statement_id=constraint_id,
+        region=REGION_GLOBAL,
+        properties={
+            "deny_actions": ["sts:AssumeRole"],
+            "deny_not_actions": [],
+            "exception_principal_patterns": [],
+            "parse_status": parse_status,
+            "policy_name": constraint_id,
+            "resource_patterns": ["*"],
+        },
+    )
+
+
 def _make_facts(
     *,
     nodes: tuple[Node, ...],
     edges: tuple[Edge, ...],
+    constraints: tuple[Constraint, ...] = (),
     edge_constraints: tuple[EdgeConstraint, ...] = (),
     scenario_hash: str = "deadbeef" * 8,
 ) -> FactGraph:
     return FactGraph(
         nodes=nodes,
         edges=edges,
-        constraints=(),
+        constraints=constraints,
         edge_constraints=edge_constraints,
         scenario_hash=scenario_hash,
         edge_budget_exhausted=False,
@@ -393,7 +422,10 @@ class TestFixtureACriticalNakedWildcardPrincipal:
 class TestFixtureBBroadNakedBlockedBySCP:
     """SCP with complete confidence blocks the trust → blocked/info."""
 
-    _SCP_CONSTRAINT_ID = "scp_constraint_xyz"
+    _SCP_CONSTRAINT_ID = _constraint(
+        constraint_id="scp_constraint_xyz",
+        constraint_type=CONSTRAINT_TYPE_SCP,
+    ).constraint_id
 
     def _build(self) -> FactGraph:
         target = _target_role_node()
@@ -404,9 +436,13 @@ class TestFixtureBBroadNakedBlockedBySCP:
             naked_trust=NAKED_BROAD,
             cross_account=True,
         )
+        scp = _constraint(
+            constraint_id="scp_constraint_xyz",
+            constraint_type=CONSTRAINT_TYPE_SCP,
+        )
         ec = _edge_constraint(
             edge_id=edge.edge_id,
-            constraint_id=self._SCP_CONSTRAINT_ID,
+            constraint_id=scp.constraint_id,
             governance_confidence="complete",
             likely_blocking=True,
             binding_reason="SCP DenyAssumeRole at OU ou-prod",
@@ -414,6 +450,7 @@ class TestFixtureBBroadNakedBlockedBySCP:
         return _make_facts(
             nodes=(target, external),
             edges=(edge,),
+            constraints=(scp,),
             edge_constraints=(ec,),
         )
 
@@ -434,6 +471,59 @@ class TestFixtureBBroadNakedBlockedBySCP:
     def test_constraint_id_in_evidence(self) -> None:
         f = CrossAccountTrustReasoner().run(self._build())[0]
         assert self._SCP_CONSTRAINT_ID in f.evidence.constraint_refs
+
+
+class TestTrustEdgeBindingTypeFiltering:
+    """Only parent constraints typed as SCP can affect the SCP trust-edge check."""
+
+    def _build_with_binding_type(self, constraint_type: str) -> FactGraph:
+        target = _target_role_node()
+        external = _account_root_node(_EXTERNAL_ACCOUNT)
+        edge = _trust_edge(
+            src=external,
+            dst=target,
+            naked_trust=NAKED_BROAD,
+            cross_account=True,
+        )
+        constraint = _constraint(
+            constraint_id=f"{constraint_type.lower()}_constraint_xyz",
+            constraint_type=constraint_type,
+        )
+        binding = _edge_constraint(
+            edge_id=edge.edge_id,
+            constraint_id=constraint.constraint_id,
+            governance_confidence="complete",
+            likely_blocking=True,
+            binding_reason=f"{constraint_type} binding on trust edge",
+        )
+        return _make_facts(
+            nodes=(target, external),
+            edges=(edge,),
+            constraints=(constraint,),
+            edge_constraints=(binding,),
+        )
+
+    def test_permission_boundary_binding_does_not_create_scp_blocker(self) -> None:
+        finding = CrossAccountTrustReasoner().run(self._build_with_binding_type(CONSTRAINT_TYPE_PERMISSION_BOUNDARY))[0]
+        check_4 = next(c for c in finding.required_checks if c.name == "no_scp_blocks_sts_assumerole")
+        assert finding.verdict is Verdict.VALIDATED
+        assert check_4.state is CheckState.PASS
+        assert not any(blocker.kind == "scp" for blocker in finding.blockers_observed)
+
+    def test_trust_condition_binding_does_not_create_scp_unknown(self) -> None:
+        finding = CrossAccountTrustReasoner().run(self._build_with_binding_type(CONSTRAINT_TYPE_TRUST_CONDITION))[0]
+        check_4 = next(c for c in finding.required_checks if c.name == "no_scp_blocks_sts_assumerole")
+        assert finding.verdict is Verdict.VALIDATED
+        assert check_4.state is CheckState.PASS
+        assert not any(blocker.kind == "scp" for blocker in finding.blockers_observed)
+
+    def test_actual_scp_binding_still_blocks(self) -> None:
+        finding = CrossAccountTrustReasoner().run(self._build_with_binding_type(CONSTRAINT_TYPE_SCP))[0]
+        check_4 = next(c for c in finding.required_checks if c.name == "no_scp_blocks_sts_assumerole")
+        assert finding.verdict is Verdict.BLOCKED
+        assert finding.severity == SEVERITY_INFO
+        assert check_4.state is CheckState.FAIL
+        assert any(blocker.kind == "scp" for blocker in finding.blockers_observed)
 
 
 # ---------------------------------------------------------------------------
@@ -516,9 +606,14 @@ class TestFixtureESCPPartialForcesInconclusive:
             naked_trust=NAKED_CRITICAL,
             cross_account=True,
         )
+        scp = _constraint(
+            constraint_id="scp_partial_xyz",
+            constraint_type=CONSTRAINT_TYPE_SCP,
+            parse_status="partial",
+        )
         ec = _edge_constraint(
             edge_id=edge.edge_id,
-            constraint_id="scp_partial_xyz",
+            constraint_id=scp.constraint_id,
             governance_confidence="partial",
             likely_blocking=False,
             binding_reason="SCP parse partial — could not evaluate fully",
@@ -526,6 +621,7 @@ class TestFixtureESCPPartialForcesInconclusive:
         return _make_facts(
             nodes=(target, external),
             edges=(edge,),
+            constraints=(scp,),
             edge_constraints=(ec,),
         )
 
@@ -587,9 +683,14 @@ class TestFixtureGUnsupportedSCPForcesInconclusive:
             naked_trust=NAKED_CRITICAL,
             cross_account=True,
         )
+        scp = _constraint(
+            constraint_id="scp_unsupported_xyz",
+            constraint_type=CONSTRAINT_TYPE_SCP,
+            parse_status="unsupported",
+        )
         ec = _edge_constraint(
             edge_id=edge.edge_id,
-            constraint_id="scp_unsupported_xyz",
+            constraint_id=scp.constraint_id,
             governance_confidence="needs_review",
             likely_blocking=False,
             binding_reason="SCP uses unsupported syntax — manual review required",
@@ -597,6 +698,7 @@ class TestFixtureGUnsupportedSCPForcesInconclusive:
         return _make_facts(
             nodes=(target, external),
             edges=(edge,),
+            constraints=(scp,),
             edge_constraints=(ec,),
         )
 
