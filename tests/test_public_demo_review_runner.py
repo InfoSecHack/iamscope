@@ -47,6 +47,12 @@ def test_runner_writes_summary_and_manifest(tmp_path: Path) -> None:
     assert payload["aws_calls_made"] == 0
     assert "summary.md" in payload["output_files_generated"]
     assert "manifest.json" in payload["output_files_generated"]
+    assert "passrole-lambda-replay-subset/replay-subset-summary.md" in payload["output_files_generated"]
+    assert "passrole-lambda-replay-subset/replay-subset-manifest.json" in payload["output_files_generated"]
+    assert "passrole-lambda-replay-subset/generated-findings.json" in payload["output_files_generated"]
+    assert (tmp_path / "passrole-lambda-replay-subset" / "replay-subset-summary.md").is_file()
+    assert (tmp_path / "passrole-lambda-replay-subset" / "replay-subset-manifest.json").is_file()
+    assert (tmp_path / "passrole-lambda-replay-subset" / "generated-findings.json").is_file()
 
 
 def test_summary_includes_claim_boundary_passrole_summaries_and_non_claims(tmp_path: Path) -> None:
@@ -83,6 +89,24 @@ def test_summary_includes_complex_synthetic_benchmark_section(tmp_path: Path) ->
     assert "Generated/replayed by IAMScope: false" in summary
     assert "This is not generated/replayed by IAMScope." in summary
     assert "This is not a composite score or pass/fail benchmark label." in summary
+
+
+def test_summary_includes_narrow_passrole_lambda_replay_subset(tmp_path: Path) -> None:
+    run_public_demo_review(tmp_path, check_runner=_passing_checks)
+    summary = (tmp_path / "summary.md").read_text()
+
+    assert "## Narrow PassRole-to-Lambda replay subset" in summary
+    assert "replayed_selected_passrole_lambda_subset" in summary
+    assert "input contract status: `replay_ready`" in summary
+    assert "safe replay attempted: `true`" in summary
+    assert "reasoners attempted: `passrole_lambda`" in summary
+    assert "matched rows: 1" in summary
+    assert "missing rows: 0" in summary
+    assert "extra rows: 0" in summary
+    assert "static-only rows: 1" in summary
+    assert "live AWS used: `false`" in summary
+    assert "AWS calls made: `0`" in summary
+    assert "This does not prove replay-equivalence for the full complex synthetic benchmark." in summary
 
 
 def test_manifest_includes_supported_claims_non_claims_and_checks(tmp_path: Path) -> None:
@@ -132,6 +156,27 @@ def test_manifest_includes_complex_synthetic_benchmark_counts(tmp_path: Path) ->
     assert complex_summary["not_pass_fail_benchmark_label"] is True
 
 
+def test_manifest_includes_narrow_passrole_lambda_replay_subset(tmp_path: Path) -> None:
+    manifest = run_public_demo_review(tmp_path, check_runner=_passing_checks)
+    subset = manifest["passrole_lambda_replay_subset"]
+
+    assert subset["replay_subset_status"] == "replayed_selected_passrole_lambda_subset"
+    assert subset["input_contract_status"] == "replay_ready"
+    assert subset["safe_replay_attempted"] is True
+    assert subset["reasoners_attempted"] == ["passrole_lambda"]
+    assert subset["matched_row_count"] == 1
+    assert subset["missing_row_count"] == 0
+    assert subset["extra_row_count"] == 0
+    assert subset["static_only_row_count"] == 1
+    assert subset["generated_findings_output"] == "passrole-lambda-replay-subset/generated-findings.json"
+    assert subset["local_only"] is True
+    assert subset["live_aws_used"] is False
+    assert subset["aws_calls_made"] == 0
+    assert "no full complex benchmark replay-equivalence" in subset["non_claims"]
+    assert "no composite benchmark score" in subset["non_claims"]
+    assert "no pass/fail benchmark label" in subset["non_claims"]
+
+
 def test_runner_fails_if_account_scan_produces_unexpected_output(tmp_path: Path) -> None:
     def checks(_: Path) -> list[CheckResult]:
         return [
@@ -174,9 +219,17 @@ def test_runner_does_not_require_aws_credentials(monkeypatch: pytest.MonkeyPatch
 
 
 def test_generated_outputs_are_not_committed() -> None:
-    forbidden = {"summary.md", "manifest.json", "path-overcounting-uncertainty-groups.json"}
+    forbidden = {
+        "summary.md",
+        "manifest.json",
+        "path-overcounting-uncertainty-groups.json",
+        "replay-subset-summary.md",
+        "replay-subset-manifest.json",
+        "generated-findings.json",
+    }
     fixture_dirs = [
         REPO_ROOT / "tests" / "fixtures" / "demo" / "path_overcounting_shared_uncertainty",
+        REPO_ROOT / "tests" / "fixtures" / "demo" / "complex_replay_subset_passrole_lambda",
         REPO_ROOT / "tests" / "fixtures" / "live_binding" / "passrole_lambda_selected_finding",
         REPO_ROOT / "tests" / "fixtures" / "live_binding" / "passrole_lambda_denied_missing_passrole",
     ]
