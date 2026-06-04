@@ -12,6 +12,14 @@ from typing import Any
 
 
 SANDBOX_PREFIX = "iamscope-prodlike-v1-"
+ORACLE_I001_BOUNDARY_TRIAGE_NOTE = (
+    "emitted blocked due complete-confidence boundary evidence; likely oracle/fixture expectation conflict, "
+    "not automatically an IAMScope false positive"
+)
+UNCERTAINTY_PROBE_EXTRA_TRIAGE_NOTE = (
+    "extra blocked path induced by uncertainty-probe boundary/policy shape; "
+    "not part of deterministic oracle mapping"
+)
 
 NON_CLAIMS = [
     "not broad IAMScope correctness",
@@ -169,6 +177,18 @@ def _mapping_key(spec: dict[str, str]) -> tuple[str, str, str]:
     return (spec["pattern_id"], spec["source_name"], spec["target_name"])
 
 
+def _oracle_mismatch_triage_note(row_id: str, expected_verdict: str, emitted_verdicts: list[str]) -> str | None:
+    if row_id == "oracle-i-001" and expected_verdict == "inconclusive" and "blocked" in emitted_verdicts:
+        return ORACLE_I001_BOUNDARY_TRIAGE_NOTE
+    return None
+
+
+def _unmapped_sandbox_extra_triage_note(finding: FindingView) -> str | None:
+    if finding.source_name == f"{SANDBOX_PREFIX}uncertainty-probe" and finding.verdict == "blocked":
+        return UNCERTAINTY_PROBE_EXTRA_TRIAGE_NOTE
+    return None
+
+
 def compare(oracle_payload: Any, findings_payload: Any) -> dict[str, Any]:
     oracle_rows = _oracle_rows(oracle_payload)
     raw_findings = _findings(findings_payload)
@@ -249,23 +269,25 @@ def compare(oracle_payload: Any, findings_payload: Any) -> dict[str, Any]:
         emitted_verdicts = sorted({candidate.verdict for candidate in candidates})
         expected_verdict = mapping["expected_verdict"]
         category = "oracle_match" if expected_verdict in emitted_verdicts else "oracle_mismatch"
-        rows.append(
-            {
-                **base,
-                "comparison_category": category,
-                "expected_verdict": expected_verdict,
-                "emitted_verdict": emitted_verdicts[0] if len(emitted_verdicts) == 1 else emitted_verdicts,
-                "pattern_id": mapping["pattern_id"],
-                "source_name": mapping["source_name"],
-                "target_name": mapping["target_name"],
-                "finding_ids": [candidate.finding_id for candidate in candidates],
-                "reason": (
-                    "emitted verdict matched expected oracle category"
-                    if category == "oracle_match"
-                    else "emitted verdict differed from expected oracle category"
-                ),
-            }
-        )
+        row = {
+            **base,
+            "comparison_category": category,
+            "expected_verdict": expected_verdict,
+            "emitted_verdict": emitted_verdicts[0] if len(emitted_verdicts) == 1 else emitted_verdicts,
+            "pattern_id": mapping["pattern_id"],
+            "source_name": mapping["source_name"],
+            "target_name": mapping["target_name"],
+            "finding_ids": [candidate.finding_id for candidate in candidates],
+            "reason": (
+                "emitted verdict matched expected oracle category"
+                if category == "oracle_match"
+                else "emitted verdict differed from expected oracle category"
+            ),
+        }
+        triage_note = _oracle_mismatch_triage_note(row_id, expected_verdict, emitted_verdicts)
+        if triage_note is not None:
+            row["triage_note"] = triage_note
+        rows.append(row)
 
     environmental_extras: list[dict[str, Any]] = []
     unmapped_sandbox_extras: list[dict[str, Any]] = []
@@ -285,17 +307,19 @@ def compare(oracle_payload: Any, findings_payload: Any) -> dict[str, Any]:
                 }
             )
         elif finding.source_has_sandbox_prefix and finding.mapping_key not in supported_mapping_keys:
-            unmapped_sandbox_extras.append(
-                {
-                    "comparison_category": "unmapped_sandbox_extra",
-                    "extra_type": "sandbox_source_has_no_deterministic_oracle_mapping",
-                    "finding_id": finding.finding_id,
-                    "pattern_id": finding.pattern_id,
-                    "verdict": finding.verdict,
-                    "source_name": finding.source_name,
-                    "target_name": finding.target_name,
-                }
-            )
+            extra = {
+                "comparison_category": "unmapped_sandbox_extra",
+                "extra_type": "sandbox_source_has_no_deterministic_oracle_mapping",
+                "finding_id": finding.finding_id,
+                "pattern_id": finding.pattern_id,
+                "verdict": finding.verdict,
+                "source_name": finding.source_name,
+                "target_name": finding.target_name,
+            }
+            triage_note = _unmapped_sandbox_extra_triage_note(finding)
+            if triage_note is not None:
+                extra["triage_note"] = triage_note
+            unmapped_sandbox_extras.append(extra)
 
     comparison_category_counts = Counter(row["comparison_category"] for row in rows)
     comparison_category_counts.update(extra["comparison_category"] for extra in environmental_extras)
@@ -385,6 +409,7 @@ def render_summary(result: dict[str, Any]) -> str:
             "Oracle Mismatches",
             [
                 f"{row['oracle_row_id']}: expected {row.get('expected_verdict')}, emitted {row.get('emitted_verdict')} for {row.get('source_name')} -> {row.get('target_name')}"
+                + (f"; triage: {row['triage_note']}" if row.get("triage_note") else "")
                 for row in rows
                 if row["comparison_category"] == "oracle_mismatch"
             ],
@@ -424,6 +449,7 @@ def render_summary(result: dict[str, Any]) -> str:
             "Unmapped Sandbox Extras",
             [
                 f"{extra['finding_id']}: {extra['extra_type']} {extra['pattern_id']} {extra['verdict']} {extra['source_name']} -> {extra['target_name']}"
+                + (f"; triage: {extra['triage_note']}" if extra.get("triage_note") else "")
                 for extra in result["unmapped_sandbox_extras"]
             ],
         )

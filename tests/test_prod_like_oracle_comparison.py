@@ -139,6 +139,10 @@ def test_comparison_classifies_matches_mismatch_missing_unsupported_and_not_comp
     assert _row_by_id(result, "oracle-b-001")["comparison_category"] == "oracle_match"
     assert _row_by_id(result, "oracle-i-001")["comparison_category"] == "oracle_mismatch"
     assert _row_by_id(result, "oracle-i-001")["emitted_verdict"] == "blocked"
+    assert _row_by_id(result, "oracle-i-001")["triage_note"] == (
+        "emitted blocked due complete-confidence boundary evidence; likely oracle/fixture expectation conflict, "
+        "not automatically an IAMScope false positive"
+    )
     assert _row_by_id(result, "oracle-v-006")["comparison_category"] == "oracle_missing"
     assert _row_by_id(result, "oracle-v-003")["comparison_category"] == "not_currently_live_comparable"
     assert _row_by_id(result, "oracle-u-001")["comparison_category"] == "unsupported_static_only"
@@ -175,6 +179,10 @@ def test_environmental_extra_uses_sanitized_source_and_target_names_only() -> No
     assert unmapped[0]["extra_type"] == "sandbox_source_has_no_deterministic_oracle_mapping"
     assert unmapped[0]["source_name"] == "iamscope-prodlike-v1-uncertainty-probe"
     assert unmapped[0]["target_name"] == "iamscope-prodlike-v1-service-mediated-target"
+    assert unmapped[0]["triage_note"] == (
+        "extra blocked path induced by uncertainty-probe boundary/policy shape; "
+        "not part of deterministic oracle mapping"
+    )
 
 
 def test_output_json_contains_no_raw_account_ids_or_iam_arns(tmp_path: Path) -> None:
@@ -198,6 +206,8 @@ def test_summary_contains_non_claims_without_machine_score_or_pass_fail_fields(t
 
     assert "no composite benchmark score" in summary
     assert "no pass/fail benchmark label" in summary
+    assert "likely oracle/fixture expectation conflict" in summary
+    assert "extra blocked path induced by uncertainty-probe boundary/policy shape" in summary
     assert "composite_score" not in summary
     assert "benchmark_passed" not in summary
     assert "pass_fail" not in summary
