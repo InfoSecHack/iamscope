@@ -1,0 +1,146 @@
+{
+  "local_only_boundary": [
+    "static fixture support",
+    "no live AWS",
+    "no generated/replayed IAMScope output",
+    "no broad correctness claim"
+  ],
+  "metadata": {
+    "aws_calls_made": 0,
+    "description": "Static descriptive local oracle support file, not replay-ready IAMScope output.",
+    "fixture_id": "prod_like_aws_accuracy_oracle_v1",
+    "generated_or_replayed_by_iamscope": false,
+    "generation_mode": "local_prod_like_oracle_fixture",
+    "live_aws_used": false,
+    "local_only": true,
+    "non_claims": [
+      "not broad IAMScope correctness",
+      "not production readiness",
+      "not real production AWS",
+      "not exploitability proof",
+      "not downstream authorization proof",
+      "not Lambda invocation behavior",
+      "not generic Deny correctness",
+      "not resource-policy Deny support except unsupported/static-only row labeling",
+      "not SCP Deny support beyond selected benchmark behavior",
+      "no composite benchmark score",
+      "no pass/fail benchmark label"
+    ],
+    "phase": "phase_2_local_prod_like_oracle_fixture",
+    "phase5_status": "not_run_yet",
+    "reasoners_run": [],
+    "schema_version": "prod_like_aws_accuracy_oracle_v1.scenario_support.v1",
+    "source_tool": "static_fixture_authoring"
+  },
+  "oracle_row_refs": [
+    "oracle-v-001",
+    "oracle-v-002",
+    "oracle-v-003",
+    "oracle-v-004",
+    "oracle-v-005",
+    "oracle-v-006",
+    "oracle-b-001",
+    "oracle-b-002",
+    "oracle-b-003",
+    "oracle-b-004",
+    "oracle-b-005",
+    "oracle-p-001",
+    "oracle-p-002",
+    "oracle-p-003",
+    "oracle-p-004",
+    "oracle-i-001",
+    "oracle-i-002",
+    "oracle-i-003",
+    "oracle-i-004",
+    "oracle-i-005",
+    "oracle-u-001",
+    "oracle-u-002",
+    "oracle-u-003",
+    "oracle-u-004"
+  ],
+  "principals": [
+    {
+      "alias": "principal-audit-a",
+      "synthetic_account_alias": "synthetic-account-a"
+    },
+    {
+      "alias": "principal-boundary-chain",
+      "synthetic_account_alias": "synthetic-account-a"
+    },
+    {
+      "alias": "principal-boundary-lambda",
+      "synthetic_account_alias": "synthetic-account-a"
+    },
+    {
+      "alias": "principal-build",
+      "synthetic_account_alias": "synthetic-account-a"
+    },
+    {
+      "alias": "principal-ci-deployer",
+      "synthetic_account_alias": "synthetic-account-a"
+    },
+    {
+      "alias": "principal-condition-unknown",
+      "synthetic_account_alias": "synthetic-account-a"
+    },
+    {
+      "alias": "principal-cross-condition-a",
+      "synthetic_account_alias": "synthetic-account-a"
+    },
+    {
+      "alias": "principal-deny-service",
+      "synthetic_account_alias": "synthetic-account-a"
+    }
+  ],
+  "roles": [
+    {
+      "alias": "role-lambda-exec-scoped",
+      "synthetic_account_alias": "synthetic-account-a"
+    },
+    {
+      "alias": "role-ecs-task-scoped",
+      "synthetic_account_alias": "synthetic-account-a"
+    },
+    {
+      "alias": "role-readonly-ops",
+      "synthetic_account_alias": "synthetic-account-a"
+    },
+    {
+      "alias": "role-prod-observer",
+      "synthetic_account_alias": "synthetic-account-a"
+    },
+    {
+      "alias": "role-audit-b",
+      "synthetic_account_alias": "synthetic-account-a"
+    },
+    {
+      "alias": "role-service-mediated-target",
+      "synthetic_account_alias": "synthetic-account-a"
+    },
+    {
+      "alias": "role-lambda-exec-boundary",
+      "synthetic_account_alias": "synthetic-account-a"
+    },
+    {
+      "alias": "role-chain-target",
+      "synthetic_account_alias": "synthetic-account-a"
+    },
+    {
+      "alias": "role-scp-passrole-target",
+      "synthetic_account_alias": "synthetic-account-b"
+    },
+    {
+      "alias": "role-denied-assume",
+      "synthetic_account_alias": "synthetic-account-b"
+    }
+  ],
+  "synthetic_account_id_for_arn_like_values": "000000000000",
+  "synthetic_accounts": [
+    {
+      "account_alias": "synthetic-account-a"
+    },
+    {
+      "account_alias": "synthetic-account-b"
+    }
+  ]
+}

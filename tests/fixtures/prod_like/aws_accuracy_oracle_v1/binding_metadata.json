@@ -1,0 +1,175 @@
+{
+  "binding_notes": [
+    {
+      "binding_kind": "validated",
+      "oracle_row_id": "oracle-v-001",
+      "reason": "None",
+      "static_fixture_support_only": true
+    },
+    {
+      "binding_kind": "validated",
+      "oracle_row_id": "oracle-v-002",
+      "reason": "None",
+      "static_fixture_support_only": true
+    },
+    {
+      "binding_kind": "validated",
+      "oracle_row_id": "oracle-v-003",
+      "reason": "None",
+      "static_fixture_support_only": true
+    },
+    {
+      "binding_kind": "validated",
+      "oracle_row_id": "oracle-v-004",
+      "reason": "None",
+      "static_fixture_support_only": true
+    },
+    {
+      "binding_kind": "validated",
+      "oracle_row_id": "oracle-v-005",
+      "reason": "None",
+      "static_fixture_support_only": true
+    },
+    {
+      "binding_kind": "validated",
+      "oracle_row_id": "oracle-v-006",
+      "reason": "None",
+      "static_fixture_support_only": true
+    },
+    {
+      "binding_kind": "blocked",
+      "oracle_row_id": "oracle-b-001",
+      "reason": "Permission boundary blocks `iam:PassRole` or `lambda:CreateFunction`",
+      "static_fixture_support_only": true
+    },
+    {
+      "binding_kind": "blocked",
+      "oracle_row_id": "oracle-b-002",
+      "reason": "Permission boundary blocks second-hop action",
+      "static_fixture_support_only": true
+    },
+    {
+      "binding_kind": "blocked",
+      "oracle_row_id": "oracle-b-003",
+      "reason": "SCP-like guardrail blocks `iam:PassRole`",
+      "static_fixture_support_only": true
+    },
+    {
+      "binding_kind": "blocked",
+      "oracle_row_id": "oracle-b-004",
+      "reason": "Explicit identity Deny suppresses `sts:AssumeRole`",
+      "static_fixture_support_only": true
+    },
+    {
+      "binding_kind": "blocked",
+      "oracle_row_id": "oracle-b-005",
+      "reason": "Explicit Deny blocks service action",
+      "static_fixture_support_only": true
+    },
+    {
+      "binding_kind": "precondition_only",
+      "oracle_row_id": "oracle-p-001",
+      "reason": "Missing `iam:PassRole`",
+      "static_fixture_support_only": true
+    },
+    {
+      "binding_kind": "precondition_only",
+      "oracle_row_id": "oracle-p-002",
+      "reason": "Missing target service trust",
+      "static_fixture_support_only": true
+    },
+    {
+      "binding_kind": "precondition_only",
+      "oracle_row_id": "oracle-p-003",
+      "reason": "Missing service action permission",
+      "static_fixture_support_only": true
+    },
+    {
+      "binding_kind": "precondition_only",
+      "oracle_row_id": "oracle-p-004",
+      "reason": "Missing `sts:AssumeRole` permission",
+      "static_fixture_support_only": true
+    },
+    {
+      "binding_kind": "inconclusive",
+      "oracle_row_id": "oracle-i-001",
+      "reason": "Target resource scope cannot be proven specific enough",
+      "static_fixture_support_only": true
+    },
+    {
+      "binding_kind": "inconclusive",
+      "oracle_row_id": "oracle-i-002",
+      "reason": "Condition key context unavailable",
+      "static_fixture_support_only": true
+    },
+    {
+      "binding_kind": "inconclusive",
+      "oracle_row_id": "oracle-i-003",
+      "reason": "Runtime/session context missing",
+      "static_fixture_support_only": true
+    },
+    {
+      "binding_kind": "inconclusive",
+      "oracle_row_id": "oracle-i-004",
+      "reason": "Account/OU guardrail scope unknown",
+      "static_fixture_support_only": true
+    },
+    {
+      "binding_kind": "inconclusive",
+      "oracle_row_id": "oracle-i-005",
+      "reason": "Trust condition context unknown",
+      "static_fixture_support_only": true
+    },
+    {
+      "binding_kind": "unsupported",
+      "oracle_row_id": "oracle-u-001",
+      "reason": "Generic resource-policy Deny outside v1 support",
+      "static_fixture_support_only": true
+    },
+    {
+      "binding_kind": "unsupported",
+      "oracle_row_id": "oracle-u-002",
+      "reason": "Condition semantics outside v1 support",
+      "static_fixture_support_only": true
+    },
+    {
+      "binding_kind": "unsupported",
+      "oracle_row_id": "oracle-u-003",
+      "reason": "Lambda invocation behavior outside v1 support",
+      "static_fixture_support_only": true
+    },
+    {
+      "binding_kind": "unsupported",
+      "oracle_row_id": "oracle-u-004",
+      "reason": "Exploitability/downstream authorization outside v1 support",
+      "static_fixture_support_only": true
+    }
+  ],
+  "metadata": {
+    "aws_calls_made": 0,
+    "description": "Static descriptive binding notes for the local oracle, not an IAMScope replay sidecar.",
+    "fixture_id": "prod_like_aws_accuracy_oracle_v1",
+    "generated_or_replayed_by_iamscope": false,
+    "generation_mode": "local_prod_like_oracle_fixture",
+    "live_aws_used": false,
+    "local_only": true,
+    "non_claims": [
+      "not broad IAMScope correctness",
+      "not production readiness",
+      "not real production AWS",
+      "not exploitability proof",
+      "not downstream authorization proof",
+      "not Lambda invocation behavior",
+      "not generic Deny correctness",
+      "not resource-policy Deny support except unsupported/static-only row labeling",
+      "not SCP Deny support beyond selected benchmark behavior",
+      "no composite benchmark score",
+      "no pass/fail benchmark label"
+    ],
+    "phase": "phase_2_local_prod_like_oracle_fixture",
+    "phase5_status": "not_run_yet",
+    "reasoners_run": [],
+    "schema_version": "prod_like_aws_accuracy_oracle_v1.binding_metadata_support.v1",
+    "source_tool": "static_fixture_authoring"
+  }
+}

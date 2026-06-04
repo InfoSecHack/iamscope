@@ -1,0 +1,296 @@
+{
+  "comparison_method": {
+    "benchmark_label_policy": "no pass/fail benchmark label",
+    "counts_by_category_allowed": true,
+    "score_policy": "no composite benchmark score"
+  },
+  "comparison_rows": [
+    {
+      "blocker_precondition_uncertainty_reason": "None",
+      "emitted_iamscope_category": "not_run_yet",
+      "evidence_used": [],
+      "expected_category": "validated",
+      "match_status": "phase5_not_run_yet",
+      "not_counted_as": [],
+      "oracle_row_id": "oracle-v-001",
+      "reviewer_note": "Mirrors the bounded service-mediated CreateFunction evidence shape without invoking Lambda."
+    },
+    {
+      "blocker_precondition_uncertainty_reason": "None",
+      "emitted_iamscope_category": "not_run_yet",
+      "evidence_used": [],
+      "expected_category": "validated",
+      "match_status": "phase5_not_run_yet",
+      "not_counted_as": [],
+      "oracle_row_id": "oracle-v-002",
+      "reviewer_note": "Keeps ECS as modeled service-mediated behavior, not runtime execution proof."
+    },
+    {
+      "blocker_precondition_uncertainty_reason": "None",
+      "emitted_iamscope_category": "not_run_yet",
+      "evidence_used": [],
+      "expected_category": "validated",
+      "match_status": "phase5_not_run_yet",
+      "not_counted_as": [],
+      "oracle_row_id": "oracle-v-003",
+      "reviewer_note": "Single-hop baseline."
+    },
+    {
+      "blocker_precondition_uncertainty_reason": "None",
+      "emitted_iamscope_category": "not_run_yet",
+      "evidence_used": [],
+      "expected_category": "validated",
+      "match_status": "phase5_not_run_yet",
+      "not_counted_as": [],
+      "oracle_row_id": "oracle-v-004",
+      "reviewer_note": "Bounded multi-hop case."
+    },
+    {
+      "blocker_precondition_uncertainty_reason": "None",
+      "emitted_iamscope_category": "not_run_yet",
+      "evidence_used": [],
+      "expected_category": "validated",
+      "match_status": "phase5_not_run_yet",
+      "not_counted_as": [],
+      "oracle_row_id": "oracle-v-005",
+      "reviewer_note": "Uses `synthetic-account-a` and `synthetic-account-b` aliases only."
+    },
+    {
+      "blocker_precondition_uncertainty_reason": "None",
+      "emitted_iamscope_category": "not_run_yet",
+      "evidence_used": [],
+      "expected_category": "validated",
+      "match_status": "phase5_not_run_yet",
+      "not_counted_as": [],
+      "oracle_row_id": "oracle-v-006",
+      "reviewer_note": "No downstream service action or invocation claim."
+    },
+    {
+      "blocker_precondition_uncertainty_reason": "Permission boundary blocks `iam:PassRole` or `lambda:CreateFunction`",
+      "emitted_iamscope_category": "not_run_yet",
+      "evidence_used": [],
+      "expected_category": "blocked",
+      "match_status": "phase5_not_run_yet",
+      "not_counted_as": [],
+      "oracle_row_id": "oracle-b-001",
+      "reviewer_note": "Boundary blocker should prevent validated promotion."
+    },
+    {
+      "blocker_precondition_uncertainty_reason": "Permission boundary blocks second-hop action",
+      "emitted_iamscope_category": "not_run_yet",
+      "evidence_used": [],
+      "expected_category": "blocked",
+      "match_status": "phase5_not_run_yet",
+      "not_counted_as": [],
+      "oracle_row_id": "oracle-b-002",
+      "reviewer_note": "Tests chain continuation blocker attribution."
+    },
+    {
+      "blocker_precondition_uncertainty_reason": "SCP-like guardrail blocks `iam:PassRole`",
+      "emitted_iamscope_category": "not_run_yet",
+      "evidence_used": [],
+      "expected_category": "blocked",
+      "match_status": "phase5_not_run_yet",
+      "not_counted_as": [],
+      "oracle_row_id": "oracle-b-003",
+      "reviewer_note": "Selected benchmark behavior only, not generic SCP Deny support."
+    },
+    {
+      "blocker_precondition_uncertainty_reason": "Explicit identity Deny suppresses `sts:AssumeRole`",
+      "emitted_iamscope_category": "not_run_yet",
+      "evidence_used": [],
+      "expected_category": "blocked",
+      "match_status": "phase5_not_run_yet",
+      "not_counted_as": [],
+      "oracle_row_id": "oracle-b-004",
+      "reviewer_note": "Static/report validation only unless future phase explicitly adds runtime proof."
+    },
+    {
+      "blocker_precondition_uncertainty_reason": "Explicit Deny blocks service action",
+      "emitted_iamscope_category": "not_run_yet",
+      "evidence_used": [],
+      "expected_category": "blocked",
+      "match_status": "phase5_not_run_yet",
+      "not_counted_as": [],
+      "oracle_row_id": "oracle-b-005",
+      "reviewer_note": "No generic Deny correctness claim."
+    },
+    {
+      "blocker_precondition_uncertainty_reason": "Missing `iam:PassRole`",
+      "emitted_iamscope_category": "not_run_yet",
+      "evidence_used": [],
+      "expected_category": "precondition_only",
+      "match_status": "phase5_not_run_yet",
+      "not_counted_as": [],
+      "oracle_row_id": "oracle-p-001",
+      "reviewer_note": "Aligns with denied controlled case expectation."
+    },
+    {
+      "blocker_precondition_uncertainty_reason": "Missing target service trust",
+      "emitted_iamscope_category": "not_run_yet",
+      "evidence_used": [],
+      "expected_category": "precondition_only",
+      "match_status": "phase5_not_run_yet",
+      "not_counted_as": [],
+      "oracle_row_id": "oracle-p-002",
+      "reviewer_note": "Target-first reasoners may emit no finding rather than precondition-only."
+    },
+    {
+      "blocker_precondition_uncertainty_reason": "Missing service action permission",
+      "emitted_iamscope_category": "not_run_yet",
+      "evidence_used": [],
+      "expected_category": "precondition_only",
+      "match_status": "phase5_not_run_yet",
+      "not_counted_as": [],
+      "oracle_row_id": "oracle-p-003",
+      "reviewer_note": "No live AWS call implied."
+    },
+    {
+      "blocker_precondition_uncertainty_reason": "Missing `sts:AssumeRole` permission",
+      "emitted_iamscope_category": "not_run_yet",
+      "evidence_used": [],
+      "expected_category": "precondition_only",
+      "match_status": "phase5_not_run_yet",
+      "not_counted_as": [],
+      "oracle_row_id": "oracle-p-004",
+      "reviewer_note": "Missing permission should not become a validated path."
+    },
+    {
+      "blocker_precondition_uncertainty_reason": "Target resource scope cannot be proven specific enough",
+      "emitted_iamscope_category": "not_run_yet",
+      "evidence_used": [],
+      "expected_category": "inconclusive",
+      "match_status": "phase5_not_run_yet",
+      "not_counted_as": [],
+      "oracle_row_id": "oracle-i-001",
+      "reviewer_note": "Keeps shared uncertainty visible."
+    },
+    {
+      "blocker_precondition_uncertainty_reason": "Condition key context unavailable",
+      "emitted_iamscope_category": "not_run_yet",
+      "evidence_used": [],
+      "expected_category": "inconclusive",
+      "match_status": "phase5_not_run_yet",
+      "not_counted_as": [],
+      "oracle_row_id": "oracle-i-002",
+      "reviewer_note": "Must not assume condition satisfaction."
+    },
+    {
+      "blocker_precondition_uncertainty_reason": "Runtime/session context missing",
+      "emitted_iamscope_category": "not_run_yet",
+      "evidence_used": [],
+      "expected_category": "inconclusive",
+      "match_status": "phase5_not_run_yet",
+      "not_counted_as": [],
+      "oracle_row_id": "oracle-i-003",
+      "reviewer_note": "Does not prove runtime authorization."
+    },
+    {
+      "blocker_precondition_uncertainty_reason": "Account/OU guardrail scope unknown",
+      "emitted_iamscope_category": "not_run_yet",
+      "evidence_used": [],
+      "expected_category": "inconclusive",
+      "match_status": "phase5_not_run_yet",
+      "not_counted_as": [],
+      "oracle_row_id": "oracle-i-004",
+      "reviewer_note": "Selected benchmark behavior only."
+    },
+    {
+      "blocker_precondition_uncertainty_reason": "Trust condition context unknown",
+      "emitted_iamscope_category": "not_run_yet",
+      "evidence_used": [],
+      "expected_category": "inconclusive",
+      "match_status": "phase5_not_run_yet",
+      "not_counted_as": [],
+      "oracle_row_id": "oracle-i-005",
+      "reviewer_note": "Uses sanitized account aliases only."
+    },
+    {
+      "blocker_precondition_uncertainty_reason": "Generic resource-policy Deny outside v1 support",
+      "emitted_iamscope_category": "not_run_yet",
+      "evidence_used": [],
+      "expected_category": "unsupported",
+      "match_status": "unsupported_behavior",
+      "not_counted_as": [
+        "false_positive",
+        "false_negative",
+        "extra_finding",
+        "missing_finding"
+      ],
+      "oracle_row_id": "oracle-u-001",
+      "reviewer_note": "Not counted as false positive or false negative."
+    },
+    {
+      "blocker_precondition_uncertainty_reason": "Condition semantics outside v1 support",
+      "emitted_iamscope_category": "not_run_yet",
+      "evidence_used": [],
+      "expected_category": "unsupported",
+      "match_status": "unsupported_behavior",
+      "not_counted_as": [
+        "false_positive",
+        "false_negative",
+        "extra_finding",
+        "missing_finding"
+      ],
+      "oracle_row_id": "oracle-u-002",
+      "reviewer_note": "Avoids overclaiming service-specific policy semantics."
+    },
+    {
+      "blocker_precondition_uncertainty_reason": "Lambda invocation behavior outside v1 support",
+      "emitted_iamscope_category": "not_run_yet",
+      "evidence_used": [],
+      "expected_category": "unsupported",
+      "match_status": "unsupported_behavior",
+      "not_counted_as": [
+        "false_positive",
+        "false_negative",
+        "extra_finding",
+        "missing_finding"
+      ],
+      "oracle_row_id": "oracle-u-003",
+      "reviewer_note": "No Lambda invocation behavior claim."
+    },
+    {
+      "blocker_precondition_uncertainty_reason": "Exploitability/downstream authorization outside v1 support",
+      "emitted_iamscope_category": "not_run_yet",
+      "evidence_used": [],
+      "expected_category": "unsupported",
+      "match_status": "unsupported_behavior",
+      "not_counted_as": [
+        "false_positive",
+        "false_negative",
+        "extra_finding",
+        "missing_finding"
+      ],
+      "oracle_row_id": "oracle-u-004",
+      "reviewer_note": "Explicit non-claim row."
+    }
+  ],
+  "metadata": {
+    "aws_calls_made": 0,
+    "emitted_iamscope_category_default": "not_run_yet",
+    "fixture_id": "prod_like_aws_accuracy_oracle_v1",
+    "generated_or_replayed_by_iamscope": false,
+    "generation_mode": "local_prod_like_oracle_fixture",
+    "live_aws_used": false,
+    "local_only": true,
+    "non_claims": [
+      "not broad IAMScope correctness",
+      "not production readiness",
+      "not real production AWS",
+      "not exploitability proof",
+      "not downstream authorization proof",
+      "not Lambda invocation behavior",
+      "not generic Deny correctness",
+      "not resource-policy Deny support except unsupported/static-only row labeling",
+      "not SCP Deny support beyond selected benchmark behavior",
+      "no composite benchmark score",
+      "no pass/fail benchmark label"
+    ],
+    "phase": "phase_2_local_prod_like_oracle_fixture",
+    "phase5_status": "not_run_yet",
+    "reasoners_run": [],
+    "schema_version": "prod_like_aws_accuracy_oracle_v1.expected_comparison.v1",
+    "source_tool": "static_fixture_authoring"
+  }
+}
