@@ -26,7 +26,7 @@ import fnmatch
 from dataclasses import dataclass, field
 from typing import Any
 
-from iamscope.constants import NODE_TYPE_HYPEREDGE
+from iamscope.constants import NODE_TYPE_HYPEREDGE, NODE_TYPE_WILDCARD_PRINCIPAL, TRUST_SCOPE_ANY_AWS_PRINCIPAL
 from iamscope.models import Constraint, Edge, EdgeConstraint, Node
 from iamscope.reasoner.verdict import CheckState
 from iamscope.truth.probe_overlay import ProbeRecord
@@ -367,6 +367,8 @@ def _is_unknown_witness(edge: Edge) -> bool:
     - dst is a __hyperedge__ node (wildcard expansion was suppressed)
     - features.is_wildcard_resource == True (source policy used wildcard
       resource, expansion code resolved it but may have missed nuances)
+    - trust src is a wildcard principal (trust admits broadly but does
+      not prove a clean principal-specific trust witness)
     - features.has_conditions == True (statement has a Condition block,
       runtime context not evaluable from the static graph)
     """
@@ -374,5 +376,12 @@ def _is_unknown_witness(edge: Edge) -> bool:
         return True
     features: dict[str, Any] = edge.features or {}
     if features.get("is_wildcard_resource", False):
+        return True
+    if (
+        edge.src.provider_id == "*"
+        or edge.src.node_type == NODE_TYPE_WILDCARD_PRINCIPAL
+        or features.get("is_wildcard_principal") is True
+        or features.get("trust_scope") == TRUST_SCOPE_ANY_AWS_PRINCIPAL
+    ):
         return True
     return bool(features.get("has_conditions", False))

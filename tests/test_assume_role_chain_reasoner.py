@@ -37,7 +37,9 @@ from iamscope.constants import (
     VALIDATED_STATE_DENIED,
 )
 from iamscope.models import Constraint, Edge, EdgeConstraint, Node
+from iamscope.parser.trust_policy import parse_trust_policy
 from iamscope.reasoner import AssumeRoleChainReasoner, FactGraph
+from iamscope.resolver.cross_account import build_trust_edges
 from iamscope.truth.probe_overlay import ProbeRecord
 
 # ---------------------------------------------------------------------------
@@ -162,6 +164,27 @@ def _trust_edge(
             "statement_index": 0,
         },
     )
+
+
+def _wildcard_trust_edge(
+    *,
+    target_arn: str,
+) -> Edge:
+    """Trust edge: target role has Principal: \"*\" wildcard trust."""
+    policy = {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Principal": "*",
+                "Action": "sts:AssumeRole",
+            }
+        ],
+    }
+    trust_results = parse_trust_policy(policy, target_arn, _ACCOUNT)
+    edges = build_trust_edges(trust_results, _role(target_arn))
+    assert len(edges) == 1
+    return edges[0]
 
 
 def _admin_grant_edge(role_arn: str) -> Edge:
@@ -1008,6 +1031,70 @@ class TestConditionedTrustAmbiguity:
         assert finding.verdict.value == "inconclusive"
         check = next(c for c in finding.required_checks if c.name == "no_hop_traverses_hyperedge")
         assert check.state.value == "unknown"
+
+
+class TestWildcardTrustPrincipal:
+    def test_wildcard_trust_hop_emits_inconclusive_chain(self) -> None:
+        """Principal: \"*\" trust admits the hop, but only as ambiguous evidence."""
+        alice = _user(_ALICE_ARN)
+        devops = _role(_DEVOPS_ARN)
+        admin = _role(_ADMIN_ARN)
+        perm_1 = _assume_perm_edge(src_arn=_ALICE_ARN, dst_arn=_DEVOPS_ARN)
+        trust_1 = _wildcard_trust_edge(target_arn=_DEVOPS_ARN)
+        perm_2 = _assume_perm_edge(src_arn=_DEVOPS_ARN, dst_arn=_ADMIN_ARN)
+        trust_2 = _trust_edge(principal_arn=_DEVOPS_ARN, target_arn=_ADMIN_ARN)
+        admin_grant = _admin_grant_edge(_ADMIN_ARN)
+        facts = _make_facts(
+            nodes=(alice, devops, admin),
+            edges=(perm_1, trust_1, perm_2, trust_2, admin_grant),
+        )
+
+        findings = AssumeRoleChainReasoner().run(facts)
+
+        assert len(findings) == 1
+        finding = findings[0]
+        assert finding.verdict.value == "inconclusive"
+        check = next(c for c in finding.required_checks if c.name == "no_hop_traverses_hyperedge")
+        assert check.state.value == "unknown"
+        assert trust_1.edge_id in finding.evidence.edge_refs
+
+    def test_account_root_trust_hop_remains_validated(self) -> None:
+        alice = _user(_ALICE_ARN)
+        devops = _role(_DEVOPS_ARN)
+        admin = _role(_ADMIN_ARN)
+        root_arn = f"arn:aws:iam::{_ACCOUNT}:root"
+        perm_1 = _assume_perm_edge(src_arn=_ALICE_ARN, dst_arn=_DEVOPS_ARN)
+        trust_1 = _trust_edge(principal_arn=root_arn, target_arn=_DEVOPS_ARN)
+        perm_2 = _assume_perm_edge(src_arn=_DEVOPS_ARN, dst_arn=_ADMIN_ARN)
+        trust_2 = _trust_edge(principal_arn=_DEVOPS_ARN, target_arn=_ADMIN_ARN)
+        admin_grant = _admin_grant_edge(_ADMIN_ARN)
+        facts = _make_facts(
+            nodes=(alice, devops, admin),
+            edges=(perm_1, trust_1, perm_2, trust_2, admin_grant),
+        )
+
+        finding = AssumeRoleChainReasoner().run(facts)[0]
+
+        assert finding.verdict.value == "validated"
+        check = next(c for c in finding.required_checks if c.name == "no_hop_traverses_hyperedge")
+        assert check.state.value == "pass"
+
+    def test_unrelated_trust_still_produces_no_chain(self) -> None:
+        alice = _user(_ALICE_ARN)
+        bob_arn = f"arn:aws:iam::{_ACCOUNT}:user/Bob"
+        devops = _role(_DEVOPS_ARN)
+        admin = _role(_ADMIN_ARN)
+        perm_1 = _assume_perm_edge(src_arn=_ALICE_ARN, dst_arn=_DEVOPS_ARN)
+        unrelated_trust = _trust_edge(principal_arn=bob_arn, target_arn=_DEVOPS_ARN)
+        perm_2 = _assume_perm_edge(src_arn=_DEVOPS_ARN, dst_arn=_ADMIN_ARN)
+        trust_2 = _trust_edge(principal_arn=_DEVOPS_ARN, target_arn=_ADMIN_ARN)
+        admin_grant = _admin_grant_edge(_ADMIN_ARN)
+        facts = _make_facts(
+            nodes=(alice, devops, admin),
+            edges=(perm_1, unrelated_trust, perm_2, trust_2, admin_grant),
+        )
+
+        assert AssumeRoleChainReasoner().run(facts) == []
 
 
 class TestHyperedgeOnHop:

@@ -40,6 +40,7 @@ from tests.test_assume_role_chain_reasoner import (  # noqa: I001
     _role,
     _trust_edge,
     _user,
+    _wildcard_trust_edge,
 )
 
 # ---------------------------------------------------------------------------
@@ -239,6 +240,66 @@ class TestConditionedTrustReachability:
             c for c in alice_f.required_checks if c.name == "at_least_one_reachable_chain_uses_clean_witnesses"
         )
         assert check.state.value == "unknown"
+
+
+class TestWildcardTrustPrincipalReachability:
+    def test_wildcard_trust_path_to_admin_is_inconclusive(self) -> None:
+        alice = _user(_ALICE_ARN)
+        admin = _role(_ADMIN_ARN)
+        perm = _assume_perm_edge(src_arn=_ALICE_ARN, dst_arn=_ADMIN_ARN)
+        trust = _wildcard_trust_edge(target_arn=_ADMIN_ARN)
+        admin_grant = _admin_grant_edge(_ADMIN_ARN)
+        facts = _make_facts(
+            nodes=(alice, admin),
+            edges=(perm, trust, admin_grant),
+        )
+
+        findings = AdminReachabilityReasoner().run(facts)
+        alice_f = next(f for f in findings if f.source.provider_id == _ALICE_ARN)
+
+        assert alice_f.verdict.value == "inconclusive"
+        check = next(
+            c for c in alice_f.required_checks if c.name == "at_least_one_reachable_chain_uses_clean_witnesses"
+        )
+        assert check.state.value == "unknown"
+        assert trust.edge_id in alice_f.evidence.edge_refs
+
+    def test_account_root_trust_path_remains_validated(self) -> None:
+        alice = _user(_ALICE_ARN)
+        admin = _role(_ADMIN_ARN)
+        root_arn = "arn:aws:iam::111111\u003111111:root"
+        perm = _assume_perm_edge(src_arn=_ALICE_ARN, dst_arn=_ADMIN_ARN)
+        trust = _trust_edge(principal_arn=root_arn, target_arn=_ADMIN_ARN)
+        admin_grant = _admin_grant_edge(_ADMIN_ARN)
+        facts = _make_facts(
+            nodes=(alice, admin),
+            edges=(perm, trust, admin_grant),
+        )
+
+        findings = AdminReachabilityReasoner().run(facts)
+        alice_f = next(f for f in findings if f.source.provider_id == _ALICE_ARN)
+
+        assert alice_f.verdict.value == "validated"
+        check = next(
+            c for c in alice_f.required_checks if c.name == "at_least_one_reachable_chain_uses_clean_witnesses"
+        )
+        assert check.state.value == "pass"
+
+    def test_unrelated_trust_still_produces_no_reachability(self) -> None:
+        alice = _user(_ALICE_ARN)
+        admin = _role(_ADMIN_ARN)
+        bob_arn = "arn:aws:iam::111111\u003111111:user/Bob"
+        perm = _assume_perm_edge(src_arn=_ALICE_ARN, dst_arn=_ADMIN_ARN)
+        unrelated_trust = _trust_edge(principal_arn=bob_arn, target_arn=_ADMIN_ARN)
+        admin_grant = _admin_grant_edge(_ADMIN_ARN)
+        facts = _make_facts(
+            nodes=(alice, admin),
+            edges=(perm, unrelated_trust, admin_grant),
+        )
+
+        findings = AdminReachabilityReasoner().run(facts)
+
+        assert not any(f.source.provider_id == _ALICE_ARN for f in findings)
 
 
 class TestPermissionBoundaryReachability:
