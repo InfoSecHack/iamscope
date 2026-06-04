@@ -1,7 +1,9 @@
 """Deterministic ID generation for IAMScope.
 
-Algorithm: sha256_null_separated_v2 (bumped from v1 in v0.2.37)
-- Fields are stripped and lowercased
+Algorithm: sha256_null_separated_v3_case_sensitive_provider_ids
+- Fields are stripped
+- Structural fields are lowercased by the ID formula that owns them
+- Provider-owned identity fields preserve exact case
 - Joined with NULL byte separator (\\x00)
 - SHA-256 hashed
 - Full hex digest (64 chars)
@@ -44,22 +46,49 @@ permission shape.
   produced the edge_ids in a given scenario. Consumers should
   read that field and gate any edge-id comparison on equality.
 
-Pinned formulas (v2):
-- node_id       = canonical_id(provider, node_type, provider_id)
-- edge_id       = canonical_id(edge_type, src_provider_id,
-                                dst_provider_id, region,
-                                features_digest)
+Pinned formulas (v3):
+- node_id       = hash(provider.lower(), node_type.lower(),
+                       case-preserved provider_id)
+- edge_id       = hash(edge_type.lower(),
+                       case-preserved src_provider_id,
+                       case-preserved dst_provider_id,
+                       region.lower(),
+                       case-preserved features_digest)
                   where features_digest is
                   canonical_json_bytes(features).decode("utf-8")
 - constraint_id = canonical_id(provider, constraint_type,
                                 scope_type, scope_id, policy_id,
                                 statement_id)
+                  intentionally remains on the legacy lowercase
+                  canonicalization path pending separate review
 
 `node_id` and `constraint_id` formulas are UNCHANGED between
 v1 and v2 — only `edge_id` gained the features_digest field.
 A pure v1→v2 re-emit on the same inputs produces identical node
 and constraint IDs, and v2-only-different edge IDs for edges
 whose features participated in the v1 collision.
+
+### v2 → v3 migration (case-sensitive provider IDs)
+
+v2 used `canonical_id` for every deterministic ID formula, which
+lowercased every string field before hashing. AWS IAM role and user
+names are case-sensitive, so case-distinct provider IDs such as
+`arn:aws:iam::000000000000:role/CaseRole` and
+`arn:aws:iam::000000000000:role/caserole` collided under `node_id`.
+`edge_id` had the same class of collision for source and destination
+provider IDs.
+
+v3 makes `node_id` and `edge_id` field-aware:
+- structural fields (`provider`, `node_type`, `edge_type`, `region`)
+  are stripped and lowercased;
+- provider-owned identity fields (`provider_id`, `src_provider_id`,
+  `dst_provider_id`) are stripped but preserve case;
+- `features_digest` is stripped but otherwise preserved because it is
+  already canonical JSON bytes decoded as UTF-8.
+
+`constraint_id` intentionally remains on the legacy lowercase
+canonicalization path pending separate constraint-field review.
+v2 and v3 scenarios are NOT node-id- or edge-id-comparable.
 """
 
 import hashlib
@@ -101,10 +130,33 @@ def canonical_id(*fields: str) -> str:
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
+def _validate_id_field(field: str, index: int) -> str:
+    if not isinstance(field, str):
+        raise ValueError(f"canonical_id field {index} must be a string, got {type(field).__name__}: {field!r}")
+    stripped = field.strip()
+    if not stripped:
+        raise ValueError(f"canonical_id field {index} is empty after stripping: {field!r}")
+    return stripped
+
+
+def _hash_processed_fields(fields: list[str]) -> str:
+    canonical = "\x00".join(fields)
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+def _structural_field(field: str, index: int) -> str:
+    return _validate_id_field(field, index).lower()
+
+
+def _provider_identity_field(field: str, index: int) -> str:
+    return _validate_id_field(field, index)
+
+
 def node_id(provider: str, node_type: str, provider_id: str) -> str:
     """Compute deterministic node ID.
 
-    Formula: canonical_id(provider, node_type, provider_id)
+    Formula (v3): sha256(provider.lower(), node_type.lower(),
+                         case-preserved provider_id)
 
     Args:
         provider: Provider string (e.g., "aws").
@@ -114,7 +166,13 @@ def node_id(provider: str, node_type: str, provider_id: str) -> str:
     Returns:
         64-character hex string.
     """
-    return canonical_id(provider, node_type, provider_id)
+    return _hash_processed_fields(
+        [
+            _structural_field(provider, 0),
+            _structural_field(node_type, 1),
+            _provider_identity_field(provider_id, 2),
+        ]
+    )
 
 
 def edge_id(
@@ -124,10 +182,12 @@ def edge_id(
     region: str,
     features_digest: str,
 ) -> str:
-    """Compute deterministic edge ID (sha256_null_separated_v2).
+    """Compute deterministic edge ID (sha256_null_separated_v3).
 
-    Formula: canonical_id(edge_type, src_provider_id, dst_provider_id,
-                          region, features_digest)
+    Formula (v3): sha256(edge_type.lower(), case-preserved
+                          src_provider_id, case-preserved
+                          dst_provider_id, region.lower(),
+                          features_digest)
 
     v2 (v0.2.37+) adds `features_digest` as a required fifth field —
     see module docstring for the v1→v2 migration rationale (reviewer
@@ -153,7 +213,15 @@ def edge_id(
     Returns:
         64-character hex string.
     """
-    return canonical_id(edge_type, src_provider_id, dst_provider_id, region, features_digest)
+    return _hash_processed_fields(
+        [
+            _structural_field(edge_type, 0),
+            _provider_identity_field(src_provider_id, 1),
+            _provider_identity_field(dst_provider_id, 2),
+            _structural_field(region, 3),
+            _provider_identity_field(features_digest, 4),
+        ]
+    )
 
 
 def constraint_id(

@@ -25,7 +25,7 @@
     "blockers_observed_count": 0,
     "expected_classification": "selected_local_createfunction_passrole_finding",
     "expected_verdict": "validated",
-    "finding_id": "dc284c673334e54974e229c9ac006684b3e928d0d03936f857fe93068dc74dc8",
+    "finding_id": "d611535f5dc10e74aab2214bddc46c1e0cf44ea8e35a8c5d9d47d5562908ccd5",
     "finding_key": "e7aa122330b61ce55fdb3cd017139b3c9b8c941fdd95fec676e2c337cde58b1e",
     "live_behavior_alignment": "service-mediated CreateFunction plus PassRole plus Lambda trust only",
     "pattern_id": "passrole_lambda",

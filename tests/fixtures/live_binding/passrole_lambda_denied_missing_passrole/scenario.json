@@ -12,7 +12,7 @@
         "provider_id": "arn:aws:iam::000000000000:role/IAMScopeLiveBindingLambdaExecutionRole",
         "region": "-"
       },
-      "edge_id": "ee650f233a6ed64f2e59a9e0f86a3c9d5bb0735730b8bcf021ecbd2a6d2fbaba",
+      "edge_id": "ba7b5752c650b6d1f8c33246f30d2be59129386e6b4000fc67706119f961769d",
       "edge_type": "lambda:CreateFunction_permission",
       "features": {
         "allow_controls": [
@@ -47,7 +47,7 @@
         "provider_id": "arn:aws:iam::000000000000:role/IAMScopeLiveBindingLambdaExecutionRole",
         "region": "-"
       },
-      "edge_id": "4e82d4996c7212e2ab5e5ef7088fba44653dde7d70ace38f1e182f55ffacb86b",
+      "edge_id": "e9e3d8a8c41a2090317655ca4bf91092fd16b4ebd2a37c0fd129816dd28b6b6a",
       "edge_type": "sts:AssumeRole_trust",
       "features": {
         "allow_controls": [
@@ -81,7 +81,7 @@
   "live_aws_used": false,
   "nodes": [
     {
-      "node_id": "8333d429ff01cd4e221057d52b64796ad32a7d358126bbd9a4874a00d140f090",
+      "node_id": "53aadae287ce372434592eb499386e179fd1fea3db1c786d1dc86edffee2f97d",
       "node_type": "IAMRole",
       "properties": {
         "account_id": "000000000000",
@@ -92,7 +92,7 @@
       "region": "-"
     },
     {
-      "node_id": "9a8beffce76dcd9a52962f1be19c603a4bc97287d51b54296eec70942325d4ec",
+      "node_id": "581b077d55e9c2c1250c7f3cd22149e84f8ad4d6626a5a617b4db73f06f687ec",
       "node_type": "IAMRole",
       "properties": {
         "account_id": "000000000000",

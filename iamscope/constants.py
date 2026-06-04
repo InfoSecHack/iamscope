@@ -13,7 +13,7 @@ MAX_TOTAL_EDGES: int = 100_000
 # ---------------------------------------------------------------------------
 # Deterministic ID algorithm version
 # ---------------------------------------------------------------------------
-ID_ALGORITHM: str = "sha256_null_separated_v2"
+ID_ALGORITHM: str = "sha256_null_separated_v3_case_sensitive_provider_ids"
 
 # ---------------------------------------------------------------------------
 # confidence_q mapping (int 0..1000)

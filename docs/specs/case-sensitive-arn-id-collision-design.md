@@ -92,11 +92,11 @@ mistakenly compare v2 and v3 IDs as if they were the same identifier family.
 
 ## Candidate Fix
 
-Introduce a new deterministic ID algorithm version, tentatively:
+Implemented in the v3 migration slice as:
 
 `sha256_null_separated_v3_case_sensitive_provider_ids`
 
-The candidate v3 behavior should use field-aware canonicalization:
+The v3 behavior uses field-aware canonicalization:
 
 - keep provider and structural type fields normalized where they are intended to
   be case-insensitive, such as `provider`, `node_type`, `edge_type`, and
@@ -105,12 +105,18 @@ The candidate v3 behavior should use field-aware canonicalization:
   `provider_id`, `src_provider_id`, and `dst_provider_id`;
 - keep feature canonicalization deterministic and unchanged unless a separate
   review finds a feature-level case collision;
-- review `constraint_id` separately before deciding whether it should stay on
-  the existing canonicalization behavior or move to a field-aware formula.
+- leaves `constraint_id` on the existing canonicalization behavior pending
+  separate review.
 
 The code fix should avoid a broad "never lowercase anything" change. The safer
 boundary is to make each deterministic ID formula choose the canonicalization
 rule for each field it owns.
+
+v3 is not ID-compatible with v2. Cross-version comparisons must not treat
+`node_id` or `edge_id` values as the same identifier family unless a future
+explicit migration/remapping layer is added. ARF-RT, probe overlays,
+observation logs, and `findings_diff` consumers should gate ID comparison on
+matching `id_algorithm` values.
 
 ## Migration and Versioning Plan
 

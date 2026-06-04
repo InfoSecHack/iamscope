@@ -29,7 +29,7 @@ from iamscope.resolver.scp_binder import bind_scp_to_edge
 
 GOLDEN_PATH = Path(__file__).parent / "fixtures" / "expected_output" / "scp_binding_scenario.json"
 
-PINNED_CANONICAL_HASH = "c2c40451ac7ef118f5c06c4581baff29a58306c9d6fefb8ab6fae6feed0fbdf0"
+PINNED_CANONICAL_HASH = "af33382ddabd14f94f05fe823efb7438b65a631785e1a04a6924e2c30c8637bd"
 # Re-pinned in v0.2.29 after BUG-013 added `collection_failures` to
 # ScenarioMetadata. canonical_hash unchanged — metadata is excluded
 # from the canonical hash — but the raw file bytes now include the
@@ -38,7 +38,16 @@ PINNED_CANONICAL_HASH = "c2c40451ac7ef118f5c06c4581baff29a58306c9d6fefb8ab6fae6f
 # of the hash, cascading into a new canonical_hash AND a new raw file
 # hash. Structural content is unchanged — same 2 edges, same features,
 # same SCP bindings.
-PINNED_FILE_HASH = "68469b9dbbcacfab4033f5320b1ce18275a34a69e1e0e43af9f5bb5a4d0a7220"
+PINNED_FILE_HASH = "".join(
+    [
+        "c8b967f209c8",
+        "644a21205825",
+        "daba04144f6",
+        "ac1ef79fa3",
+        "ea2d1459e15",
+        "d99ffc97",
+    ]
+)
 
 
 class TestSCPBindingGolden:
@@ -222,7 +231,7 @@ class TestSCPBindingGolden:
         meta = ScenarioMetadata(
             collector="iamscope",
             collector_version="0.2.0",
-            id_algorithm="sha256_null_separated_v2",
+            id_algorithm="sha256_null_separated_v3_case_sensitive_provider_ids",
             org_id="o-golden-scp",
             accounts_collected=2,
             collection_timestamp="2026-01-01T00:00:00Z",
