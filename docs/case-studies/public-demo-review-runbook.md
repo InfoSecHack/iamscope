@@ -26,6 +26,7 @@ The runner performs local checks only:
 - generated artifact hygiene scan for live result JSON, Terraform state/cache/plan/output files, and Terraform lock files;
 - report-only path-overcounting uncertainty grouping from the local synthetic fixture.
 - report-only summary of the complex synthetic benchmark fixture.
+- narrow PassRole-to-Lambda replay subset probe from local replay-ready artifacts.
 
 The runner treats non-empty account, ARN, or artifact hygiene scan output as a failure. The current expected scan result is no output.
 
@@ -36,6 +37,9 @@ The runner generates:
 - `/tmp/iamscope-public-demo-review/summary.md`
 - `/tmp/iamscope-public-demo-review/manifest.json`
 - `/tmp/iamscope-public-demo-review/path-overcounting-uncertainty-groups.json`
+- `/tmp/iamscope-public-demo-review/passrole-lambda-replay-subset/replay-subset-summary.md`
+- `/tmp/iamscope-public-demo-review/passrole-lambda-replay-subset/replay-subset-manifest.json`
+- `/tmp/iamscope-public-demo-review/passrole-lambda-replay-subset/generated-findings.json`
 
 Generated outputs are local scratch outputs and are not committed by default.
 
@@ -55,6 +59,29 @@ groups are `shared_passrole_target_resource_scope_unknown`: `3`,
 The complex synthetic benchmark section is not live AWS evidence, was not
 generated/replayed by IAMScope, and is not a composite score or pass/fail
 benchmark label.
+
+## Narrow PassRole-to-Lambda Replay Subset
+
+The generated `summary.md` and `manifest.json` include a separate narrow
+PassRole-to-Lambda replay subset section. That section is local-only and uses
+existing IAMScope replay machinery against replay-ready subset artifacts.
+
+The current expected subset result is:
+
+- `replay_subset_status`: `replayed_selected_passrole_lambda_subset`
+- `input_contract_status`: `replay_ready`
+- `safe_replay_attempted`: `true`
+- `reasoners_attempted`: `passrole_lambda`
+- matched rows: `1`
+- missing rows: `0`
+- extra rows: `0`
+- static-only rows: `1`
+- live AWS used: `false`
+- AWS calls made: `0`
+
+This subset does not prove replay-equivalence for the full complex synthetic
+benchmark. It does not use live AWS, does not produce a score, and does not
+produce a pass/fail benchmark label.
 
 ## Claim boundary
 
