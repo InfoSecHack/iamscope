@@ -29,7 +29,7 @@ def _build_clean_scenario() -> dict:
     md = ScenarioMetadata(
         collector="iamscope",
         collector_version="0.2.0",
-        id_algorithm="sha256_null_separated_v2",
+        id_algorithm="sha256_null_separated_v3_case_sensitive_provider_ids",
     )
     scenario_bytes, _ = emit_scenario(
         nodes=[a, b],
@@ -166,7 +166,7 @@ class TestDanglingSrcMaterialization:
         md = ScenarioMetadata(
             collector="iamscope",
             collector_version="0.2.0",
-            id_algorithm="sha256_null_separated_v2",
+            id_algorithm="sha256_null_separated_v3_case_sensitive_provider_ids",
         )
         scenario_bytes, _ = emit_scenario(
             nodes=all_nodes,

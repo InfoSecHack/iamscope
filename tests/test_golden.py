@@ -37,7 +37,7 @@ class TestGoldenMinimalScenario:
     def test_golden_canonical_hash_pinned(self) -> None:
         """Canonical hash from golden fixture must match pinned value.
 
-        PINNED HASH: 1ef3da8327d13ea21c80923c79076db819b0cea74320b18671bc4a8c06f81150
+        PINNED HASH: 96a91e9047f88ea44088bb6c37113cdc093597821c26953218d742f2f062a6be
 
         Re-pinned in v0.2.37 (Session 2 edge_id v1→v2): edge_id formula
         now includes features_digest, so every edge_id in this fixture
@@ -59,7 +59,7 @@ class TestGoldenMinimalScenario:
         scenario = json.loads(golden_path.read_bytes())
         stored_hash = scenario["metadata"]["canonical_hash"]
 
-        pinned_hash = "1ef3da8327d13ea21c80923c79076db819b0cea74320b18671bc4a8c06f81150"
+        pinned_hash = "96a91e9047f88ea44088bb6c37113cdc093597821c26953218d742f2f062a6be"
         assert stored_hash == pinned_hash, (
             f"Golden canonical hash changed!\n"
             f"  Expected: {pinned_hash}\n"
@@ -83,17 +83,7 @@ class TestGoldenMinimalScenario:
         # now include the new empty-list field. Re-pinned again in
         # v0.2.37 (Session 2 edge_id v1→v2) — both the canonical_hash
         # and the raw file bytes changed because edge_ids shifted.)
-        pinned_file_hash = "".join(
-            [
-                "0b34673195",
-                "12483f35c2",
-                "5b57475258",
-                "2cc3e1a779",
-                "0c6eff7713",
-                "dc944ea250",
-                "e3d0",
-            ]
-        )
+        pinned_file_hash = "231d3e02f6097fd11acfeadfca9339f1c1593847c78f87fdeaf3ccad6a2f448a"
 
         # Note: raw file hash includes metadata (timestamps etc).
         # If only metadata changed, canonical_hash test above still passes.
@@ -263,7 +253,7 @@ class TestGoldenMinimalScenario:
         meta = ScenarioMetadata(
             collector="iamscope",
             collector_version="0.2.0",
-            id_algorithm="sha256_null_separated_v2",
+            id_algorithm="sha256_null_separated_v3_case_sensitive_provider_ids",
             org_id="o-golden",
             accounts_collected=2,
             collection_timestamp="2026-01-01T00:00:00Z",

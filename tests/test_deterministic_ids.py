@@ -1,12 +1,13 @@
 """Tests for deterministic ID generation.
 
-Tests verify the pinned sha256_null_separated_v2 algorithm (v0.2.37+):
+Tests verify the pinned sha256_null_separated_v3_case_sensitive_provider_ids algorithm:
 - Same input → same output (stability)
 - Different input → different output (uniqueness)
-- Case insensitive (lowercased before hashing)
+- `canonical_id` remains legacy case insensitive
+- `node_id` and `edge_id` preserve provider-owned identity field case
 - Whitespace insensitive (stripped before hashing)
 - Stable formula (known input → known hash, pinned across versions)
-- Edge ID uses correct component fields (v2: now includes
+- Edge ID uses correct component fields (v2+ includes
   features_digest as the fifth field)
 - Constraint ID includes statement_id per R14
 
@@ -21,6 +22,7 @@ import hashlib
 
 import pytest
 
+from iamscope.constants import ID_ALGORITHM
 from iamscope.identity.deterministic_ids import (
     canonical_id,
     constraint_id,
@@ -105,12 +107,13 @@ class TestCanonicalId:
 
 
 class TestNodeId:
-    """Tests for node_id formula: canonical_id(provider, node_type, provider_id)."""
+    """Tests for node_id formula with case-preserved provider_id."""
 
     def test_node_id_components(self) -> None:
         """node_id must use (provider, node_type, provider_id)."""
         nid = node_id("aws", "IAMRole", "arn:aws:iam::111111\u003111111:role/TestRole")
-        expected = canonical_id("aws", "IAMRole", "arn:aws:iam::111111\u003111111:role/TestRole")
+        canonical = "\x00".join(["aws", "iamrole", "arn:aws:iam::111111\u003111111:role/TestRole"])
+        expected = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
         assert nid == expected
 
     def test_different_node_types_different_ids(self) -> None:
@@ -119,11 +122,21 @@ class TestNodeId:
         user_id = node_id("aws", "IAMUser", "arn:aws:iam::111:role/Test")
         assert role_id != user_id
 
+    def test_provider_id_case_is_preserved(self) -> None:
+        """v3 keeps provider-owned identity field case in node IDs."""
+        role_upper = node_id("aws", "IAMRole", "arn:aws:iam::000000000000:role/CaseRole")
+        role_lower = node_id("aws", "IAMRole", "arn:aws:iam::000000000000:role/caserole")
+        assert role_upper != role_lower
+
+    def test_structural_fields_remain_case_normalized(self) -> None:
+        """Provider and node_type remain structural, case-normalized fields."""
+        lower_structural = node_id("aws", "iamrole", "arn:aws:iam::000000000000:role/CaseRole")
+        mixed_structural = node_id("AWS", "IAMRole", "arn:aws:iam::000000000000:role/CaseRole")
+        assert lower_structural == mixed_structural
+
 
 class TestEdgeId:
-    """Tests for edge_id formula (v2): canonical_id(edge_type, src, dst,
-    region, features_digest). v2 added `features_digest` as a fifth
-    field in v0.2.37 — see module docstring."""
+    """Tests for edge_id formula with case-preserved src/dst provider IDs."""
 
     # Empty-features digest: canonical_json_bytes({}).decode("utf-8") == "{}"
     # Used as a stable "no features" placeholder in these unit tests so
@@ -140,13 +153,16 @@ class TestEdgeId:
             "-",
             self._EMPTY_FEATURES_DIGEST,
         )
-        expected = canonical_id(
-            "sts:AssumeRole_trust",
-            "arn:aws:iam::222222\u003222222:role/DevJump",
-            "arn:aws:iam::333333\u003333333:role/ProdDeploy",
-            "-",
-            self._EMPTY_FEATURES_DIGEST,
+        canonical = "\x00".join(
+            [
+                "sts:assumerole_trust",
+                "arn:aws:iam::222222\u003222222:role/DevJump",
+                "arn:aws:iam::333333\u003333333:role/ProdDeploy",
+                "-",
+                self._EMPTY_FEATURES_DIGEST,
+            ]
         )
+        expected = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
         assert eid == expected
 
     def test_different_edge_types_different_ids(self) -> None:
@@ -186,6 +202,60 @@ class TestEdgeId:
         )
         assert global_id != regional_id
 
+    def test_source_provider_id_case_is_preserved(self) -> None:
+        """v3 keeps source provider-owned identity field case in edge IDs."""
+        upper_source = edge_id(
+            "sts:AssumeRole_permission",
+            "arn:aws:iam::000000000000:user/CaseUser",
+            "arn:aws:iam::000000000000:role/TargetRole",
+            "-",
+            self._EMPTY_FEATURES_DIGEST,
+        )
+        lower_source = edge_id(
+            "sts:AssumeRole_permission",
+            "arn:aws:iam::000000000000:user/caseuser",
+            "arn:aws:iam::000000000000:role/TargetRole",
+            "-",
+            self._EMPTY_FEATURES_DIGEST,
+        )
+        assert upper_source != lower_source
+
+    def test_destination_provider_id_case_is_preserved(self) -> None:
+        """v3 keeps destination provider-owned identity field case in edge IDs."""
+        upper_destination = edge_id(
+            "sts:AssumeRole_permission",
+            "arn:aws:iam::000000000000:user/SourceUser",
+            "arn:aws:iam::000000000000:role/CaseRole",
+            "-",
+            self._EMPTY_FEATURES_DIGEST,
+        )
+        lower_destination = edge_id(
+            "sts:AssumeRole_permission",
+            "arn:aws:iam::000000000000:user/SourceUser",
+            "arn:aws:iam::000000000000:role/caserole",
+            "-",
+            self._EMPTY_FEATURES_DIGEST,
+        )
+        assert upper_destination != lower_destination
+
+    def test_structural_fields_remain_case_normalized(self) -> None:
+        """Edge type and region remain structural, case-normalized fields."""
+        lower_structural = edge_id(
+            "sts:assumerole_permission",
+            "arn:aws:iam::000000000000:user/CaseUser",
+            "arn:aws:iam::000000000000:role/CaseRole",
+            "us-east-1",
+            self._EMPTY_FEATURES_DIGEST,
+        )
+        mixed_structural = edge_id(
+            "sts:AssumeRole_permission",
+            "arn:aws:iam::000000000000:user/CaseUser",
+            "arn:aws:iam::000000000000:role/CaseRole",
+            "US-EAST-1",
+            self._EMPTY_FEATURES_DIGEST,
+        )
+        assert lower_structural == mixed_structural
+
 
 class TestConstraintId:
     """Tests for constraint_id formula including statement_id (R14)."""
@@ -201,6 +271,16 @@ class TestConstraintId:
         cid1 = constraint_id("aws", "SCP", "OU", "ou-abc", "p-123", "stmt_0")
         cid2 = constraint_id("aws", "SCP", "OU", "ou-abc", "p-123", "stmt_0")
         assert cid1 == cid2
+
+    def test_constraint_id_remains_legacy_case_normalized_pending_review(self) -> None:
+        """Constraint IDs stay on the legacy lowercase canonicalization path."""
+        cid_lower = constraint_id("aws", "scp", "ou", "ou-abc", "p-123", "case-sensitive-sid")
+        cid_mixed = constraint_id("AWS", "SCP", "OU", "ou-abc", "p-123", "Case-Sensitive-Sid")
+        assert cid_lower == cid_mixed
+
+
+def test_id_algorithm_constant_is_v3_case_sensitive_provider_ids() -> None:
+    assert ID_ALGORITHM == "sha256_null_separated_v3_case_sensitive_provider_ids"
 
 
 class TestEdgeConstraintSortKey:

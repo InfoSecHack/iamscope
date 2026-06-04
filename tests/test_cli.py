@@ -366,7 +366,7 @@ class TestCLIEntryPoint:
         md = ScenarioMetadata(
             collector="iamscope",
             collector_version="0.2.0",
-            id_algorithm="sha256_null_separated_v2",
+            id_algorithm="sha256_null_separated_v3_case_sensitive_provider_ids",
         )
         scenario_bytes, _ = emit_scenario(
             nodes=[role_a, role_b],

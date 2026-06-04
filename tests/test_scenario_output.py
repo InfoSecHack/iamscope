@@ -16,6 +16,7 @@ import pytest
 
 from iamscope.constants import (
     CONSTRAINT_TYPE_SCP,
+    ID_ALGORITHM,
     NODE_TYPE_ACCOUNT_ROOT,
     NODE_TYPE_IAM_ROLE,
     PROVIDER_AWS,
@@ -67,6 +68,7 @@ class TestMinimalScenario:
         assert len(scenario["edges"]) == 1
         assert len(scenario["constraints"]) == 0
         assert len(scenario["edge_constraints"]) == 0
+        assert scenario["metadata"]["id_algorithm"] == ID_ALGORITHM
         assert scenario["objectives"] == []
         assert scenario["observations"] == []
 

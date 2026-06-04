@@ -79,7 +79,7 @@ def _make_findings_doc(*findings: dict[str, Any]) -> dict[str, Any]:
         "collector_version": "0.2.0",
         "findings_count": len(sorted_findings),
         "hash_scope": "canonical_hash excludes canonical_hash, reasoning_timestamp, reasoning_duration_seconds",
-        "id_algorithm": "sha256_null_separated_v2",
+        "id_algorithm": "sha256_null_separated_v3_case_sensitive_provider_ids",
         "reasoners_run": sorted({f["pattern_id"] for f in sorted_findings}),
         "reasoners_skipped": {},
         "verdict_breakdown": {

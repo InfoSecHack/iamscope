@@ -12,7 +12,7 @@
         "provider_id": "arn:aws:iam::000000000000:role/IAMScopeLiveBindingLambdaExecutionRole",
         "region": "-"
       },
-      "edge_id": "bcf0f131f4a66f2a73a77bae0ad7bc4b6928c92bf924da5f93a359547425b522",
+      "edge_id": "4172e020cfe6ded291527ee3ad4243ee5553452726a25516454f3134e635cf17",
       "edge_type": "lambda:CreateFunction_permission",
       "features": {
         "allow_controls": [
@@ -47,7 +47,7 @@
         "provider_id": "arn:aws:iam::000000000000:role/IAMScopeLiveBindingLambdaExecutionRole",
         "region": "-"
       },
-      "edge_id": "8fbe3500a1361fd80425ac88a46d7767c2413c97cc82b940525dead1001879b9",
+      "edge_id": "1fe5c6ebad2a369aff16fea0a8af1dd92c1a90fb611de401093c4f074089fd02",
       "edge_type": "iam:PassRole_permission",
       "features": {
         "allow_controls": [
@@ -82,7 +82,7 @@
         "provider_id": "arn:aws:iam::000000000000:role/IAMScopeLiveBindingLambdaExecutionRole",
         "region": "-"
       },
-      "edge_id": "24ad4d35b4441651fb0a4a321b53addfbdd843dc3653ff54dea29c220c478668",
+      "edge_id": "3ddf91eedddc15e944f67b4bef8559d68acdeedb57e19f2a557a4c5a45a4b165",
       "edge_type": "sts:AssumeRole_trust",
       "features": {
         "allow_controls": [
@@ -116,7 +116,7 @@
   "live_aws_used": false,
   "nodes": [
     {
-      "node_id": "c23e6af725515592a63bf88a0d1bf77bbd18927e492295d573e5f058bcb84425",
+      "node_id": "70d88ec4ec607a117bf0823f8f593f6d99c757e3ae2b0addeebfab7cf2b76039",
       "node_type": "IAMUser",
       "properties": {
         "account_id": "000000000000",
@@ -127,7 +127,7 @@
       "region": "-"
     },
     {
-      "node_id": "9a8beffce76dcd9a52962f1be19c603a4bc97287d51b54296eec70942325d4ec",
+      "node_id": "581b077d55e9c2c1250c7f3cd22149e84f8ad4d6626a5a617b4db73f06f687ec",
       "node_type": "IAMRole",
       "properties": {
         "account_id": "000000000000",

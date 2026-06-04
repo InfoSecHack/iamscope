@@ -1,19 +1,11 @@
 """Regression evidence for case-sensitive ARN deterministic ID collisions."""
 
-from __future__ import annotations
-
-import pytest
-
+from iamscope.constants import ID_ALGORITHM
 from iamscope.identity.deterministic_ids import edge_id, node_id
-
-_XFAIL_REASON = (
-    "known v2 canonical_id lowercases provider_id; fixed by planned v3 case-preserving provider_id algorithm"
-)
 
 _EMPTY_FEATURES_DIGEST = "{}"
 
 
-@pytest.mark.xfail(reason=_XFAIL_REASON, strict=True)
 def test_case_distinct_iam_role_provider_ids_do_not_collide_under_node_id() -> None:
     upper_role = node_id(
         "aws",
@@ -29,7 +21,6 @@ def test_case_distinct_iam_role_provider_ids_do_not_collide_under_node_id() -> N
     assert upper_role != lower_role
 
 
-@pytest.mark.xfail(reason=_XFAIL_REASON, strict=True)
 def test_case_distinct_iam_user_provider_ids_do_not_collide_under_node_id() -> None:
     upper_user = node_id(
         "aws",
@@ -45,7 +36,6 @@ def test_case_distinct_iam_user_provider_ids_do_not_collide_under_node_id() -> N
     assert upper_user != lower_user
 
 
-@pytest.mark.xfail(reason=_XFAIL_REASON, strict=True)
 def test_case_distinct_source_provider_ids_do_not_collide_under_edge_id() -> None:
     upper_source = edge_id(
         "sts:AssumeRole_permission",
@@ -65,7 +55,6 @@ def test_case_distinct_source_provider_ids_do_not_collide_under_edge_id() -> Non
     assert upper_source != lower_source
 
 
-@pytest.mark.xfail(reason=_XFAIL_REASON, strict=True)
 def test_case_distinct_destination_provider_ids_do_not_collide_under_edge_id() -> None:
     upper_destination = edge_id(
         "sts:AssumeRole_permission",
@@ -113,3 +102,7 @@ def test_exact_repeated_inputs_remain_deterministic() -> None:
 
     assert first_node_id == second_node_id
     assert first_edge_id == second_edge_id
+
+
+def test_id_algorithm_exposes_v3_case_sensitive_provider_id_value() -> None:
+    assert ID_ALGORITHM == "sha256_null_separated_v3_case_sensitive_provider_ids"
