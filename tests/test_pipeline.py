@@ -27,10 +27,19 @@ from moto import mock_aws
 
 from iamscope.auth.session import get_session
 from iamscope.collector.account import AccountData
+from iamscope.collector.failures import CollectionFailure
 from iamscope.constants import CONSTRAINT_TYPE_STALE_PRINCIPAL_DRIFT, NODE_TYPE_IAM_ROLE, PROVIDER_AWS
-from iamscope.models import AccountInfo, Node, OrgData
+from iamscope.models import AccountInfo, Node, OrgData, ScenarioMetadata
+from iamscope.output.scenario_json import emit_scenario
+from iamscope.parser.parse_failures import PolicyParseFailure
 from iamscope.parser.trust_policy import parse_trust_policy
-from iamscope.pipeline import PipelineConfig, _run_resolution, run_pipeline
+from iamscope.pipeline import (
+    PipelineConfig,
+    PipelineResult,
+    _aggregate_policy_parse_failures,
+    _run_resolution,
+    run_pipeline,
+)
 
 
 @pytest.fixture
@@ -315,6 +324,129 @@ class TestPipelineResult:
         # Should be valid JSON (even if empty array)
         sidecar = json.loads(result.binding_metadata_bytes)
         assert isinstance(sidecar, list)
+
+
+class TestPolicyParseFailureMetadata:
+    """No-AWS tests for IAM policy parse failure aggregation and metadata emission."""
+
+    def _failure(
+        self,
+        *,
+        source_arn: str,
+        parser: str = "permission_policy",
+        policy_source: str = "inline",
+        policy_name: str = "BrokenInline",
+        policy_arn: str = "",
+        failure_kind: str = "json_decode_error",
+        error_class: str = "JSONDecodeError",
+        error_message: str = "Expecting property name enclosed in double quotes",
+    ) -> PolicyParseFailure:
+        return PolicyParseFailure(
+            parser=parser,
+            source_arn=source_arn,
+            policy_source=policy_source,
+            policy_name=policy_name,
+            policy_arn=policy_arn,
+            failure_kind=failure_kind,
+            error_class=error_class,
+            error_message=error_message,
+        )
+
+    def test_pipeline_result_has_policy_parse_failures_field(self) -> None:
+        result = PipelineResult()
+        assert result.policy_parse_failures == []
+
+    def test_aggregates_policy_parse_failures_deterministically(self) -> None:
+        account_a = "111111\u003111111"
+        account_b = "222222\u003222222"
+        role_failure = self._failure(
+            parser="trust_policy",
+            source_arn=f"arn:aws:iam::{account_a}:role/BrokenTrust",
+            policy_source="trust",
+            policy_name="AssumeRolePolicyDocument",
+            failure_kind="not_a_dict",
+            error_class="",
+            error_message="",
+        )
+        user_failure = self._failure(source_arn=f"arn:aws:iam::{account_a}:user/BrokenUser")
+        group_failure = self._failure(
+            source_arn=f"arn:aws:iam::{account_b}:group/BrokenGroup",
+            policy_source="group_inline",
+            policy_name="BrokenGroupInline",
+        )
+        acct_b = AccountData(account_id=account_b, policy_parse_failures=[group_failure])
+        acct_a = AccountData(account_id=account_a, policy_parse_failures=[user_failure, role_failure])
+
+        failures = _aggregate_policy_parse_failures([acct_b, acct_a])
+
+        assert failures == [user_failure, role_failure, group_failure]
+
+    def test_empty_policy_parse_failures_are_stable(self) -> None:
+        acct = AccountData(account_id="111111\u003111111")
+
+        failures = _aggregate_policy_parse_failures([acct])
+
+        assert failures == []
+        assert "policy_parse_failures" not in ScenarioMetadata().to_dict()
+
+    def test_scenario_metadata_includes_policy_parse_failures(self) -> None:
+        account_id = "111111\u003111111"
+        failure = self._failure(
+            source_arn=f"arn:aws:iam::{account_id}:role/BrokenRole",
+            policy_arn=f"arn:aws:iam::{account_id}:policy/BrokenPolicy",
+        )
+        collection_failure = CollectionFailure(
+            collector="lambda",
+            account_id=account_id,
+            region="us-east-1",
+            error_class="AccessDeniedException",
+            error_message="synthetic collector failure",
+        )
+        metadata = ScenarioMetadata(
+            collection_failures=[collection_failure.to_dict()],
+            policy_parse_failures=[failure.to_dict()],
+        )
+
+        scenario_bytes, _hash = emit_scenario(
+            nodes=[],
+            edges=[],
+            constraints=[],
+            edge_constraints=[],
+            metadata=metadata,
+        )
+        scenario = json.loads(scenario_bytes)
+
+        assert scenario["metadata"]["collection_failures"] == [collection_failure.to_dict()]
+        assert scenario["metadata"]["policy_parse_failures"] == [failure.to_dict()]
+        assert scenario["metadata"]["collection_failures"] != scenario["metadata"]["policy_parse_failures"]
+
+    def test_policy_parse_failure_serialization_keeps_useful_fields(self) -> None:
+        account_id = "111111\u003111111"
+        failure = self._failure(
+            source_arn=f"arn:aws:iam::{account_id}:role/BrokenRole",
+            policy_arn=f"arn:aws:iam::{account_id}:policy/BrokenPolicy",
+        )
+
+        record = failure.to_dict()
+
+        assert set(record) == {
+            "error_class",
+            "error_message",
+            "failure_kind",
+            "parser",
+            "policy_arn",
+            "policy_name",
+            "policy_source",
+            "source_arn",
+        }
+        assert record["parser"] == "permission_policy"
+        assert record["source_arn"] == f"arn:aws:iam::{account_id}:role/BrokenRole"
+        assert record["policy_source"] == "inline"
+        assert record["policy_name"] == "BrokenInline"
+        assert record["policy_arn"] == f"arn:aws:iam::{account_id}:policy/BrokenPolicy"
+        assert record["failure_kind"] == "json_decode_error"
+        assert record["error_class"] == "JSONDecodeError"
+        assert record["error_message"]
 
 
 # ---------------------------------------------------------------------------
