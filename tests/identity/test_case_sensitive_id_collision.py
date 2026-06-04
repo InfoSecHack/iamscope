@@ -1,0 +1,115 @@
+"""Regression evidence for case-sensitive ARN deterministic ID collisions."""
+
+from __future__ import annotations
+
+import pytest
+
+from iamscope.identity.deterministic_ids import edge_id, node_id
+
+_XFAIL_REASON = (
+    "known v2 canonical_id lowercases provider_id; fixed by planned v3 case-preserving provider_id algorithm"
+)
+
+_EMPTY_FEATURES_DIGEST = "{}"
+
+
+@pytest.mark.xfail(reason=_XFAIL_REASON, strict=True)
+def test_case_distinct_iam_role_provider_ids_do_not_collide_under_node_id() -> None:
+    upper_role = node_id(
+        "aws",
+        "IAMRole",
+        "arn:aws:iam::000000000000:role/CaseRole",
+    )
+    lower_role = node_id(
+        "aws",
+        "IAMRole",
+        "arn:aws:iam::000000000000:role/caserole",
+    )
+
+    assert upper_role != lower_role
+
+
+@pytest.mark.xfail(reason=_XFAIL_REASON, strict=True)
+def test_case_distinct_iam_user_provider_ids_do_not_collide_under_node_id() -> None:
+    upper_user = node_id(
+        "aws",
+        "IAMUser",
+        "arn:aws:iam::000000000000:user/CaseUser",
+    )
+    lower_user = node_id(
+        "aws",
+        "IAMUser",
+        "arn:aws:iam::000000000000:user/caseuser",
+    )
+
+    assert upper_user != lower_user
+
+
+@pytest.mark.xfail(reason=_XFAIL_REASON, strict=True)
+def test_case_distinct_source_provider_ids_do_not_collide_under_edge_id() -> None:
+    upper_source = edge_id(
+        "sts:AssumeRole_permission",
+        "arn:aws:iam::000000000000:user/CaseUser",
+        "arn:aws:iam::000000000000:role/TargetRole",
+        "-",
+        _EMPTY_FEATURES_DIGEST,
+    )
+    lower_source = edge_id(
+        "sts:AssumeRole_permission",
+        "arn:aws:iam::000000000000:user/caseuser",
+        "arn:aws:iam::000000000000:role/TargetRole",
+        "-",
+        _EMPTY_FEATURES_DIGEST,
+    )
+
+    assert upper_source != lower_source
+
+
+@pytest.mark.xfail(reason=_XFAIL_REASON, strict=True)
+def test_case_distinct_destination_provider_ids_do_not_collide_under_edge_id() -> None:
+    upper_destination = edge_id(
+        "sts:AssumeRole_permission",
+        "arn:aws:iam::000000000000:user/SourceUser",
+        "arn:aws:iam::000000000000:role/CaseRole",
+        "-",
+        _EMPTY_FEATURES_DIGEST,
+    )
+    lower_destination = edge_id(
+        "sts:AssumeRole_permission",
+        "arn:aws:iam::000000000000:user/SourceUser",
+        "arn:aws:iam::000000000000:role/caserole",
+        "-",
+        _EMPTY_FEATURES_DIGEST,
+    )
+
+    assert upper_destination != lower_destination
+
+
+def test_exact_repeated_inputs_remain_deterministic() -> None:
+    first_node_id = node_id(
+        "aws",
+        "IAMRole",
+        "arn:aws:iam::000000000000:role/CaseRole",
+    )
+    second_node_id = node_id(
+        "aws",
+        "IAMRole",
+        "arn:aws:iam::000000000000:role/CaseRole",
+    )
+    first_edge_id = edge_id(
+        "sts:AssumeRole_permission",
+        "arn:aws:iam::000000000000:user/CaseUser",
+        "arn:aws:iam::000000000000:role/CaseRole",
+        "-",
+        _EMPTY_FEATURES_DIGEST,
+    )
+    second_edge_id = edge_id(
+        "sts:AssumeRole_permission",
+        "arn:aws:iam::000000000000:user/CaseUser",
+        "arn:aws:iam::000000000000:role/CaseRole",
+        "-",
+        _EMPTY_FEATURES_DIGEST,
+    )
+
+    assert first_node_id == second_node_id
+    assert first_edge_id == second_edge_id
