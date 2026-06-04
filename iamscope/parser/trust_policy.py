@@ -539,7 +539,7 @@ def extract_oidc_subject(
     all condition operators (StringEquals, StringLike, etc.).
 
     Handles both URL-form principals ("token.actions.githubusercontent.com")
-    and ARN-form ("arn:aws:iam::111111111111:oidc-provider/token.actions.githubusercontent.com").
+    and ARN-form ("arn:aws:iam::000000000000:oidc-provider/token.actions.githubusercontent.com").
 
     Args:
         condition_block: The "Condition" dict from the trust statement.

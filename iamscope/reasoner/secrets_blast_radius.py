@@ -396,9 +396,9 @@ def _principal_matches(
 
     Pre-BUG-007 this used exact string comparison (`p in (...)`), which
     produced false negatives on extremely common KMS policy patterns
-    like `"arn:aws:iam::123456789012:role/*"` (scope access to all
+    like `"arn:aws:iam::000000000000:role/*"` (scope access to all
     roles in an account), `"arn:aws:iam::*:role/OrgRole"` (cross-
-    account org grants), or `"arn:aws:iam::123456789012:role/prod-*"`
+    account org grants), or `"arn:aws:iam::000000000000:role/prod-*"`
     (scoped by prefix). The fix is to fnmatch the candidate ARN
     against each principal pattern so wildcards are honored.
 
@@ -447,8 +447,8 @@ def _resource_matches_kms(resources: list, key_arn: str) -> bool:
 
     - `"arn:aws:kms:us-east-1:*:key/*"` — cross-account KMS sharing
       boilerplate, extremely common in multi-account orgs
-    - `"arn:aws:kms:*:123456789012:key/*"` — all regions, one account
-    - `"arn:aws:kms:us-east-1:123456789012:key/abc-*"` — scoped by
+    - `"arn:aws:kms:*:000000000000:key/*"` — all regions, one account
+    - `"arn:aws:kms:us-east-1:000000000000:key/abc-*"` — scoped by
       key-ID prefix
 
     Any of these would have produced a false-negative

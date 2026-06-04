@@ -3,7 +3,7 @@
 Usage:
     iamscope collect [options]
     iamscope collect --profile myprofile --output ./results/
-    iamscope collect --accounts 111111111111,222222222222
+    iamscope collect --accounts <account-id-1>,<account-id-2>
     iamscope collect --expansion-mode expand --include-service-linked
 
 The CLI wraps the pipeline orchestrator and handles:

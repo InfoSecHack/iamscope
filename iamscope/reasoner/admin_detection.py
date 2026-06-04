@@ -39,16 +39,25 @@ def find_admin_witness_edge(
        definition. Matches `edge_type == "*_permission"` or
        `"iam:*_permission"`.
 
-    2. **Wildcard expansion hyperedges across ≥3 distinct service
-       prefixes** — what the real collector produces when a policy has
-       `Action: "*"`. The collector expands `*` into one permission
-       edge per relevant action class, each pointing to a synthetic
-       `__hyperedge__:wildcard_*` dst. A genuinely-admin role will
-       have wildcard edges spanning many service prefixes (sts, iam,
-       lambda, ec2, ecs, secretsmanager), whereas a merely-permissive
-       role with one scoped wildcard grant like
-       `Action: "lambda:CreateFunction", Resource: "*"` will have
-       wildcard edges in only ONE service prefix.
+    2. **Wildcard parser provenance on wildcard resources** — what the
+       real collector produces when a policy has `Action: "*"` or
+       `Action: "iam:*"` with `Resource: "*"`. The collector expands
+       wildcards into one permission edge per relevant action class and
+       preserves `action_matched_via` plus wildcard-resource metadata
+       on each edge. A literal `Action: "*"` is a direct admin signal.
+       A literal `Action: "iam:*"` is also admin-equivalent once the
+       parser/edge-builder output shows multiple IAM actions came from
+       the same wildcard action over wildcard resources.
+
+    3. **Wildcard expansion hyperedges across ≥3 distinct service
+       prefixes** — the historical fallback for collected data where a
+       policy has `Action: "*"` but the direct wildcard provenance is
+       not available. A genuinely-admin role will have wildcard edges
+       spanning many service prefixes (sts, iam, lambda, ec2, ecs,
+       secretsmanager), whereas a merely-permissive role with one
+       scoped wildcard grant like `Action: "lambda:CreateFunction",
+       Resource: "*"` will have wildcard edges in only ONE service
+       prefix.
 
        The ≥3 threshold distinguishes:
        - AdminRole with `Action: "*"` → 6 distinct prefixes → admin ✓
@@ -67,6 +76,7 @@ def find_admin_witness_edge(
     of citing an opaque node identifier (which would fail
     `Finding._validate_evidence_cross_references`).
     """
+    iam_wildcard_witnesses_by_action: dict[str, Edge] = {}
     wildcard_witnesses_by_prefix: dict[str, Edge] = {}
     for edge in facts.edges_from(target_role.provider_id):
         if not edge.edge_type.endswith("_permission"):
@@ -75,20 +85,43 @@ def find_admin_witness_edge(
         action = edge.edge_type[: -len("_permission")]
         if action == "*" or action == "iam:*":
             return edge
-        # Tier 2 signal: wildcard expansion hyperedge dst. Collect
+        # Tier 2: real parser/edge-builder wildcard provenance. This
+        # uses statement-derived metadata instead of action-name
+        # guessing. Require wildcard-resource scope so service-level
+        # wildcard actions over a narrow resource pattern do not become
+        # broad admin-equivalence witnesses.
+        action_matched_via = edge.features.get("action_matched_via")
+        if _is_wildcard_resource_grant(edge):
+            if action_matched_via == "wildcard_star":
+                return edge
+            if action_matched_via == "wildcard_iam" and action.startswith("iam:"):
+                iam_wildcard_witnesses_by_action.setdefault(action, edge)
+        # Tier 3 signal: wildcard expansion hyperedge dst. Collect
         # witness edges keyed by service prefix (the part of the
         # action before the colon). If we end up with ≥3 distinct
-        # prefixes, tier 2 fires.
+        # prefixes, tier 3 fires.
         if edge.dst.provider_id.startswith("__hyperedge__:wildcard_"):
             service_prefix = action.split(":", 1)[0] if ":" in action else action
             if service_prefix not in wildcard_witnesses_by_prefix:
                 wildcard_witnesses_by_prefix[service_prefix] = edge
-    # Tier 2: require ≥3 distinct service prefixes with wildcard grants
+    # Tier 2b: require multiple IAM actions from literal `iam:*`.
+    # This distinguishes real `Action: "iam:*", Resource: "*"` parser
+    # output from a narrow exact grant like
+    # `Action: "iam:PassRole", Resource: "*"`.
+    if len(iam_wildcard_witnesses_by_action) >= 2:
+        first_action = sorted(iam_wildcard_witnesses_by_action.keys())[0]
+        return iam_wildcard_witnesses_by_action[first_action]
+    # Tier 3: require ≥3 distinct service prefixes with wildcard grants
     if len(wildcard_witnesses_by_prefix) >= 3:
         # Return the lex-first witness for deterministic output
         first_prefix = sorted(wildcard_witnesses_by_prefix.keys())[0]
         return wildcard_witnesses_by_prefix[first_prefix]
     return None
+
+
+def _is_wildcard_resource_grant(edge: Edge) -> bool:
+    """Return True when an edge came from a broad wildcard resource grant."""
+    return edge.features.get("is_wildcard_resource") is True and edge.features.get("resource_pattern") == "*"
 
 
 def is_admin_equivalent(facts: FactGraph, target_role: Node) -> bool:

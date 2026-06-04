@@ -417,7 +417,7 @@ def _is_wildcard_resource(resource: str) -> bool:
     and "arn:*:iam::*:role/*" — missing the vast majority of real-world
     wildcard patterns:
 
-    - `arn:aws:iam::111111111111:role/prod-*` (role prefix wildcard)
+    - `arn:aws:iam::000000000000:role/prod-*` (role prefix wildcard)
     - `arn:aws:lambda:*:123:function:svc-*` (Lambda function wildcard)
     - `arn:aws:s3:::my-bucket/*` (S3 object wildcard)
     - `arn:aws:secretsmanager:*:123:secret:prod-*` (secret wildcard)
