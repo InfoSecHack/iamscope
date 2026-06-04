@@ -61,6 +61,7 @@ from enum import Enum
 from typing import Any
 
 from iamscope.constants import (
+    CONSTRAINT_TYPE_SCP,
     NAKED_BROAD,
     NAKED_CONDITIONED,
     NAKED_CRITICAL,
@@ -429,13 +430,18 @@ class CrossAccountTrustReasoner:
         )
 
         # ---- Check 4: no_scp_blocks_sts_assumerole.
-        # Walk all SCP bindings on this edge. In V1, all bindings on
-        # trust edges are SCPs (permission boundaries don't bind to
-        # trust edges), so we don't filter by constraint_type — every
-        # binding is in scope for this check.
+        # Walk only SCP bindings on this edge. The binding sidecar can
+        # attach SCP, TRUST_CONDITION, PERMISSION_BOUNDARY, and other
+        # constraints to trust edges; non-SCP constraints must not be
+        # treated as SCP blockers or SCP ambiguity.
         check_4_state = CheckState.PASS
         check_4_reason = "no SCP bindings observed on this edge"
-        bindings = facts.bindings_for_edge(edge_id)
+        bindings = [
+            binding
+            for binding in facts.bindings_for_edge(edge_id)
+            if (constraint := facts.constraint_by_id(binding.constraint_id)) is not None
+            and constraint.constraint_type == CONSTRAINT_TYPE_SCP
+        ]
         if bindings:
             edge_constraint_refs.update(f"{b.edge_id}|{b.constraint_id}" for b in bindings)
             constraint_refs.update(b.constraint_id for b in bindings)

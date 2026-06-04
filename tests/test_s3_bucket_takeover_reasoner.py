@@ -25,7 +25,7 @@ from iamscope.constants import (
     REGION_GLOBAL,
 )
 from iamscope.models import Constraint, Edge, EdgeConstraint, Node
-from iamscope.reasoner import FactGraph, S3BucketTakeoverReasoner
+from iamscope.reasoner import CheckState, FactGraph, S3BucketTakeoverReasoner
 
 _ACCOUNT = "111111\u003111111"
 _ALICE_ARN = f"arn:aws:iam::{_ACCOUNT}:user/Alice"
@@ -263,12 +263,13 @@ class TestValidatedFindings:
         assert findings[0].verdict.value == "validated"
         assert findings[0].severity == "critical"
 
-    def test_all_five_checks_present(self) -> None:
+    def test_all_six_checks_present(self) -> None:
         f = S3BucketTakeoverReasoner().run(_build_alice_to_bucket_a())[0]
         check_names = [c.name for c in f.required_checks]
-        assert len(check_names) == 5
+        assert len(check_names) == 6
         assert "principal_has_put_bucket_policy_permission" in check_names
         assert "witness_edge_is_clean" in check_names
+        assert "target_bucket_collected" in check_names
         assert "no_scp_blocks_put_bucket_policy" in check_names
         assert "no_boundary_blocks_put_bucket_policy" in check_names
         assert "principal_is_actionable" in check_names
@@ -279,10 +280,36 @@ class TestValidatedFindings:
         assert "s3" in f.title.lower()
 
     def test_trace_steps_contiguous(self) -> None:
-        """Trace step numbering must be 1,2,3,4,5 (invariant)."""
+        """Trace step numbering must be 1,2,3,4,5,6 (invariant)."""
         f = S3BucketTakeoverReasoner().run(_build_alice_to_bucket_a())[0]
         steps = [t.step for t in f.evidence.reasoning_trace]
-        assert steps == [1, 2, 3, 4, 5]
+        assert steps == [1, 2, 3, 4, 5, 6]
+
+
+class TestDanglingBucketReferences:
+    def test_dangling_bucket_emits_inconclusive_high(self) -> None:
+        alice = _user(_ALICE_ARN)
+        bucket = _bucket(_BUCKET_A)
+        bucket.properties["is_dangling_reference"] = True
+        edge = _pbp_edge(src=alice, bucket_arn=_BUCKET_A)
+        facts = _make_facts(nodes=(alice, bucket), edges=(edge,))
+
+        findings = S3BucketTakeoverReasoner().run(facts)
+
+        assert len(findings) == 1
+        finding = findings[0]
+        assert finding.verdict.value == "inconclusive"
+        assert finding.severity == "high"
+        assert "target_bucket_collected" in finding.reasoner_exit_reason
+        check = next(c for c in finding.required_checks if c.name == "target_bucket_collected")
+        assert check.state is CheckState.UNKNOWN
+        assert "not directly collected" in check.reason
+
+    def test_non_dangling_clean_bucket_still_validated_critical(self) -> None:
+        findings = S3BucketTakeoverReasoner().run(_build_alice_to_bucket_a())
+        assert len(findings) == 1
+        assert findings[0].verdict.value == "validated"
+        assert findings[0].severity == "critical"
 
 
 # ---------------------------------------------------------------------------

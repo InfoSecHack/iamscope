@@ -66,6 +66,7 @@ on `kind="condition_context"` assumptions, not session-policy ones.
 
 from __future__ import annotations
 
+import fnmatch
 import logging
 from typing import Any
 
@@ -1089,8 +1090,7 @@ class PassRoleLambdaReasoner:
                     found_in_supported_op = True
                     values = value if isinstance(value, list) else [value]
                     for v in values:
-                        v_lower = str(v).lower()
-                        if v_lower == _LAMBDA_SERVICE_PRINCIPAL:
+                        if self._passed_to_service_matches(operator, str(v), _LAMBDA_SERVICE_PRINCIPAL):
                             scoped_to_lambda = True
                         else:
                             other_services.append(str(v))
@@ -1124,6 +1124,26 @@ class PassRoleLambdaReasoner:
             f"iam:PassedToService scoped to {sorted(set(other_services))} "
             f"(not Lambda) — PassRole cannot pass to a Lambda execution role",
         )
+
+    def _passed_to_service_matches(
+        self,
+        operator: str,
+        condition_value: str,
+        service_principal: str,
+    ) -> bool:
+        """Evaluate supported iam:PassedToService operators.
+
+        StringEquals preserves exact string semantics. StringLike uses
+        AWS-style glob matching, case-insensitively, so values such as
+        `lambda.*`, `*.amazonaws.com`, and `*` match Lambda.
+        """
+        condition_value_lower = condition_value.lower()
+        service_principal_lower = service_principal.lower()
+        if operator == "StringEquals":
+            return condition_value_lower == service_principal_lower
+        if operator == "StringLike":
+            return fnmatch.fnmatchcase(service_principal_lower, condition_value_lower)
+        return False
 
     # ---------------------------------------------------------------
     # Admin-equivalence read

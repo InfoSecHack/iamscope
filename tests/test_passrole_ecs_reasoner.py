@@ -1018,6 +1018,49 @@ class TestFixtureGPassedToServiceEcsTasks:
         assert check_8.state is CheckState.PASS
 
 
+class TestPassedToServiceStringLikeSemantics:
+    """iam:PassedToService preserves StringEquals exactness and StringLike glob semantics."""
+
+    def _check_state_for(self, raw_conditions: dict[str, Any]) -> CheckState:
+        facts, _, _, _ = _build_admin_chain(raw_conditions=raw_conditions)
+        finding = PassRoleEcsReasoner().run(facts)[0]
+        check_8 = next(c for c in finding.required_checks if c.name == "passrole_condition_scoped_to_ecs_or_absent")
+        return check_8.state
+
+    def test_stringequals_exact_ecs_tasks_passes(self) -> None:
+        assert (
+            self._check_state_for({"StringEquals": {"iam:PassedToService": "ecs-tasks.amazonaws.com"}})
+            is CheckState.PASS
+        )
+
+    def test_stringlike_ecs_tasks_glob_passes(self) -> None:
+        assert self._check_state_for({"StringLike": {"iam:PassedToService": "ecs-tasks.*"}}) is CheckState.PASS
+
+    def test_stringlike_amazonaws_glob_passes(self) -> None:
+        assert self._check_state_for({"StringLike": {"iam:PassedToService": "*.amazonaws.com"}}) is CheckState.PASS
+
+    def test_stringlike_star_passes(self) -> None:
+        assert self._check_state_for({"StringLike": {"iam:PassedToService": "*"}}) is CheckState.PASS
+
+    def test_stringlike_wrong_service_fails(self) -> None:
+        assert self._check_state_for({"StringLike": {"iam:PassedToService": "lambda.*"}}) is CheckState.FAIL
+
+    def test_stringequals_glob_is_exact_and_fails(self) -> None:
+        assert self._check_state_for({"StringEquals": {"iam:PassedToService": "*.amazonaws.com"}}) is CheckState.FAIL
+
+    def test_unsupported_operator_is_unknown(self) -> None:
+        assert (
+            self._check_state_for({"StringNotEquals": {"iam:PassedToService": "ecs-tasks.amazonaws.com"}})
+            is CheckState.UNKNOWN
+        )
+
+    def test_stringlike_list_passes_when_any_value_matches(self) -> None:
+        assert (
+            self._check_state_for({"StringLike": {"iam:PassedToService": ["lambda.*", "ecs-tasks.*"]}})
+            is CheckState.PASS
+        )
+
+
 # ---------------------------------------------------------------------------
 # Fixture H: determinism double-run
 # ---------------------------------------------------------------------------
