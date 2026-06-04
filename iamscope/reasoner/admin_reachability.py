@@ -23,8 +23,8 @@ The single-finding-per-principal shape is the right abstraction for
 that question.
 
 Verdict shape:
-    validated     all reachable chains have clean witnesses
-    inconclusive  at least one reachable chain traverses a hyperedge
+    validated     at least one reachable admin chain has clean witnesses
+    inconclusive  admin reachability exists only through a hyperedge
                   or wildcard ambiguity
 
 No blocked verdict â€” SCP analysis is per-chain, and this reasoner is
@@ -125,24 +125,28 @@ class AdminReachabilityReasoner:
         """BFS from source, collecting all reachable admin-equivalent roles.
 
         Returns a Finding if at least one admin is reached, else None.
-        Tracks all visited roles, all per-hop edges, and whether the
-        walk encountered any hyperedge/wildcard ambiguity (drives
-        the inconclusive verdict).
+        Tracks all visited roles and per-hop edges. Clean versus
+        ambiguous reachability is tracked per BFS path so an unrelated
+        wildcard branch cannot poison a separate clean admin proof.
         """
         reachable_admins: set[str] = set()  # admin role ARNs
+        clean_reachable_admins: set[str] = set()  # reached via non-ambiguous path
+        ambiguous_reachable_admins: set[str] = set()  # reached via ambiguous path
         admin_witness_edges: list[Edge] = []  # admin equivalence proof edges
-        visited: set[str] = {source.provider_id}
+        clean_admin_witness_edges: list[Edge] = []  # admin witnesses for clean proofs
+        visited: set[tuple[str, bool]] = {(source.provider_id, True)}
         all_walk_edges: list[Edge] = []  # every permission + trust edge traversed
+        clean_proof_walk_edges: list[Edge] = []  # edges from clean admin-reaching path(s)
         all_visited_roles: list[Node] = []  # in BFS order
         any_hyperedge_traversed = False
         walk_hit_depth_limit = False
 
-        # Frontier: (current_arn, depth)
-        frontier: deque[tuple[str, int]] = deque()
-        frontier.append((source.provider_id, 0))
+        # Frontier: (current_arn, depth, path_is_clean, path_edges)
+        frontier: deque[tuple[str, int, bool, tuple[Edge, ...]]] = deque()
+        frontier.append((source.provider_id, 0, True, ()))
 
         while frontier:
-            current_arn, depth = frontier.popleft()
+            current_arn, depth, path_is_clean, path_edges = frontier.popleft()
 
             # If current is a role and depth >= 1, check admin equivalence.
             if depth >= 1:
@@ -154,9 +158,15 @@ class AdminReachabilityReasoner:
                         facts,
                         current_node,
                     )
-                    if admin_witness is not None and current_arn not in reachable_admins:
+                    if admin_witness is not None:
                         reachable_admins.add(current_arn)
-                        admin_witness_edges.append(admin_witness)
+                        self._append_unique_edge(admin_witness_edges, admin_witness)
+                        if path_is_clean:
+                            clean_reachable_admins.add(current_arn)
+                            self._append_unique_edge(clean_admin_witness_edges, admin_witness)
+                            self._append_unique_edges(clean_proof_walk_edges, path_edges)
+                        else:
+                            ambiguous_reachable_admins.add(current_arn)
 
             # Stop walking deeper if depth limit hit.
             if depth >= _MAX_DEPTH:
@@ -169,8 +179,6 @@ class AdminReachabilityReasoner:
                 current_arn,
             ):
                 next_arn = perm_edge.dst.provider_id
-                if next_arn in visited:
-                    continue
 
                 trust_edge = self._find_admitting_trust_edge(
                     facts,
@@ -182,15 +190,23 @@ class AdminReachabilityReasoner:
 
                 # Track ambiguity: if either edge is a hyperedge witness,
                 # the walk has touched ambiguous ground.
+                hop_is_clean = True
                 if self._is_ambiguous_edge(perm_edge):
                     any_hyperedge_traversed = True
+                    hop_is_clean = False
                 if self._is_ambiguous_edge(trust_edge):
                     any_hyperedge_traversed = True
+                    hop_is_clean = False
 
-                all_walk_edges.append(perm_edge)
-                all_walk_edges.append(trust_edge)
-                visited.add(next_arn)
-                frontier.append((next_arn, depth + 1))
+                next_path_is_clean = path_is_clean and hop_is_clean
+                visited_key = (next_arn, next_path_is_clean)
+                if visited_key in visited:
+                    continue
+
+                self._append_unique_edge(all_walk_edges, perm_edge)
+                self._append_unique_edge(all_walk_edges, trust_edge)
+                visited.add(visited_key)
+                frontier.append((next_arn, depth + 1, next_path_is_clean, path_edges + (perm_edge, trust_edge)))
 
         # No reachable admins â†’ no finding
         if not reachable_admins:
@@ -200,8 +216,12 @@ class AdminReachabilityReasoner:
             facts=facts,
             source=source,
             reachable_admins=sorted(reachable_admins),
+            clean_reachable_admins=sorted(clean_reachable_admins),
+            ambiguous_reachable_admins=sorted(ambiguous_reachable_admins),
             admin_witness_edges=admin_witness_edges,
+            clean_admin_witness_edges=clean_admin_witness_edges,
             all_walk_edges=all_walk_edges,
+            clean_proof_walk_edges=clean_proof_walk_edges,
             all_visited_roles=all_visited_roles,
             any_hyperedge_traversed=any_hyperedge_traversed,
             walk_hit_depth_limit=walk_hit_depth_limit,
@@ -256,6 +276,16 @@ class AdminReachabilityReasoner:
         from iamscope.reasoner.fact_graph import _is_unknown_witness
 
         return _is_unknown_witness(edge)
+
+    def _append_unique_edge(self, edges: list[Edge], edge: Edge) -> None:
+        """Append edge once, preserving first-seen deterministic order."""
+        if edge.edge_id not in {existing.edge_id for existing in edges}:
+            edges.append(edge)
+
+    def _append_unique_edges(self, edges: list[Edge], new_edges: tuple[Edge, ...]) -> None:
+        """Append each edge once, preserving first-seen deterministic order."""
+        for edge in new_edges:
+            self._append_unique_edge(edges, edge)
 
     def _check_boundary_blockers_on_walk(
         self,
@@ -369,8 +399,12 @@ class AdminReachabilityReasoner:
         facts: FactGraph,
         source: Node,
         reachable_admins: list[str],
+        clean_reachable_admins: list[str],
+        ambiguous_reachable_admins: list[str],
         admin_witness_edges: list[Edge],
+        clean_admin_witness_edges: list[Edge],
         all_walk_edges: list[Edge],
+        clean_proof_walk_edges: list[Edge],
         all_visited_roles: list[Node],
         any_hyperedge_traversed: bool,
         walk_hit_depth_limit: bool,
@@ -479,9 +513,18 @@ class AdminReachabilityReasoner:
         )
 
         # ---- Check 3: at least one reachable chain uses clean witnesses
-        # If any hyperedge was traversed during the walk, the result is
-        # ambiguous (we can't prove which specific chains are real).
-        check_3_state = CheckState.UNKNOWN if any_hyperedge_traversed else CheckState.PASS
+        # Ambiguous alternate branches are still retained in evidence, but
+        # do not downgrade a separate clean proof path to an admin endpoint.
+        has_clean_admin_path = bool(clean_reachable_admins)
+        check_3_state = CheckState.PASS if has_clean_admin_path else CheckState.UNKNOWN
+        if has_clean_admin_path and any_hyperedge_traversed:
+            check_3_reason = (
+                "at least one clean reachable admin path exists; ambiguous alternate walk evidence also observed"
+            )
+        elif has_clean_admin_path:
+            check_3_reason = "all BFS paths use clean witness edges"
+        else:
+            check_3_reason = "BFS walk traversed at least one wildcard/hyperedge edge"
         check_results.append(
             Check(
                 name="at_least_one_reachable_chain_uses_clean_witnesses",
@@ -491,20 +534,28 @@ class AdminReachabilityReasoner:
                 ),
                 state=check_3_state,
                 evidence_refs=tuple(edge_refs),
-                reason=(
-                    "BFS walk traversed at least one wildcard/hyperedge edge"
-                    if any_hyperedge_traversed
-                    else "all BFS paths use clean witness edges"
-                ),
+                reason=check_3_reason,
             )
         )
         trace.append(
             TraceEntry(
                 step=3,
                 action="check_at_least_one_reachable_chain_uses_clean_witnesses",
-                inputs=(str(any_hyperedge_traversed),),
+                inputs=(
+                    (
+                        str(any_hyperedge_traversed),
+                        str(len(clean_reachable_admins)),
+                        str(len(ambiguous_reachable_admins)),
+                    )
+                    if has_clean_admin_path and any_hyperedge_traversed
+                    else (str(any_hyperedge_traversed),)
+                ),
                 result=check_3_state.value.upper(),
-                reason="ambiguity in walk" if any_hyperedge_traversed else "clean walk",
+                reason=(
+                    "clean path with ambiguous alternate walk"
+                    if has_clean_admin_path and any_hyperedge_traversed
+                    else ("clean walk" if has_clean_admin_path else "ambiguity in walk")
+                ),
             )
         )
 
@@ -541,9 +592,11 @@ class AdminReachabilityReasoner:
         # ---- Check 5: no permission boundary blocks reachable walk
         scp_constraint_refs: set[str] = set()
         scp_edge_constraint_refs: set[str] = set()
+        blocker_walk_edges = clean_proof_walk_edges if clean_reachable_admins else all_walk_edges
+        blocker_admin_witness_edges = clean_admin_witness_edges if clean_reachable_admins else admin_witness_edges
         check_5_state, check_5_reason, check_5_blockers = self._check_scp_blockers_on_walk(
             facts,
-            all_walk_edges,
+            blocker_walk_edges,
             scp_constraint_refs,
             scp_edge_constraint_refs,
         )
@@ -575,7 +628,7 @@ class AdminReachabilityReasoner:
         boundary_edge_constraint_refs: set[str] = set()
         check_6_state, check_6_reason, check_6_blockers = self._check_boundary_blockers_on_walk(
             facts,
-            all_walk_edges + admin_witness_edges,
+            blocker_walk_edges + blocker_admin_witness_edges,
             boundary_constraint_refs,
             boundary_edge_constraint_refs,
         )
