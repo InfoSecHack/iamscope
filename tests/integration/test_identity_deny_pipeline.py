@@ -326,7 +326,7 @@ def test_pipeline_conditional_deny_inconclusive() -> None:
     assert check.state.value == "unknown"
 
 
-def test_pipeline_notaction_deny_conservative() -> None:
+def test_pipeline_notaction_deny_does_not_overbind_unrelated_actions() -> None:
     case = _build_case(
         deny_principal_arn=_ALICE_ARN,
         deny_policy_doc=_deny_doc(action=None, not_action="s3:*", resource=_DEVOPS_ARN),
@@ -334,10 +334,10 @@ def test_pipeline_notaction_deny_conservative() -> None:
 
     constraint = _identity_deny_constraints(case)[0]
     assert constraint.properties["parse_status"] == "partial"
-    binding = next(iter(case.facts.bindings_for_edge(_alice_to_devops_edge(case).edge_id)))
-    assert binding.governance_confidence == "partial"
+    assert constraint.properties["deny_actions"] == []
+    assert case.facts.bindings_for_edge(_alice_to_devops_edge(case).edge_id) == ()
     finding = _alice_admin_arc_finding(case)
-    assert finding.verdict.value == "inconclusive"
+    assert finding.verdict.value == "validated"
 
 
 def test_pipeline_deny_wrong_principal_no_effect() -> None:

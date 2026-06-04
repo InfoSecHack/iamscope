@@ -54,7 +54,7 @@ def _deny_result(
         principal_arn=principal_arn,
         policy_arn=policy_arn,
         statement_id=statement_id,
-        deny_actions=deny_actions or ["sts:AssumeRole"],
+        deny_actions=deny_actions if deny_actions is not None else ["sts:AssumeRole"],
         resource_patterns=resource_patterns or ["*"],
         has_conditions=has_conditions,
         raw_conditions=raw_conditions or {},
@@ -226,15 +226,39 @@ class TestBindIdentityDenyToEdge:
         assert binding.governance_confidence == GOVERNANCE_CONFIDENCE_PARTIAL
         assert binding.likely_blocking is True
 
-    def test_partial_parse_binds_conservatively_without_action_match(self) -> None:
+    def test_partial_parse_action_mismatch_no_bind(self) -> None:
         edge = _edge(action="sts:AssumeRole")
         constraint = _constraint(_deny_result(deny_actions=["s3:*"], parse_status="partial"))
+
+        assert bind_identity_deny_to_edge(edge, constraint) is None
+
+    def test_partial_parse_matching_action_binds_partial(self) -> None:
+        edge = _edge(action="sts:AssumeRole")
+        constraint = _constraint(_deny_result(deny_actions=["sts:AssumeRole"], parse_status="partial"))
 
         binding = bind_identity_deny_to_edge(edge, constraint)
 
         assert binding is not None
         assert binding.governance_confidence == GOVERNANCE_CONFIDENCE_PARTIAL
         assert binding.likely_blocking is True
+
+    def test_partial_parse_empty_deny_actions_no_broad_bind(self) -> None:
+        edge = _edge(action="iam:PassRole")
+        constraint = _constraint(_deny_result(deny_actions=[], parse_status="partial"))
+
+        assert bind_identity_deny_to_edge(edge, constraint) is None
+
+    def test_conditional_deny_action_mismatch_no_bind(self) -> None:
+        edge = _edge(action="iam:PassRole")
+        constraint = _constraint(
+            _deny_result(
+                deny_actions=["sts:AssumeRole"],
+                has_conditions=True,
+                raw_conditions={"Bool": {"aws:MultiFactorAuthPresent": "false"}},
+            )
+        )
+
+        assert bind_identity_deny_to_edge(edge, constraint) is None
 
     def test_non_permission_edge_no_bind(self) -> None:
         edge = _edge(edge_type="sts:AssumeRole_trust")

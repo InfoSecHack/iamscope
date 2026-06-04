@@ -269,8 +269,10 @@ def parse_permission_denies(
             deny_actions = _normalize_to_list(actions_raw)
         elif not_actions_raw is not None:
             # NotAction in a Deny means deny everything except these actions.
-            # CC-4 owns true inversion; for CC-1 this is conservative partial data.
-            deny_actions = _normalize_to_list(not_actions_raw)
+            # CC-4 owns true inversion; until identity Deny supports a
+            # separate deny_not_actions field, do not store the exception
+            # list as if it were a positive denied-action list.
+            deny_actions = []
             parse_status = "partial"
         else:
             deny_actions = []
