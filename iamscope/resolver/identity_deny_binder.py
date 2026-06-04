@@ -87,7 +87,9 @@ def bind_identity_deny_to_edge(
     parse_status: str = props.get("parse_status", PARSE_STATUS_COMPLETE)
     has_conditions: bool = props.get("has_conditions", False)
 
-    if parse_status == PARSE_STATUS_COMPLETE and not _action_matches_deny(edge_action, deny_actions):
+    if not deny_actions:
+        return None
+    if not _action_matches_deny(edge_action, deny_actions):
         return None
 
     if not _resource_matches_deny(edge.dst.provider_id, resource_patterns):

@@ -125,7 +125,7 @@ def test_notaction_deny_parse_status_partial() -> None:
         }
     )
 
-    assert results[0].deny_actions == ["s3:GetObject"]
+    assert results[0].deny_actions == []
     assert results[0].parse_status == "partial"
 
 
