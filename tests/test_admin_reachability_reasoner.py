@@ -28,6 +28,7 @@ from iamscope.reasoner import AdminReachabilityReasoner, FactGraph
 from tests.test_assume_role_chain_reasoner import (  # noqa: I001
     _ADMIN_ARN,
     _ALICE_ARN,
+    _DEPLOY_ARN,
     _DEVOPS_ARN,
     _NON_ADMIN_ARN,
     _PROD_ARN,
@@ -441,6 +442,63 @@ class TestScpReachability:
 
 
 class TestHyperedgeInconclusive:
+    def test_clean_admin_path_plus_unrelated_ambiguous_branch_stays_validated(self) -> None:
+        """An ambiguous alternate branch must not poison a separate clean admin proof."""
+        facts = _build_two_hop_chain()
+        non_admin = _role(_NON_ADMIN_ARN)
+        ambiguous_perm = _assume_perm_edge(
+            src_arn=_ALICE_ARN,
+            dst_arn=_NON_ADMIN_ARN,
+            digest="8" * 64,
+            is_wildcard_resource=True,
+        )
+        ambiguous_trust = _trust_edge(
+            principal_arn=_ALICE_ARN,
+            target_arn=_NON_ADMIN_ARN,
+            digest="9" * 64,
+        )
+        branched = _make_facts(
+            nodes=(*facts.nodes, non_admin),
+            edges=(*facts.edges, ambiguous_perm, ambiguous_trust),
+        )
+
+        findings = AdminReachabilityReasoner().run(branched)
+        alice_f = next(f for f in findings if f.source.provider_id == _ALICE_ARN)
+
+        assert alice_f.verdict.value == "validated"
+        check = next(
+            c for c in alice_f.required_checks if c.name == "at_least_one_reachable_chain_uses_clean_witnesses"
+        )
+        assert check.state.value == "pass"
+        assert "ambiguous alternate walk evidence" in check.reason
+        assert ambiguous_perm.edge_id in alice_f.evidence.edge_refs
+        assert ambiguous_trust.edge_id in alice_f.evidence.edge_refs
+
+    def test_only_ambiguous_path_to_admin_remains_inconclusive(self) -> None:
+        """Admin reachability through only a wildcard hop remains inconclusive."""
+        alice = _user(_ALICE_ARN)
+        admin = _role(_ADMIN_ARN)
+        wildcard_perm = _assume_perm_edge(
+            src_arn=_ALICE_ARN,
+            dst_arn=_ADMIN_ARN,
+            is_wildcard_resource=True,
+        )
+        trust = _trust_edge(principal_arn=_ALICE_ARN, target_arn=_ADMIN_ARN)
+        admin_grant = _admin_grant_edge(_ADMIN_ARN)
+        facts = _make_facts(
+            nodes=(alice, admin),
+            edges=(wildcard_perm, trust, admin_grant),
+        )
+
+        findings = AdminReachabilityReasoner().run(facts)
+        alice_f = next(f for f in findings if f.source.provider_id == _ALICE_ARN)
+
+        assert alice_f.verdict.value == "inconclusive"
+        check = next(
+            c for c in alice_f.required_checks if c.name == "at_least_one_reachable_chain_uses_clean_witnesses"
+        )
+        assert check.state.value == "unknown"
+
     def test_wildcard_hop_produces_inconclusive(self) -> None:
         """Wildcard sts:AssumeRole on first hop → check 3 UNKNOWN."""
         alice = _user(_ALICE_ARN)
@@ -465,6 +523,51 @@ class TestHyperedgeInconclusive:
         # Check 3 should be UNKNOWN
         c = next(c for c in alice_f.required_checks if c.name == "at_least_one_reachable_chain_uses_clean_witnesses")
         assert c.state.value == "unknown"
+
+
+class TestDepthLimitConservative:
+    def test_clean_admin_path_still_inconclusive_when_alternate_walk_hits_depth_limit(self) -> None:
+        alice = _user(_ALICE_ARN)
+        admin = _role(_ADMIN_ARN)
+        deploy = _role(_DEPLOY_ARN)
+        devops = _role(_DEVOPS_ARN)
+        prod = _role(_PROD_ARN)
+        non_admin = _role(_NON_ADMIN_ARN)
+
+        direct_perm = _assume_perm_edge(src_arn=_ALICE_ARN, dst_arn=_ADMIN_ARN, digest="1" * 64)
+        direct_trust = _trust_edge(principal_arn=_ALICE_ARN, target_arn=_ADMIN_ARN, digest="2" * 64)
+        branch_1_perm = _assume_perm_edge(src_arn=_ALICE_ARN, dst_arn=_DEPLOY_ARN, digest="3" * 64)
+        branch_1_trust = _trust_edge(principal_arn=_ALICE_ARN, target_arn=_DEPLOY_ARN, digest="4" * 64)
+        branch_2_perm = _assume_perm_edge(src_arn=_DEPLOY_ARN, dst_arn=_DEVOPS_ARN, digest="5" * 64)
+        branch_2_trust = _trust_edge(principal_arn=_DEPLOY_ARN, target_arn=_DEVOPS_ARN, digest="6" * 64)
+        branch_3_perm = _assume_perm_edge(src_arn=_DEVOPS_ARN, dst_arn=_PROD_ARN, digest="7" * 64)
+        branch_3_trust = _trust_edge(principal_arn=_DEVOPS_ARN, target_arn=_PROD_ARN, digest="8" * 64)
+        branch_4_perm = _assume_perm_edge(src_arn=_PROD_ARN, dst_arn=_NON_ADMIN_ARN, digest="9" * 64)
+        branch_4_trust = _trust_edge(principal_arn=_PROD_ARN, target_arn=_NON_ADMIN_ARN, digest="0" * 64)
+        admin_grant = _admin_grant_edge(_ADMIN_ARN)
+        facts = _make_facts(
+            nodes=(alice, admin, deploy, devops, prod, non_admin),
+            edges=(
+                direct_perm,
+                direct_trust,
+                branch_1_perm,
+                branch_1_trust,
+                branch_2_perm,
+                branch_2_trust,
+                branch_3_perm,
+                branch_3_trust,
+                branch_4_perm,
+                branch_4_trust,
+                admin_grant,
+            ),
+        )
+
+        findings = AdminReachabilityReasoner().run(facts)
+        alice_f = next(f for f in findings if f.source.provider_id == _ALICE_ARN)
+
+        assert alice_f.verdict.value == "inconclusive"
+        check = next(c for c in alice_f.required_checks if c.name == "walk_terminated_within_depth_limit")
+        assert check.state.value == "unknown"
 
 
 # ---------------------------------------------------------------------------
