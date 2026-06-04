@@ -25,6 +25,7 @@ Design notes:
 
 from __future__ import annotations
 
+from iamscope.constants import NODE_TYPE_WILDCARD_PRINCIPAL, TRUST_SCOPE_ANY_AWS_PRINCIPAL
 from iamscope.models import Edge, Node
 from iamscope.reasoner.fact_graph import FactGraph
 
@@ -76,7 +77,7 @@ def find_admitting_trust_edge(
 
     Walks the next role's trust policy via `facts.trust_policy_of` and
     returns the first edge whose src admits current_arn. Considers
-    both direct ARN match and account-root principals.
+    direct ARN match, account-root principals, and wildcard principals.
 
     Account-root admission rule: a trust edge whose src is
     `arn:aws:iam::<ACCOUNT>:root` admits any principal in the same
@@ -85,6 +86,13 @@ def find_admitting_trust_edge(
     account-root to a role's trust policy delegates trust decisions
     to the account's IAM policies, effectively trusting any IAM
     principal in that account.
+
+    Wildcard-principal admission rule: a trust edge whose principal is
+    `Principal: "*"` admits any current principal, but callers must
+    classify that edge as ambiguous rather than clean. The resolver
+    preserves this via `WildcardPrincipal`, `is_wildcard_principal`, and
+    `trust_scope=any_aws_principal`; matching it here prevents chain
+    reasoners from silently dropping wildcard-trust hops.
 
     Returns None if no admitting trust edge exists. Callers should
     skip the hop entirely in that case (the chain is broken).
@@ -104,4 +112,18 @@ def find_admitting_trust_edge(
                 cur_parts = current_arn.split(":")
                 if len(cur_parts) >= 5 and cur_parts[4] == src_account:
                     return trust_edge
+        # Wildcard principal: admits any principal, but is ambiguous.
+        if _is_wildcard_trust_principal(trust_edge):
+            return trust_edge
     return None
+
+
+def _is_wildcard_trust_principal(trust_edge: Edge) -> bool:
+    """Return True for current resolver/parser wildcard-principal trust shapes."""
+    features = trust_edge.features or {}
+    return (
+        trust_edge.src.provider_id == "*"
+        or trust_edge.src.node_type == NODE_TYPE_WILDCARD_PRINCIPAL
+        or features.get("is_wildcard_principal") is True
+        or features.get("trust_scope") == TRUST_SCOPE_ANY_AWS_PRINCIPAL
+    )
