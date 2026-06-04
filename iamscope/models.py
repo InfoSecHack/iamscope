@@ -726,6 +726,12 @@ class ScenarioMetadata:
     # because `canonical_hash` excludes metadata — the non-deterministic
     # failure content will never perturb the hash.
     collection_failures: list[dict[str, Any]] = field(default_factory=list)
+    # BUG-024 fix: structured record of IAM policy parse failures
+    # collected during per-account IAM collection. Empty/absent in the
+    # happy path; any non-empty value means IAM policies were skipped
+    # before graph construction and downstream findings may be missing.
+    # Each entry is produced by `PolicyParseFailure.to_dict()`.
+    policy_parse_failures: list[dict[str, Any]] = field(default_factory=list)
     hash_scope: str = "canonical_hash excludes metadata block"
 
     def to_dict(self) -> dict[str, Any]:
@@ -744,4 +750,6 @@ class ScenarioMetadata:
             "noise_filter": self.noise_filter,
             "org_id": self.org_id,
         }
+        if self.policy_parse_failures:
+            d["policy_parse_failures"] = self.policy_parse_failures
         return _sorted_dict(d)

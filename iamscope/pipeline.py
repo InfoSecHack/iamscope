@@ -49,6 +49,7 @@ from iamscope.models import (
     TrustParseResult,
 )
 from iamscope.output.scenario_json import emit_binding_metadata, emit_scenario
+from iamscope.parser.parse_failures import PolicyParseFailure
 from iamscope.parser.resource_policy import parse_resource_policy_documents
 from iamscope.resolver.cross_account import build_trust_edges, resolve_synthetic_nodes
 from iamscope.resolver.identity_deny_binder import (
@@ -153,6 +154,12 @@ class PipelineResult:
     # `ScenarioMetadata.collection_failures` so consumers that only
     # read scenario.json still see the signal.
     collection_failures: list[CollectionFailure] = field(default_factory=list)
+
+    # BUG-024 fix: structured record of per-account IAM policy parse
+    # failures aggregated from AccountData.policy_parse_failures. Empty
+    # in the happy path; any non-empty value means one or more IAM
+    # policies could not be parsed before graph construction.
+    policy_parse_failures: list[PolicyParseFailure] = field(default_factory=list)
 
 
 def run_pipeline(
@@ -353,6 +360,8 @@ def run_pipeline(
         result.accounts_collected = len(all_account_data)
         result.accounts_skipped = accounts_skipped
 
+    result.policy_parse_failures = _aggregate_policy_parse_failures(result.account_data)
+
     # --- Phase 3: Resolution ---
     logger.info("=== Phase 3: Resolution Pipeline ===")
     nodes, edges, constraints, edge_constraints, budget_hit = _run_resolution(
@@ -447,6 +456,15 @@ def run_pipeline(
             "the full list.",
             len(result.collection_failures),
         )
+    if result.policy_parse_failures:
+        logger.warning(
+            "IAM policy parsing was partial: %d policy document(s) failed "
+            "to parse during account collection. Fact graph may be "
+            "incomplete and downstream findings may be missing. "
+            "See PipelineResult.policy_parse_failures or the scenario.json "
+            "metadata.policy_parse_failures field for the full list.",
+            len(result.policy_parse_failures),
+        )
     metadata = ScenarioMetadata(
         collector="iamscope",
         collector_version="0.2.0",
@@ -468,6 +486,7 @@ def run_pipeline(
             "total_edge_constraints": len(edge_constraints),
         },
         collection_failures=[f.to_dict() for f in result.collection_failures],
+        policy_parse_failures=[f.to_dict() for f in result.policy_parse_failures],
     )
 
     scenario_bytes, canonical_hash = emit_scenario(
@@ -506,6 +525,28 @@ def run_pipeline(
     )
 
     return result
+
+
+def _policy_parse_failure_sort_key(failure: PolicyParseFailure) -> tuple[str, str, str, str, str, str, str, str]:
+    """Stable ordering for policy parse failures across accounts and AWS pages."""
+    return (
+        failure.parser,
+        failure.source_arn,
+        failure.policy_source,
+        failure.policy_name,
+        failure.policy_arn,
+        failure.failure_kind,
+        failure.error_class,
+        failure.error_message,
+    )
+
+
+def _aggregate_policy_parse_failures(account_data: list[AccountData]) -> list[PolicyParseFailure]:
+    """Aggregate per-account IAM policy parse failures deterministically."""
+    failures: list[PolicyParseFailure] = []
+    for acct in sorted(account_data, key=lambda account: account.account_id):
+        failures.extend(sorted(acct.policy_parse_failures, key=_policy_parse_failure_sort_key))
+    return failures
 
 
 def _resolve_target_accounts(
