@@ -259,6 +259,146 @@ def _scenario_counts(scenario: Any) -> dict[str, int]:
     }
 
 
+def _scenario_edges_by_id(scenario: Any) -> dict[str, dict[str, Any]]:
+    if not isinstance(scenario, dict):
+        return {}
+    edges = scenario.get("edges", [])
+    if not isinstance(edges, list):
+        return {}
+    indexed: dict[str, dict[str, Any]] = {}
+    for edge in edges:
+        if not isinstance(edge, dict):
+            continue
+        for key in ("id", "edge_id"):
+            edge_id = edge.get(key)
+            if isinstance(edge_id, str) and edge_id:
+                indexed[edge_id] = edge
+    return indexed
+
+
+def _short_value(value: Any) -> str:
+    if isinstance(value, dict):
+        pieces = []
+        for key in sorted(value):
+            item = value[key]
+            item_text = f"{type(item).__name__}[{len(item)}]" if isinstance(item, dict | list) else sanitize_text(item)
+            pieces.append(f"{sanitize_text(key)}={item_text}")
+        return ", ".join(pieces) if pieces else "empty"
+    if isinstance(value, list):
+        return ", ".join(sanitize_text(item) for item in value[:6]) if value else "empty"
+    if value is None:
+        return "not_provided"
+    return sanitize_text(value)
+
+
+def _collection_context_summary(finding: dict[str, Any]) -> str:
+    for key in ("collection_context", "collection_context_summary"):
+        value = finding.get(key)
+        if value:
+            return _short_value(value)
+    evidence = finding.get("evidence")
+    if isinstance(evidence, dict):
+        for key in ("collection_context", "collection_context_summary"):
+            value = evidence.get(key)
+            if value:
+                return _short_value(value)
+    return "not_provided"
+
+
+def _assumptions_summary(finding: dict[str, Any]) -> list[str]:
+    assumptions = finding.get("assumptions")
+    if not isinstance(assumptions, list):
+        return []
+    entries: list[str] = []
+    for assumption in assumptions:
+        if isinstance(assumption, dict):
+            kind = sanitize_text(assumption.get("kind", "unknown"))
+            detail = sanitize_text(assumption.get("detail", ""))
+            entries.append(f"{kind}: {detail}" if detail else kind)
+        else:
+            entries.append(sanitize_text(assumption))
+    return entries
+
+
+def _blockers_summary(finding: dict[str, Any]) -> list[str]:
+    blockers = finding.get("blockers_observed")
+    if not isinstance(blockers, list):
+        return []
+    entries: list[str] = []
+    for blocker in blockers:
+        if isinstance(blocker, dict):
+            kind = sanitize_text(blocker.get("kind", "unknown"))
+            reason = sanitize_text(blocker.get("reason", ""))
+            constraint_id = sanitize_text(blocker.get("constraint_id", ""))
+            if reason:
+                entries.append(f"{kind}: {reason}")
+            elif constraint_id:
+                entries.append(f"{kind}: {constraint_id}")
+            else:
+                entries.append(kind)
+        else:
+            entries.append(sanitize_text(blocker))
+    return entries
+
+
+def _collect_evidence_refs(finding: dict[str, Any]) -> list[str]:
+    refs: set[str] = set()
+    evidence = finding.get("evidence")
+    if isinstance(evidence, dict):
+        for key in ("edge_refs", "evidence_refs"):
+            values = evidence.get(key)
+            if isinstance(values, list):
+                refs.update(str(value) for value in values if value)
+    required_checks = finding.get("required_checks")
+    if isinstance(required_checks, list):
+        for check in required_checks:
+            if not isinstance(check, dict):
+                continue
+            values = check.get("evidence_refs")
+            if isinstance(values, list):
+                refs.update(str(value) for value in values if value)
+    return sorted(refs)
+
+
+def _short_ref(ref: str) -> str:
+    if len(ref) <= 16:
+        return sanitize_text(ref)
+    prefix = ref[:12]
+    if ACCOUNT_ID_RE.fullmatch(prefix):
+        prefix = ref[:10]
+    return sanitize_text(prefix)
+
+
+def _edge_endpoint_tail(edge: dict[str, Any], keys: tuple[str, ...]) -> str:
+    for key in keys:
+        value = edge.get(key)
+        if isinstance(value, str) and value:
+            return sanitize_text(_tail_name(value) if value.startswith("arn:aws:") else value)
+        if isinstance(value, dict):
+            provider_id = value.get("provider_id") or value.get("arn") or value.get("name")
+            if isinstance(provider_id, str) and provider_id:
+                return sanitize_text(_tail_name(provider_id) if provider_id.startswith("arn:aws:") else provider_id)
+    return "unknown"
+
+
+def _referenced_edge_summaries(
+    finding: dict[str, Any],
+    edges_by_id: dict[str, dict[str, Any]],
+) -> list[str]:
+    summaries: list[str] = []
+    for ref in _collect_evidence_refs(finding):
+        edge = edges_by_id.get(ref)
+        if not edge:
+            continue
+        source = _edge_endpoint_tail(edge, ("src", "source", "source_provider_id", "source_arn"))
+        target = _edge_endpoint_tail(edge, ("dst", "target", "target_provider_id", "target_arn"))
+        action = sanitize_text(edge.get("action") or edge.get("action_or_precondition") or edge.get("kind") or "")
+        relation = sanitize_text(edge.get("relation") or edge.get("type") or "")
+        descriptor = action or relation or "edge"
+        summaries.append(f"{_short_ref(ref)}: {source} -> {target} ({descriptor})")
+    return summaries[:6]
+
+
 def _load_labels(path: Path | None, findings_by_id: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
     if path is None:
         return {}
@@ -304,6 +444,7 @@ def build_review_artifacts(
     if len(findings_by_id) != len(findings):
         raise ValueError("duplicate finding_id values are not allowed")
     labels_by_id = _load_labels(labels_payload_path, findings_by_id)
+    edges_by_id = _scenario_edges_by_id(scenario_payload)
 
     inventory: list[dict[str, Any]] = []
     template: list[dict[str, Any]] = []
@@ -320,7 +461,12 @@ def build_review_artifacts(
             "source_name": _source_or_target_name(finding, "source"),
             "target_name": _source_or_target_name(finding, "target"),
             "title": sanitize_text(finding.get("title", "")),
+            "collection_context_summary": _collection_context_summary(finding),
+            "assumptions": _assumptions_summary(finding),
+            "blockers_observed": _blockers_summary(finding),
+            "required_check_states": _required_check_states(finding),
             "evidence_summary": _evidence_summary(finding),
+            "referenced_edges": _referenced_edge_summaries(finding, edges_by_id),
             "reviewer_classification": classification,
             "label_status": label_status,
         }
@@ -343,6 +489,7 @@ def build_review_artifacts(
                 "severity": entry["severity"],
                 "source_name": entry["source_name"],
                 "target_name": entry["target_name"],
+                "collection_context_summary": entry["collection_context_summary"],
                 "classification": "",
                 "reviewer_confidence": "",
                 "owner_confirmed": False,
@@ -387,11 +534,21 @@ def _markdown_table(inventory: list[dict[str, Any]]) -> str:
     rows = [
         "# Real Pilot Finding Review Table",
         "",
-        "| Finding | Pattern | IAMScope verdict | Severity | Reviewer classification | Source | Target | Evidence summary |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- |",
+        "Capability-honesty reminders:",
+        "",
+        "- No findings does not mean safe.",
+        "- Validated is not exploitability proof.",
+        "- `collection_context` matters.",
+        "- No composite score.",
+        "- No pass/fail benchmark label.",
+        "",
+        "| Finding | Pattern | IAMScope verdict | Severity | Reviewer classification | Source | Target | "
+        "Collection context | Evidence summary |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for entry in inventory:
-        evidence = "; ".join(entry["evidence_summary"]) if entry["evidence_summary"] else "none"
+        evidence_parts = [*entry["evidence_summary"], *entry["referenced_edges"]]
+        evidence = "; ".join(evidence_parts) if evidence_parts else "none"
         cells = [
             entry["finding_id_prefix"],
             entry["pattern_id"],
@@ -400,6 +557,7 @@ def _markdown_table(inventory: list[dict[str, Any]]) -> str:
             entry["reviewer_classification"],
             entry["source_name"],
             entry["target_name"],
+            entry["collection_context_summary"],
             evidence,
         ]
         rows.append("| " + " | ".join(sanitize_text(cell).replace("|", "\\|") for cell in cells) + " |")

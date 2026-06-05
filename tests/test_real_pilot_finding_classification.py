@@ -30,7 +30,14 @@ def _scenario() -> dict[str, Any]:
             {"provider_id": _iam_arn("role/path/SourceWildcardTrustRole")},
             {"provider_id": _iam_arn("role/ProdDBAdminRole")},
         ],
-        "edges": [{"src": _iam_arn("role/path/SourceWildcardTrustRole")}],
+        "edges": [
+            {
+                "id": "edge-trust-1",
+                "src": _iam_arn("role/path/SourceWildcardTrustRole"),
+                "dst": _iam_arn("role/TrustedTargetRole"),
+                "action": "sts:AssumeRole",
+            }
+        ],
         "constraints": [{"id": "constraint-1"}],
         "edge_constraints": [{"id": "edge-constraint-1"}],
     }
@@ -48,6 +55,7 @@ def _findings() -> dict[str, Any]:
                 "target": {"provider_id": _iam_arn("role/TrustedTargetRole")},
                 "title": f"{_iam_arn('role/path/SourceWildcardTrustRole')} trusts {_iam_arn('role/TrustedTargetRole')}",
                 "evidence": {
+                    "edge_refs": ["edge-trust-1"],
                     "trust_scope": "cross_account",
                     "naked_trust": True,
                     "wildcard_principal": True,
@@ -55,6 +63,16 @@ def _findings() -> dict[str, Any]:
                     "has_conditions": True,
                     "principal": _sts_arn("assumed-role/ExternalReviewer/session"),
                 },
+                "collection_context": {
+                    "scope": "partial_org",
+                    "org_membership_status": "unknown",
+                },
+                "assumptions": [
+                    {
+                        "kind": "org_membership_status",
+                        "detail": "source account membership is unknown in partial collection context",
+                    }
+                ],
                 "required_checks": [{"name": "trust_policy_allows_source", "state": "pass"}],
             },
             {
@@ -76,6 +94,13 @@ def _findings() -> dict[str, Any]:
                     "reachable_admins_count": 1,
                     "admin_policy_name": "AdministratorAccess",
                 },
+                "blockers_observed": [
+                    {
+                        "kind": "permission_boundary",
+                        "reason": "reviewer should inspect boundary context",
+                        "constraint_id": "constraint-1",
+                    }
+                ],
             },
             {
                 "finding_id": "gggghhhhiiii3333",
@@ -150,6 +175,19 @@ def test_no_label_run_emits_all_review_artifacts(tmp_path: Path) -> None:
     assert len(_load(output / "unlabeled-findings.json")["findings"]) == 3
 
 
+def test_review_table_includes_capability_honesty_reminders(tmp_path: Path) -> None:
+    scenario, findings = _write_inputs(tmp_path)
+    output = tmp_path / "review"
+    result = _run_script("--scenario", str(scenario), "--findings", str(findings), "--out", str(output))
+    assert result.returncode == 0, result.stderr
+    table = (output / "review-table.md").read_text(encoding="utf-8")
+    assert "No findings does not mean safe" in table
+    assert "Validated is not exploitability proof" in table
+    assert "`collection_context` matters" in table
+    assert "No composite score" in table
+    assert "No pass/fail benchmark label" in table
+
+
 def test_label_run_matches_by_unique_finding_id_prefix(tmp_path: Path) -> None:
     scenario, findings = _write_inputs(tmp_path)
     labels = tmp_path / "reviewer-labels.json"
@@ -220,6 +258,39 @@ def test_duplicate_or_ambiguous_finding_id_prefix_fails(tmp_path: Path) -> None:
     assert "matched" in result.stderr
 
 
+def test_duplicate_label_for_same_finding_id_fails(tmp_path: Path) -> None:
+    scenario, findings = _write_inputs(tmp_path)
+    labels = tmp_path / "reviewer-labels.json"
+    labels.write_text(
+        json.dumps(
+            {
+                "pilot_id": "real-pilot-dev-001",
+                "label_schema_version": 1,
+                "labels": [
+                    {"finding_id_prefix": "aaaabbbbcccc", "classification": "valid_path"},
+                    {
+                        "finding_id_prefix": "aaaabbbbcccc1111",
+                        "classification": "needs_more_evidence",
+                    },
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    result = _run_script(
+        "--scenario",
+        str(scenario),
+        "--findings",
+        str(findings),
+        "--labels",
+        str(labels),
+        "--out",
+        str(tmp_path / "review"),
+    )
+    assert result.returncode == 1
+    assert "duplicate label" in result.stderr
+
+
 def test_invalid_classification_category_fails(tmp_path: Path) -> None:
     scenario, findings = _write_inputs(tmp_path)
     labels = tmp_path / "reviewer-labels.json"
@@ -279,6 +350,20 @@ def test_summary_counts_without_score_or_performance_metric_fields(tmp_path: Pat
     assert forbidden_field_names.isdisjoint(set(_walk_keys(summary)))
 
 
+def test_collection_context_assumptions_and_blockers_are_surfaced() -> None:
+    artifacts = build_review_artifacts(scenario_payload=_scenario(), findings_payload=_findings())
+    cross_account = artifacts["inventory"][0]
+    assert "org_membership_status=unknown" in cross_account["collection_context_summary"]
+    assert "scope=partial_org" in cross_account["collection_context_summary"]
+    assert cross_account["assumptions"] == [
+        "org_membership_status: source account membership is unknown in partial collection context"
+    ]
+
+    admin = [entry for entry in artifacts["inventory"] if entry["pattern_id"] == "admin_reachability"][0]
+    assert admin["blockers_observed"] == ["permission_boundary: reviewer should inspect boundary context"]
+    assert admin["required_check_states"]["at_least_one_reachable_chain_uses_clean_witnesses"] == "unknown"
+
+
 def test_cross_account_trust_summary_preserves_reviewer_signal() -> None:
     artifacts = build_review_artifacts(scenario_payload=_scenario(), findings_payload=_findings())
     cross_account = artifacts["inventory"][0]
@@ -288,6 +373,14 @@ def test_cross_account_trust_summary_preserves_reviewer_signal() -> None:
     assert "wildcard_principal: yes" in summary
     assert "has_external_id: yes" in summary
     assert "has_conditions: yes" in summary
+
+
+def test_referenced_edge_summary_preserves_sanitized_edge_context() -> None:
+    artifacts = build_review_artifacts(scenario_payload=_scenario(), findings_payload=_findings())
+    cross_account = artifacts["inventory"][0]
+    assert cross_account["referenced_edges"] == [
+        "edge-trust-1: SourceWildcardTrustRole -> TrustedTargetRole (sts:AssumeRole)"
+    ]
 
 
 def test_admin_reachability_summary_preserves_administratoraccess_signal() -> None:
@@ -307,3 +400,22 @@ def test_template_contains_one_entry_per_finding(tmp_path: Path) -> None:
     assert template["label_schema_version"] == 1
     assert len(template["labels"]) == 3
     assert {label["classification"] for label in template["labels"]} == {""}
+
+
+def test_output_is_deterministic_across_repeated_runs(tmp_path: Path) -> None:
+    scenario, findings = _write_inputs(tmp_path)
+    output_one = tmp_path / "review-one"
+    output_two = tmp_path / "review-two"
+
+    first = _run_script("--scenario", str(scenario), "--findings", str(findings), "--out", str(output_one))
+    second = _run_script("--scenario", str(scenario), "--findings", str(findings), "--out", str(output_two))
+    assert first.returncode == 0, first.stderr
+    assert second.returncode == 0, second.stderr
+
+    for name in (
+        "review-table.md",
+        "review-summary.json",
+        "unlabeled-findings.json",
+        "reviewer-label-template.json",
+    ):
+        assert (output_one / name).read_text(encoding="utf-8") == (output_two / name).read_text(encoding="utf-8")
