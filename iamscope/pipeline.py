@@ -583,6 +583,34 @@ def _get_account_session(
     )
 
 
+def _org_membership_resolution_context(
+    org_data: OrgData,
+    all_account_data: list[AccountData],
+    config: PipelineConfig,
+) -> tuple[set[str], bool]:
+    """Return known accounts and whether absence proves non-membership.
+
+    Trust-policy synthetic principals need a tri-state org-membership signal:
+    member, non_member, or unknown. Known active org accounts and directly
+    collected account IDs are members. Absence proves non-membership only when
+    the run covers the full active org account set. Standalone, account-filtered,
+    skipped, or otherwise partial runs leave absent accounts unknown instead of
+    silently asserting they are external/non-members.
+    """
+    active_org_accounts = set(org_data.active_account_ids)
+    collected_accounts = {acct.account_id for acct in all_account_data if acct.account_id}
+    known_accounts = active_org_accounts | collected_accounts
+
+    org_collection_complete = (
+        not config.standalone
+        and config.account_filter is None
+        and not config.skip_accounts
+        and bool(active_org_accounts)
+        and active_org_accounts <= collected_accounts
+    )
+    return known_accounts, org_collection_complete
+
+
 def _run_resolution(
     org_data: OrgData,
     all_account_data: list[AccountData],
@@ -657,8 +685,14 @@ def _run_resolution(
         ec2_mode=config.ec2_mode,
     )
 
-    # Known account IDs for synthetic node resolution
-    known_accounts = org_data.active_account_ids
+    # Known account IDs for synthetic node resolution. Absence from this set
+    # proves non-membership only when collection covered the full active org;
+    # partial/standalone runs keep absent accounts explicitly unknown.
+    known_accounts, org_collection_complete = _org_membership_resolution_context(
+        org_data,
+        all_account_data,
+        config,
+    )
 
     # NF-1 fix (S06): construct a real NoiseFilter from config and pass its
     # edge filter function to build_trust_edges. Pre-S06 this was dead code
@@ -704,7 +738,11 @@ def _run_resolution(
         all_nodes.extend(hyperedge_nodes)
 
     # Resolve synthetic nodes (external accounts, wildcards, services)
-    synthetic_nodes = resolve_synthetic_nodes(all_trust_results, known_account_ids=known_accounts)
+    synthetic_nodes = resolve_synthetic_nodes(
+        all_trust_results,
+        known_account_ids=known_accounts,
+        org_collection_complete=org_collection_complete,
+    )
     all_nodes.extend(synthetic_nodes)
 
     # Add Lambda/EC2 service nodes and edges

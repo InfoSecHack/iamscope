@@ -37,10 +37,15 @@ from iamscope.constants import (
 from iamscope.models import ControlRef, Edge, Node, NodeRef, TrustParseResult
 from iamscope.resolver.naked_trust import classify_naked_trust
 
+ORG_MEMBERSHIP_MEMBER = "member"
+ORG_MEMBERSHIP_NON_MEMBER = "non_member"
+ORG_MEMBERSHIP_UNKNOWN = "unknown"
+
 
 def resolve_synthetic_nodes(
     trust_results: list[TrustParseResult],
     known_account_ids: set[str] | None = None,
+    org_collection_complete: bool = False,
 ) -> list[Node]:
     """Create synthetic nodes for principals referenced in trust policies.
 
@@ -51,6 +56,11 @@ def resolve_synthetic_nodes(
         trust_results: Parsed trust policy results from all roles.
         known_account_ids: Account IDs collected in this run (used to
                           mark external vs. internal accounts).
+        org_collection_complete: True when the account/org collection scope
+                          is complete enough that absence from known accounts
+                          can be treated as a confirmed non-member. False
+                          preserves uncertainty for partial or standalone
+                          collection.
 
     Returns:
         Sorted list of deduplicated synthetic Node objects.
@@ -64,7 +74,11 @@ def resolve_synthetic_nodes(
         if key in seen:
             continue
 
-        node = _create_synthetic_node(tr, known)
+        node = _create_synthetic_node(
+            tr,
+            known,
+            org_collection_complete=org_collection_complete,
+        )
         if node is not None:
             seen[key] = node
 
@@ -75,6 +89,7 @@ def resolve_synthetic_nodes(
 def _create_synthetic_node(
     tr: TrustParseResult,
     known_account_ids: set[str],
+    org_collection_complete: bool,
 ) -> Node | None:
     """Create a single synthetic node from a trust parse result.
 
@@ -87,6 +102,7 @@ def _create_synthetic_node(
 
     if node_type == NODE_TYPE_WILDCARD_PRINCIPAL:
         properties["description"] = "Any AWS principal (Principal: *)"
+        properties["org_membership_status"] = ORG_MEMBERSHIP_NON_MEMBER
         properties["org_member"] = False
         return Node(
             provider=PROVIDER_AWS,
@@ -98,10 +114,14 @@ def _create_synthetic_node(
 
     if node_type == NODE_TYPE_ACCOUNT_ROOT:
         account_id = _extract_account_from_arn(provider_id)
-        is_org_member = account_id in known_account_ids if account_id else False
         properties["account_id"] = account_id or ""
-        properties["is_external"] = not is_org_member
-        properties["org_member"] = is_org_member
+        properties.update(
+            _org_membership_properties(
+                account_id,
+                known_account_ids,
+                org_collection_complete=org_collection_complete,
+            )
+        )
         return Node(
             provider=PROVIDER_AWS,
             node_type=NODE_TYPE_ACCOUNT_ROOT,
@@ -142,7 +162,9 @@ def _create_synthetic_node(
 
     if node_type == NODE_TYPE_EXTERNAL_ACCOUNT:
         properties["raw_principal"] = provider_id
-        properties["org_member"] = False
+        properties["org_membership_status"] = ORG_MEMBERSHIP_UNKNOWN
+        properties["org_member"] = None
+        properties["is_external"] = None
         return Node(
             provider=PROVIDER_AWS,
             node_type=NODE_TYPE_EXTERNAL_ACCOUNT,
@@ -156,10 +178,14 @@ def _create_synthetic_node(
     if node_type in (NODE_TYPE_IAM_ROLE, NODE_TYPE_IAM_USER):
         if tr.cross_account:
             account_id = _extract_account_from_arn(provider_id)
-            is_org_member = account_id in known_account_ids if account_id else False
             properties["account_id"] = account_id or ""
-            properties["is_external"] = not is_org_member
-            properties["org_member"] = is_org_member
+            properties.update(
+                _org_membership_properties(
+                    account_id,
+                    known_account_ids,
+                    org_collection_complete=org_collection_complete,
+                )
+            )
             return Node(
                 provider=PROVIDER_AWS,
                 node_type=node_type,
@@ -171,6 +197,56 @@ def _create_synthetic_node(
         return None
 
     return None
+
+
+def _org_membership_properties(
+    account_id: str | None,
+    known_account_ids: set[str],
+    *,
+    org_collection_complete: bool,
+) -> dict[str, Any]:
+    """Return tri-state org-membership properties for synthetic principals.
+
+    Compatibility choice: keep the legacy `org_member` and `is_external`
+    keys, but set both to None when membership is unknown. This preserves
+    existing field presence for consumers while avoiding a false
+    non-member/external assertion when collection scope is partial.
+    """
+    status = _org_membership_status(
+        account_id,
+        known_account_ids,
+        org_collection_complete=org_collection_complete,
+    )
+    if status == ORG_MEMBERSHIP_MEMBER:
+        return {
+            "org_membership_status": status,
+            "org_member": True,
+            "is_external": False,
+        }
+    if status == ORG_MEMBERSHIP_NON_MEMBER:
+        return {
+            "org_membership_status": status,
+            "org_member": False,
+            "is_external": True,
+        }
+    return {
+        "org_membership_status": ORG_MEMBERSHIP_UNKNOWN,
+        "org_member": None,
+        "is_external": None,
+    }
+
+
+def _org_membership_status(
+    account_id: str | None,
+    known_account_ids: set[str],
+    *,
+    org_collection_complete: bool,
+) -> str:
+    if account_id and account_id in known_account_ids:
+        return ORG_MEMBERSHIP_MEMBER
+    if org_collection_complete and account_id:
+        return ORG_MEMBERSHIP_NON_MEMBER
+    return ORG_MEMBERSHIP_UNKNOWN
 
 
 def build_trust_edges(
