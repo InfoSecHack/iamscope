@@ -31,27 +31,28 @@ locals {
   }
 
   source_principals = {
-    ci_deployer       = "ci-deployer"
-    ecs_deployer      = "ecs-deployer"
-    helpdesk          = "helpdesk"
-    build             = "build"
-    audit             = "audit"
-    boundary_probe    = "boundary-probe"
-    deny_probe        = "deny-probe"
-    uncertainty_probe = "uncertainty-probe"
+    ci_deployer                = "ci-deployer"
+    ecs_deployer               = "ecs-deployer"
+    helpdesk                   = "helpdesk"
+    build                      = "build"
+    audit                      = "audit"
+    boundary_probe             = "boundary-probe"
+    deny_probe                 = "deny-probe"
+    uncertainty_resource_probe = "uncertainty-resource-probe"
+    uncertainty_boundary_probe = "uncertainty-boundary-probe"
   }
 
   target_roles = {
-    lambda_exec_scoped       = "lambda-exec-scoped"
-    ecs_task_scoped          = "ecs-task-scoped"
-    readonly_ops             = "readonly-ops"
-    prod_observer            = "prod-observer"
-    audit_b                  = "audit-b"
-    service_mediated_target  = "service-mediated-target"
-    lambda_exec_boundary     = "lambda-exec-boundary"
-    chain_target             = "chain-target"
-    scp_passrole_target      = "scp-passrole-target"
-    denied_assume            = "denied-assume"
+    lambda_exec_scoped      = "lambda-exec-scoped"
+    ecs_task_scoped         = "ecs-task-scoped"
+    readonly_ops            = "readonly-ops"
+    prod_observer           = "prod-observer"
+    audit_b                 = "audit-b"
+    service_mediated_target = "service-mediated-target"
+    lambda_exec_boundary    = "lambda-exec-boundary"
+    chain_target            = "chain-target"
+    scp_passrole_target     = "scp-passrole-target"
+    denied_assume           = "denied-assume"
   }
 
   permission_boundary_names = {
@@ -74,8 +75,8 @@ locals {
   }
 
   source_permission_boundary_keys = {
-    boundary_probe    = "passrole_lambda"
-    uncertainty_probe = "session_context"
+    boundary_probe             = "passrole_lambda"
+    uncertainty_boundary_probe = "session_context"
   }
 
   source_inline_policy_specs = {
@@ -213,7 +214,7 @@ locals {
         },
       ]
     }
-    uncertainty_probe = {
+    uncertainty_resource_probe = {
       statements = [
         {
           sid       = "OracleI001WildcardResourceScopeUnknown"
@@ -221,6 +222,10 @@ locals {
           actions   = ["iam:PassRole", "lambda:CreateFunction"]
           resources = ["*"]
         },
+      ]
+    }
+    uncertainty_boundary_probe = {
+      statements = [
         {
           sid       = "OracleI002UnresolvedConditionKey"
           effect    = "Allow"
@@ -372,7 +377,7 @@ locals {
     }
     oracle-i-001 = {
       resource_group      = "wildcard_resource_scope_unknown"
-      source_principal    = "uncertainty_probe"
+      source_principal    = "uncertainty_resource_probe"
       target_role         = "lambda_exec_scoped"
       live_representable  = "yes"
       cleanup_requirement = "delete policies and roles"
@@ -380,7 +385,7 @@ locals {
     }
     oracle-i-002 = {
       resource_group      = "unresolved_condition_key"
-      source_principal    = "uncertainty_probe"
+      source_principal    = "uncertainty_boundary_probe"
       target_role         = "readonly_ops"
       live_representable  = "partial"
       cleanup_requirement = "delete conditional policies and roles"
@@ -388,7 +393,7 @@ locals {
     }
     oracle-i-003 = {
       resource_group      = "session_or_boundary_context_missing"
-      source_principal    = "uncertainty_probe"
+      source_principal    = "uncertainty_boundary_probe"
       target_role         = "chain_target"
       live_representable  = "partial"
       cleanup_requirement = "delete roles and policies"

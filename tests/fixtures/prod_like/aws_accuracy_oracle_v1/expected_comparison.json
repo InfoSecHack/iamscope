@@ -163,7 +163,7 @@
       "match_status": "phase5_not_run_yet",
       "not_counted_as": [],
       "oracle_row_id": "oracle-i-001",
-      "reviewer_note": "Keeps shared uncertainty visible."
+      "reviewer_note": "Uses split wildcard resource-scope source with no complete-confidence boundary blocker."
     },
     {
       "blocker_precondition_uncertainty_reason": "Condition key context unavailable",

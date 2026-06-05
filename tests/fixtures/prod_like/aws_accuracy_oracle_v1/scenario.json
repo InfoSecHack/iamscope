@@ -90,35 +90,23 @@
     {
       "alias": "principal-deny-service",
       "synthetic_account_alias": "synthetic-account-a"
+    },
+    {
+      "alias": "principal-scp-unknown",
+      "synthetic_account_alias": "synthetic-account-a"
+    },
+    {
+      "alias": "principal-session-context",
+      "synthetic_account_alias": "synthetic-account-a"
+    },
+    {
+      "alias": "principal-wildcard-scope",
+      "synthetic_account_alias": "synthetic-account-a"
     }
   ],
   "roles": [
     {
-      "alias": "role-lambda-exec-scoped",
-      "synthetic_account_alias": "synthetic-account-a"
-    },
-    {
-      "alias": "role-ecs-task-scoped",
-      "synthetic_account_alias": "synthetic-account-a"
-    },
-    {
-      "alias": "role-readonly-ops",
-      "synthetic_account_alias": "synthetic-account-a"
-    },
-    {
-      "alias": "role-prod-observer",
-      "synthetic_account_alias": "synthetic-account-a"
-    },
-    {
       "alias": "role-audit-b",
-      "synthetic_account_alias": "synthetic-account-a"
-    },
-    {
-      "alias": "role-service-mediated-target",
-      "synthetic_account_alias": "synthetic-account-a"
-    },
-    {
-      "alias": "role-lambda-exec-boundary",
       "synthetic_account_alias": "synthetic-account-a"
     },
     {
@@ -126,12 +114,52 @@
       "synthetic_account_alias": "synthetic-account-a"
     },
     {
-      "alias": "role-scp-passrole-target",
+      "alias": "role-condition-target",
+      "synthetic_account_alias": "synthetic-account-a"
+    },
+    {
+      "alias": "role-cross-condition-b",
       "synthetic_account_alias": "synthetic-account-b"
     },
     {
       "alias": "role-denied-assume",
       "synthetic_account_alias": "synthetic-account-b"
+    },
+    {
+      "alias": "role-ecs-task-scoped",
+      "synthetic_account_alias": "synthetic-account-a"
+    },
+    {
+      "alias": "role-lambda-exec-boundary",
+      "synthetic_account_alias": "synthetic-account-a"
+    },
+    {
+      "alias": "role-lambda-exec-scoped",
+      "synthetic_account_alias": "synthetic-account-a"
+    },
+    {
+      "alias": "role-prod-observer",
+      "synthetic_account_alias": "synthetic-account-a"
+    },
+    {
+      "alias": "role-readonly-ops",
+      "synthetic_account_alias": "synthetic-account-a"
+    },
+    {
+      "alias": "role-scp-passrole-target",
+      "synthetic_account_alias": "synthetic-account-b"
+    },
+    {
+      "alias": "role-scp-unknown-target",
+      "synthetic_account_alias": "synthetic-account-b"
+    },
+    {
+      "alias": "role-service-mediated-target",
+      "synthetic_account_alias": "synthetic-account-a"
+    },
+    {
+      "alias": "role-session-target",
+      "synthetic_account_alias": "synthetic-account-a"
     }
   ],
   "synthetic_account_id_for_arn_like_values": "000000000000",

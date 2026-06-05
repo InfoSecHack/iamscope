@@ -22,6 +22,9 @@ This is a local-only known-ground-truth oracle fixture for IAMScope's future pro
 
 Unsupported rows are unsupported/static-only. They are not counted as false positives, false negatives, extra findings, or missing findings.
 
+`oracle-i-001` uses a split wildcard resource-scope source in the local fixture
+so it is not blocked by the separate boundary/session uncertainty source.
+
 ## Local-Only Boundary
 
 - no live AWS

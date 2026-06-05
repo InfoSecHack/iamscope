@@ -12,13 +12,9 @@ from typing import Any
 
 
 SANDBOX_PREFIX = "iamscope-prodlike-v1-"
-ORACLE_I001_BOUNDARY_TRIAGE_NOTE = (
-    "emitted blocked due complete-confidence boundary evidence; likely oracle/fixture expectation conflict, "
-    "not automatically an IAMScope false positive"
-)
-UNCERTAINTY_PROBE_EXTRA_TRIAGE_NOTE = (
-    "extra blocked path induced by uncertainty-probe boundary/policy shape; "
-    "not part of deterministic oracle mapping"
+UNCERTAINTY_RESOURCE_EXTRA_TRIAGE_NOTE = (
+    "extra wildcard resource-scope path from oracle-i-001 split source; "
+    "review or remap only after a fresh live run confirms it remains intended"
 )
 
 NON_CLAIMS = [
@@ -67,7 +63,7 @@ ORACLE_ROW_MAPPINGS = {
     },
     "oracle-i-001": {
         "pattern_id": "passrole_lambda",
-        "source_name": "iamscope-prodlike-v1-uncertainty-probe",
+        "source_name": "iamscope-prodlike-v1-uncertainty-resource-probe",
         "target_name": "iamscope-prodlike-v1-lambda-exec-scoped",
         "expected_verdict": "inconclusive",
     },
@@ -177,15 +173,9 @@ def _mapping_key(spec: dict[str, str]) -> tuple[str, str, str]:
     return (spec["pattern_id"], spec["source_name"], spec["target_name"])
 
 
-def _oracle_mismatch_triage_note(row_id: str, expected_verdict: str, emitted_verdicts: list[str]) -> str | None:
-    if row_id == "oracle-i-001" and expected_verdict == "inconclusive" and "blocked" in emitted_verdicts:
-        return ORACLE_I001_BOUNDARY_TRIAGE_NOTE
-    return None
-
-
 def _unmapped_sandbox_extra_triage_note(finding: FindingView) -> str | None:
-    if finding.source_name == f"{SANDBOX_PREFIX}uncertainty-probe" and finding.verdict == "blocked":
-        return UNCERTAINTY_PROBE_EXTRA_TRIAGE_NOTE
+    if finding.source_name == f"{SANDBOX_PREFIX}uncertainty-resource-probe":
+        return UNCERTAINTY_RESOURCE_EXTRA_TRIAGE_NOTE
     return None
 
 
@@ -284,9 +274,6 @@ def compare(oracle_payload: Any, findings_payload: Any) -> dict[str, Any]:
                 else "emitted verdict differed from expected oracle category"
             ),
         }
-        triage_note = _oracle_mismatch_triage_note(row_id, expected_verdict, emitted_verdicts)
-        if triage_note is not None:
-            row["triage_note"] = triage_note
         rows.append(row)
 
     environmental_extras: list[dict[str, Any]] = []

@@ -146,6 +146,27 @@ def test_terraform_maps_oracle_rows_to_iam_policy_themes() -> None:
     assert 'effect    = "Deny"' in text
 
 
+def test_oracle_i001_source_is_split_from_boundary_session_source() -> None:
+    text = _terraform_text()
+
+    assert 'uncertainty_resource_probe = "uncertainty-resource-probe"' in text
+    assert 'uncertainty_boundary_probe = "uncertainty-boundary-probe"' in text
+    assert 'uncertainty_boundary_probe = "session_context"' in text
+    assert 'uncertainty_resource_probe = "session_context"' not in text
+
+    i001_start = text.index("oracle-i-001 = {")
+    i001_block = text[i001_start : i001_start + 350]
+    assert 'source_principal    = "uncertainty_resource_probe"' in i001_block
+
+    i002_start = text.index("oracle-i-002 = {")
+    i002_block = text[i002_start : i002_start + 350]
+    assert 'source_principal    = "uncertainty_boundary_probe"' in i002_block
+
+    i003_start = text.index("oracle-i-003 = {")
+    i003_block = text[i003_start : i003_start + 350]
+    assert 'source_principal    = "uncertainty_boundary_probe"' in i003_block
+
+
 def test_no_raw_non_synthetic_account_ids_or_iam_arns() -> None:
     text = _all_sandbox_text()
     account_ids = set(re.findall(r"\b[0-9]{12}\b", text))
