@@ -81,6 +81,7 @@ from iamscope.reasoner.probe_overlay import (
     probe_overlay_trace_entries,
 )
 from iamscope.reasoner.verdict import (
+    Assumption,
     Blocker,
     Check,
     CheckState,
@@ -118,6 +119,10 @@ _SEVERITY_LADDER: tuple[str, ...] = (
     SEVERITY_INFO,
 )
 
+_ORG_MEMBERSHIP_STATUS_MEMBER = "member"
+_ORG_MEMBERSHIP_STATUS_NON_MEMBER = "non_member"
+_ORG_MEMBERSHIP_STATUS_UNKNOWN = "unknown"
+
 
 class _OrgMembership(Enum):
     """Side-channel for check 3's org-membership status.
@@ -126,8 +131,8 @@ class _OrgMembership(Enum):
     module docstring for the spec-ambiguity resolution rationale.
     """
 
-    EXTERNAL = "external"  # source node org_member=False (truly external)
-    SAME_ORG = "same_org"  # source node org_member=True (downgrade severity)
+    EXTERNAL = "external"  # source node is confirmed non-member/external
+    SAME_ORG = "same_org"  # source node is confirmed same-org/member
     UNKNOWN = "unknown"  # could not determine (escalates verdict to inconclusive)
 
 
@@ -149,6 +154,13 @@ def _resolve_source_org_membership(
     account-root synthetic nodes do. Use that root metadata only when the
     concrete node has no explicit value.
     """
+    status_membership = _resolve_org_membership_status(
+        source_node.properties.get("org_membership_status"),
+        "source node",
+    )
+    if status_membership is not None:
+        return status_membership
+
     org_member_value = source_node.properties.get("org_member")
     if org_member_value is False:
         return (
@@ -178,6 +190,13 @@ def _resolve_source_org_membership(
             f"source account root {account_root_arn} not in fact graph",
         )
 
+    root_status_membership = _resolve_org_membership_status(
+        account_root.properties.get("org_membership_status"),
+        f"source account root {account_root_arn}",
+    )
+    if root_status_membership is not None:
+        return root_status_membership
+
     root_org_member_value = account_root.properties.get("org_member")
     if root_org_member_value is False:
         return (
@@ -193,6 +212,37 @@ def _resolve_source_org_membership(
     return (
         _OrgMembership.UNKNOWN,
         f"source account root {account_root_arn} org_member unavailable",
+    )
+
+
+def _resolve_org_membership_status(
+    status_value: Any,
+    source_label: str,
+) -> tuple[_OrgMembership, str] | None:
+    """Resolve the explicit tri-state synthetic membership status if present."""
+    if status_value is None:
+        return None
+    if status_value == _ORG_MEMBERSHIP_STATUS_MEMBER:
+        return (
+            _OrgMembership.SAME_ORG,
+            f"{source_label} properties.org_membership_status=member",
+        )
+    if status_value == _ORG_MEMBERSHIP_STATUS_NON_MEMBER:
+        return (
+            _OrgMembership.EXTERNAL,
+            f"{source_label} properties.org_membership_status=non_member (confirmed external/non-member)",
+        )
+    if status_value == _ORG_MEMBERSHIP_STATUS_UNKNOWN:
+        return (
+            _OrgMembership.UNKNOWN,
+            (
+                f"{source_label} properties.org_membership_status=unknown; "
+                "collection may be partial, filtered, or standalone"
+            ),
+        )
+    return (
+        _OrgMembership.UNKNOWN,
+        f"{source_label} has unrecognized org_membership_status={status_value!r}",
     )
 
 
@@ -601,6 +651,19 @@ class CrossAccountTrustReasoner:
             reasoning_trace=tuple(trace),
         )
 
+        assumptions: list[Assumption] = []
+        if org_membership is _OrgMembership.UNKNOWN:
+            assumptions.append(
+                Assumption(
+                    kind="org_membership_status",
+                    detail=(
+                        "source org membership is unknown; absence from known "
+                        "accounts is not treated as confirmed external/non-member "
+                        "because collection may be partial, filtered, or standalone"
+                    ),
+                )
+            )
+
         # ---- Build the Finding.
         title = self._compose_title(
             naked_trust_value=naked_trust_value,
@@ -627,7 +690,7 @@ class CrossAccountTrustReasoner:
             title=title,
             required_checks=tuple(check_results),
             blockers_observed=tuple(blockers),
-            assumptions=(),
+            assumptions=tuple(assumptions),
             evidence=evidence,
             scenario_hash=facts.scenario_hash,
             reasoner_exit_reason=exit_reason,
@@ -767,7 +830,7 @@ class CrossAccountTrustReasoner:
             return (
                 Verdict.INCONCLUSIVE,
                 SEVERITY_HIGH,
-                "source node org_membership unknown",
+                ("source org_membership_status unknown; collection may be partial, filtered, or standalone"),
             )
 
         # Rule 5: All PASS → VALIDATED with severity from naked_trust class.
@@ -805,9 +868,12 @@ class CrossAccountTrustReasoner:
         org_membership: _OrgMembership,
     ) -> str:
         """Build a human-readable one-line title for the finding."""
-        org_qualifier = (
-            "same-org cross-account" if org_membership is _OrgMembership.SAME_ORG else "external cross-account"
-        )
+        if org_membership is _OrgMembership.SAME_ORG:
+            org_qualifier = "same-org cross-account"
+        elif org_membership is _OrgMembership.EXTERNAL:
+            org_qualifier = "external cross-account"
+        else:
+            org_qualifier = "unknown-membership cross-account"
         if verdict is Verdict.VALIDATED:
             return f"Validated {naked_trust_value} {org_qualifier} trust grant"
         if verdict is Verdict.BLOCKED:
