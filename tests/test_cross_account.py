@@ -22,7 +22,9 @@ from iamscope.constants import (
     NAKED_INTRA_ACCOUNT,
     NODE_TYPE_ACCOUNT_ROOT,
     NODE_TYPE_AWS_SERVICE,
+    NODE_TYPE_EXTERNAL_ACCOUNT,
     NODE_TYPE_IAM_ROLE,
+    NODE_TYPE_IAM_USER,
     NODE_TYPE_OIDC_PROVIDER,
     NODE_TYPE_SAML_PROVIDER,
     NODE_TYPE_WILDCARD_PRINCIPAL,
@@ -81,8 +83,37 @@ class TestResolveSyntheticNodes:
         assert n.provider_id == "arn:aws:iam::222222\u003222222:root"
         assert n.properties["is_synthetic"] is True
         assert n.properties["account_id"] == "222222\u003222222"
-        assert n.properties["is_external"] is True
-        assert n.properties["org_member"] is False
+        assert n.properties["org_membership_status"] == "unknown"
+        assert n.properties["is_external"] is None
+        assert n.properties["org_member"] is None
+
+    def test_unknown_account_complete_org_is_non_member(self) -> None:
+        """Complete org collection can classify absent accounts as non-members."""
+        tr = _make_trust_result()
+        nodes = resolve_synthetic_nodes(
+            [tr],
+            {"111111\u003111111"},
+            org_collection_complete=True,
+        )
+
+        assert len(nodes) == 1
+        assert nodes[0].properties["org_membership_status"] == "non_member"
+        assert nodes[0].properties["is_external"] is True
+        assert nodes[0].properties["org_member"] is False
+
+    def test_unknown_account_partial_org_remains_unknown(self) -> None:
+        """Partial org collection must not falsely confirm non-membership."""
+        tr = _make_trust_result()
+        nodes = resolve_synthetic_nodes(
+            [tr],
+            {"111111\u003111111"},
+            org_collection_complete=False,
+        )
+
+        assert len(nodes) == 1
+        assert nodes[0].properties["org_membership_status"] == "unknown"
+        assert nodes[0].properties["is_external"] is None
+        assert nodes[0].properties["org_member"] is None
 
     def test_deduplicates_same_principal(self) -> None:
         """Identical principals from multiple statements produce one node."""
@@ -104,6 +135,8 @@ class TestResolveSyntheticNodes:
         assert len(nodes) == 1
         assert nodes[0].node_type == NODE_TYPE_WILDCARD_PRINCIPAL
         assert nodes[0].provider_id == "*"
+        assert nodes[0].properties["org_membership_status"] == "non_member"
+        assert nodes[0].properties["org_member"] is False
 
     def test_creates_service_node(self) -> None:
         """Service principal creates AWSService synthetic node."""
@@ -162,8 +195,67 @@ class TestResolveSyntheticNodes:
         assert len(nodes) == 1
         assert nodes[0].node_type == NODE_TYPE_IAM_ROLE
         assert nodes[0].properties["is_synthetic"] is True
+        assert nodes[0].properties["org_membership_status"] == "unknown"
+        assert nodes[0].properties["is_external"] is None
+        assert nodes[0].properties["org_member"] is None
+
+    def test_cross_account_role_complete_org_is_non_member(self) -> None:
+        """Cross-account IAMRole uses the same complete-org membership logic."""
+        tr = _make_trust_result(
+            principal_value="arn:aws:iam::222222\u003222222:role/CrossRole",
+            resolved_node_type=NODE_TYPE_IAM_ROLE,
+            trust_scope=TRUST_SCOPE_SPECIFIC_ROLE,
+            cross_account=True,
+        )
+        nodes = resolve_synthetic_nodes(
+            [tr],
+            {"111111\u003111111"},
+            org_collection_complete=True,
+        )
+
+        assert len(nodes) == 1
+        assert nodes[0].properties["org_membership_status"] == "non_member"
         assert nodes[0].properties["is_external"] is True
         assert nodes[0].properties["org_member"] is False
+
+    def test_cross_account_user_known_account_is_member(self) -> None:
+        """Cross-account IAMUser synthetic nodes are member when account is known."""
+        tr = _make_trust_result(
+            principal_value="arn:aws:iam::222222\u003222222:user/CrossUser",
+            resolved_node_type=NODE_TYPE_IAM_USER,
+            trust_scope=TRUST_SCOPE_SPECIFIC_ROLE,
+            cross_account=True,
+        )
+        nodes = resolve_synthetic_nodes(
+            [tr],
+            {"111111\u003111111", "222222\u003222222"},
+        )
+
+        assert len(nodes) == 1
+        assert nodes[0].node_type == NODE_TYPE_IAM_USER
+        assert nodes[0].properties["org_membership_status"] == "member"
+        assert nodes[0].properties["is_external"] is False
+        assert nodes[0].properties["org_member"] is True
+
+    def test_external_account_membership_is_unknown(self) -> None:
+        """Unrecognized external principals do not assert non-membership."""
+        tr = _make_trust_result(
+            principal_value="AIDAABCDEFGHIJKLMNOP",
+            resolved_node_type=NODE_TYPE_EXTERNAL_ACCOUNT,
+            trust_scope=TRUST_SCOPE_ACCOUNT_ROOT,
+            cross_account=True,
+        )
+        nodes = resolve_synthetic_nodes(
+            [tr],
+            {"111111\u003111111"},
+            org_collection_complete=True,
+        )
+
+        assert len(nodes) == 1
+        assert nodes[0].node_type == NODE_TYPE_EXTERNAL_ACCOUNT
+        assert nodes[0].properties["org_membership_status"] == "unknown"
+        assert nodes[0].properties["is_external"] is None
+        assert nodes[0].properties["org_member"] is None
 
     def test_skips_same_account_role(self) -> None:
         """Same-account IAMRole does NOT create synthetic node (will be collected)."""
@@ -185,6 +277,7 @@ class TestResolveSyntheticNodes:
         nodes = resolve_synthetic_nodes([tr], {"111111\u003111111", "222222\u003222222"})
 
         assert len(nodes) == 1
+        assert nodes[0].properties["org_membership_status"] == "member"
         assert nodes[0].properties["is_external"] is False
         assert nodes[0].properties["org_member"] is True
 
