@@ -119,7 +119,12 @@ def _admin_grant(role: Node) -> Edge:
     )
 
 
-def _write_frozen_chain(tmp_path: Path) -> tuple[Path, Path, str, str]:
+def _write_frozen_chain(
+    tmp_path: Path,
+    *,
+    collection_failures: list[dict] | None = None,
+    policy_parse_failures: list[dict] | None = None,
+) -> tuple[Path, Path, str, str]:
     alice = _node(_ALICE, NODE_TYPE_IAM_USER)
     devops = _node(_DEVOPS, NODE_TYPE_IAM_ROLE)
     admin = _node(_ADMIN, NODE_TYPE_IAM_ROLE)
@@ -133,7 +138,11 @@ def _write_frozen_chain(tmp_path: Path) -> tuple[Path, Path, str, str]:
         edges=[perm_1, trust_1, perm_2, trust_2, admin_grant],
         constraints=[],
         edge_constraints=[],
-        metadata=ScenarioMetadata(collection_timestamp="2026-01-01T00:00:00Z"),
+        metadata=ScenarioMetadata(
+            collection_timestamp="2026-01-01T00:00:00Z",
+            collection_failures=collection_failures or [],
+            policy_parse_failures=policy_parse_failures or [],
+        ),
     )
     scenario_path = tmp_path / "scenario.json"
     scenario_path.write_bytes(scenario_bytes)
@@ -200,6 +209,37 @@ def test_replay_overlay_mutates_finding_on_frozen_scenario(tmp_path: Path) -> No
     trace_inputs = [entry.inputs for entry in changed.evidence.reasoning_trace]
     assert any("probe-denied-hop" in inputs for inputs in trace_inputs)
     assert "p-runtime-deny" in changed.evidence.constraint_refs
+
+
+def test_replay_attaches_collection_context_from_scenario_metadata(tmp_path: Path) -> None:
+    scenario_path, binding_path, _, _ = _write_frozen_chain(
+        tmp_path,
+        collection_failures=[
+            {
+                "account_id": _ACCOUNT,
+                "collector": "lambda",
+                "error_class": "ClientError",
+                "error_message": "collection partial",
+                "region": "us-east-1",
+            }
+        ],
+    )
+
+    replay_result = run_reasoners_on_frozen_artifacts(
+        scenario_path=scenario_path,
+        binding_metadata_path=binding_path,
+        probe_overlay_path=None,
+        reasoner_instances=(AssumeRoleChainReasoner(),),
+        reasoning_timestamp="2026-01-01T00:00:00Z",
+    )
+    findings_json = json.loads(replay_result.findings_bytes)
+    context = findings_json["findings"][0]["collection_context"]
+
+    assert replay_result.findings[0].verdict.value == "validated"
+    assert context["graph_collection_complete"] is False
+    assert context["has_collection_failures"] is True
+    assert context["affected_accounts"] == [_ACCOUNT]
+    assert context["related_collection_failures"][0]["account_id"] == _ACCOUNT
 
 
 def test_replay_cli_writes_findings_with_overlay(tmp_path: Path) -> None:

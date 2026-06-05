@@ -351,6 +351,7 @@ class TestSchemaShape:
         assert set(finding.keys()) == {
             "assumptions",
             "blockers_observed",
+            "collection_context",
             "evidence",
             "finding_id",
             "finding_key",
@@ -374,6 +375,28 @@ class TestSchemaShape:
         assert finding["verdict"] == "validated"
         assert finding["severity"] == SEVERITY_CRITICAL
 
+    def test_finding_collection_context_fields(self) -> None:
+        d = self._emit()
+        context = d["findings"][0]["collection_context"]
+        assert set(context.keys()) == {
+            "affected_accounts",
+            "coverage_notes",
+            "graph_collection_complete",
+            "has_collection_failures",
+            "has_policy_parse_failures",
+            "related_collection_failures",
+            "related_policy_parse_failures",
+        }
+        assert context == {
+            "affected_accounts": [],
+            "coverage_notes": [],
+            "graph_collection_complete": True,
+            "has_collection_failures": False,
+            "has_policy_parse_failures": False,
+            "related_collection_failures": [],
+            "related_policy_parse_failures": [],
+        }
+
     def test_evidence_fields(self) -> None:
         d = self._emit()
         evidence = d["findings"][0]["evidence"]
@@ -395,6 +418,193 @@ class TestSchemaShape:
         steps = [t["step"] for t in trace]
         assert steps == sorted(steps)  # naturally 1..N
         assert steps == list(range(1, len(steps) + 1))
+
+
+# ---------------------------------------------------------------------------
+# Collection context
+# ---------------------------------------------------------------------------
+
+
+class TestCollectionContext:
+    """Per-finding collection context makes partial graph state visible."""
+
+    def _finding(
+        self,
+        *,
+        source_arn: str | None = None,
+        target_arn: str | None = None,
+        verdict: Verdict = Verdict.VALIDATED,
+    ) -> Finding:
+        return _direct_finding(
+            source_arn=source_arn or f"arn:aws:iam::{_TARGET_ACCOUNT}:user/Alice",
+            target_arn=target_arn or f"arn:aws:iam::{_TARGET_ACCOUNT}:role/Target",
+            verdict=verdict,
+        )
+
+    def _emit(
+        self,
+        *,
+        collection_context_source: dict[str, Any] | None = None,
+        finding: Finding | None = None,
+    ) -> dict[str, Any]:
+        b, _ = emit_findings(
+            [finding or self._finding()],
+            scenario_hash="deadbeef" * 8,
+            reasoners_used=_direct_reasoners_used(),
+            collection_context_source=collection_context_source,
+        )
+        return json.loads(b)
+
+    def _collection_failure(self, account_id: str, *, message: str = "collector failed") -> dict[str, str]:
+        return {
+            "account_id": account_id,
+            "collector": "lambda",
+            "error_class": "ClientError",
+            "error_message": message,
+            "region": "us-east-1",
+        }
+
+    def _parse_failure(self, source_arn: str, *, message: str = "policy parse failed") -> dict[str, str]:
+        return {
+            "error_class": "JSONDecodeError",
+            "error_message": message,
+            "failure_kind": "json_decode_error",
+            "parser": "permission_policy",
+            "policy_arn": "",
+            "policy_name": "BrokenInline",
+            "policy_source": "inline",
+            "source_arn": source_arn,
+        }
+
+    def test_happy_path_emits_complete_context(self) -> None:
+        context = self._emit()["findings"][0]["collection_context"]
+
+        assert context["graph_collection_complete"] is True
+        assert context["has_collection_failures"] is False
+        assert context["has_policy_parse_failures"] is False
+        assert context["affected_accounts"] == []
+        assert context["related_collection_failures"] == []
+        assert context["related_policy_parse_failures"] == []
+        assert context["coverage_notes"] == []
+
+    def test_global_partial_graph_adds_note_without_unrelated_failure(self) -> None:
+        context = self._emit(
+            collection_context_source={
+                "collection_failures": [self._collection_failure(_EXTERNAL_ACCOUNT)],
+                "policy_parse_failures": [],
+            }
+        )["findings"][0]["collection_context"]
+
+        assert context["graph_collection_complete"] is False
+        assert context["has_collection_failures"] is True
+        assert context["related_collection_failures"] == []
+        assert context["coverage_notes"] == ["collection was partial; no direct account match found for this finding"]
+
+    def test_source_account_collection_failure_is_related(self) -> None:
+        failure = self._collection_failure(_TARGET_ACCOUNT)
+        context = self._emit(
+            collection_context_source={
+                "collection_failures": [failure],
+                "policy_parse_failures": [],
+            }
+        )["findings"][0]["collection_context"]
+
+        assert context["graph_collection_complete"] is False
+        assert context["affected_accounts"] == [_TARGET_ACCOUNT]
+        assert context["related_collection_failures"] == [failure]
+        assert context["coverage_notes"] == []
+
+    def test_target_account_collection_failure_is_related(self) -> None:
+        source = f"arn:aws:iam::{_EXTERNAL_ACCOUNT}:user/ExternalAlice"
+        target = f"arn:aws:iam::{_TARGET_ACCOUNT}:role/Target"
+        failure = self._collection_failure(_TARGET_ACCOUNT)
+        context = self._emit(
+            finding=self._finding(source_arn=source, target_arn=target),
+            collection_context_source={
+                "collection_failures": [failure],
+                "policy_parse_failures": [],
+            },
+        )["findings"][0]["collection_context"]
+
+        assert context["affected_accounts"] == [_TARGET_ACCOUNT]
+        assert context["related_collection_failures"] == [failure]
+
+    def test_policy_parse_failure_exact_source_is_related(self) -> None:
+        source = f"arn:aws:iam::{_TARGET_ACCOUNT}:user/Alice"
+        failure = self._parse_failure(source)
+        context = self._emit(
+            finding=self._finding(source_arn=source),
+            collection_context_source={
+                "collection_failures": [],
+                "policy_parse_failures": [failure],
+            },
+        )["findings"][0]["collection_context"]
+
+        assert context["graph_collection_complete"] is False
+        assert context["has_policy_parse_failures"] is True
+        assert context["affected_accounts"] == [_TARGET_ACCOUNT]
+        assert context["related_policy_parse_failures"] == [failure]
+        assert context["coverage_notes"] == []
+
+    def test_policy_parse_failure_same_account_not_exact_source_is_noted(self) -> None:
+        failure = self._parse_failure(f"arn:aws:iam::{_TARGET_ACCOUNT}:role/OtherRole")
+        context = self._emit(
+            collection_context_source={
+                "collection_failures": [],
+                "policy_parse_failures": [failure],
+            }
+        )["findings"][0]["collection_context"]
+
+        assert context["related_policy_parse_failures"] == [failure]
+        assert context["coverage_notes"] == ["policy parse failure related by account, not exact source/target ARN"]
+
+    def test_collection_context_is_deterministic(self) -> None:
+        context_source = {
+            "collection_failures": [self._collection_failure(_TARGET_ACCOUNT)],
+            "policy_parse_failures": [self._parse_failure(f"arn:aws:iam::{_TARGET_ACCOUNT}:role/OtherRole")],
+        }
+
+        b1, h1 = emit_findings(
+            [self._finding()],
+            scenario_hash="deadbeef" * 8,
+            reasoners_used=_direct_reasoners_used(),
+            collection_context_source=context_source,
+        )
+        b2, h2 = emit_findings(
+            [self._finding()],
+            scenario_hash="deadbeef" * 8,
+            reasoners_used=_direct_reasoners_used(),
+            collection_context_source=context_source,
+        )
+
+        assert b1 == b2
+        assert h1 == h2
+
+    def test_validated_finding_remains_validated_with_partial_context(self) -> None:
+        context = self._emit(
+            finding=self._finding(verdict=Verdict.VALIDATED),
+            collection_context_source={
+                "collection_failures": [self._collection_failure(_TARGET_ACCOUNT)],
+                "policy_parse_failures": [],
+            },
+        )["findings"][0]
+
+        assert context["verdict"] == "validated"
+        assert context["collection_context"]["graph_collection_complete"] is False
+
+    def test_context_sanitizes_multiline_error_messages(self) -> None:
+        context = self._emit(
+            collection_context_source={
+                "collection_failures": [
+                    self._collection_failure(_TARGET_ACCOUNT, message="line one\nTraceback details")
+                ],
+                "policy_parse_failures": [],
+            }
+        )["findings"][0]["collection_context"]
+
+        message = context["related_collection_failures"][0]["error_message"]
+        assert "\n" not in message
+        assert message == "line one Traceback details"
 
 
 # ---------------------------------------------------------------------------

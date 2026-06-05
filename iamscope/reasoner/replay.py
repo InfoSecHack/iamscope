@@ -84,6 +84,8 @@ def run_reasoners_on_frozen_artifacts(
         binding_metadata_path=binding_metadata_path,
         probe_overlay_path=probe_overlay_path,
     )
+    scenario = json.loads(Path(scenario_path).read_bytes())
+    scenario_metadata = dict(scenario.get("metadata", {}))
     registry = Registry()
     for instance in reasoner_instances:
         registry.register(instance)
@@ -117,6 +119,7 @@ def run_reasoners_on_frozen_artifacts(
         reasoners_skipped=reasoners_skipped or None,
         reasoning_timestamp=reasoning_timestamp,
         reasoning_duration_seconds=duration,
+        collection_context_source=scenario_metadata,
     )
     return ReplayResult(
         findings=tuple(findings),

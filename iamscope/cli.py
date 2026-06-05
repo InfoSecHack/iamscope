@@ -1424,6 +1424,10 @@ def _run_reasoners_and_emit(
             time.gmtime(),
         ),
         reasoning_duration_seconds=reasoning_duration,
+        collection_context_source={
+            "collection_failures": [failure.to_dict() for failure in result.collection_failures],
+            "policy_parse_failures": [failure.to_dict() for failure in result.policy_parse_failures],
+        },
     )
 
     return (
