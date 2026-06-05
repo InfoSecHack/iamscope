@@ -9,8 +9,10 @@ policies and the boundary. This means a boundary acts as a ceiling,
 similar to SCPs but scoped per-principal.
 
 Binding rules:
-- Trust edges: bind to edges where dst has the boundary
 - Permission edges: bind to edges where src has the boundary
+- Trust edges: do not bind. Permission boundaries constrain a principal's
+  effective permissions; they do not constrain who can assume that principal
+  through a trust policy.
 
 BND-1 post-fix behaviour (S03):
 - If the constraint's `parse_status` is "complete", compare the edge's
@@ -95,9 +97,10 @@ def bind_permission_boundaries(
 ) -> list[EdgeConstraint]:
     """Bind permission boundary constraints to edges.
 
-    A boundary applies to any edge involving the constrained principal:
-    - Trust edges where dst has the boundary
-    - Permission edges where src has the boundary
+    A boundary applies to permission edges where the edge source is the
+    constrained principal. It intentionally does not bind to trust edges:
+    permission boundaries constrain what a principal can do after credentials
+    exist, not who can assume a role through its trust policy.
 
     Post-BND-1 (S03): the binding now computes action intersection against
     the boundary's `allowed_actions`. See the module docstring for the
@@ -135,15 +138,11 @@ def bind_permission_boundaries(
     edge_constraints: list[EdgeConstraint] = []
 
     for edge in edges:
-        # Identify which end of the edge the boundary applies to, based on layer.
-        if "_trust" in edge.edge_type:
-            constrained_id = edge.dst.provider_id
-            side = "dst"
-        elif "_permission" in edge.edge_type:
-            constrained_id = edge.src.provider_id
-            side = "src"
-        else:
-            continue  # service edges etc. — boundaries don't apply
+        if "_permission" not in edge.edge_type:
+            continue
+
+        constrained_id = edge.src.provider_id
+        side = "src"
 
         boundary_arn = boundary_by_principal.get(constrained_id, "")
         if not boundary_arn or boundary_arn not in constraint_by_boundary:
@@ -247,13 +246,11 @@ def _extract_edge_action(edge_type: str) -> str | None:
     """Return the action portion of an edge_type string.
 
     Edge types follow the pattern `<action>_<layer>` where layer is
-    `trust` or `permission` (e.g. `sts:AssumeRole_trust`,
-    `iam:PassRole_permission`). Returns None if neither suffix matches.
+    `permission` (e.g. `iam:PassRole_permission`). Returns None if
+    the suffix does not match.
     """
     if edge_type.endswith("_permission"):
         return edge_type[: -len("_permission")]
-    if edge_type.endswith("_trust"):
-        return edge_type[: -len("_trust")]
     return None
 
 
