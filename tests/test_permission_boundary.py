@@ -2,7 +2,8 @@
 
 Tests cover:
 - build_permission_boundary_constraints from policy docs
-- bind_permission_boundaries to trust and permission edges
+- bind_permission_boundaries to permission edges only
+- permission boundaries do not bind to trust edges
 - Empty policies produce no constraints
 - Multiple boundaries deduplication
 - Pipeline integration with boundary-attached role
@@ -123,8 +124,8 @@ class TestBuildConstraints:
 class TestBindBoundaries:
     """Tests for bind_permission_boundaries."""
 
-    def test_trust_edge_dst_has_boundary(self) -> None:
-        """Trust edge bound when dst role has the boundary."""
+    def test_trust_edge_dst_has_boundary_does_not_bind(self) -> None:
+        """Trust edge is not bound when dst role has the boundary."""
         dst_node = _make_node("arn:role/Target", boundary_arn="arn:boundary")
         edge = _make_edge("sts:AssumeRole_trust", "arn:src", "arn:role/Target")
 
@@ -138,9 +139,7 @@ class TestBindBoundaries:
             }
         )
         ecs = bind_permission_boundaries([edge], [dst_node], constraints)
-        assert len(ecs) == 1
-        assert ecs[0].edge_id == edge.edge_id
-        assert ecs[0].constraint_id == constraints[0].constraint_id
+        assert ecs == []
 
     def test_permission_edge_src_has_boundary(self) -> None:
         """Permission edge bound when src principal has the boundary."""
@@ -518,17 +517,11 @@ class TestBND1ActionIntersection:
         assert ecs[0].governance_confidence == "complete"
         assert "explicit boundary Deny" in ecs[0].binding_reason
 
-    def test_trust_edge_also_action_intersected(self) -> None:
-        """BND-1 fix applies symmetrically to _trust edges (dst-constrained).
-
-        Not in the plan's 8-test list; added as a regression guard because the
-        binding logic handles both edge layers and both should be exercised.
-        """
+    def test_trust_edge_is_not_boundary_intersected(self) -> None:
+        """Permission-boundary action intersection is permission-edge-only."""
         ecs = self._bind(
             boundary_arn="arn:aws:iam::222222\u003222222:policy/AssumeRoleOnly",
             allowed_actions=["sts:AssumeRole"],
             edge_type="sts:AssumeRole_trust",
         )
-        assert len(ecs) == 1
-        assert ecs[0].likely_blocking is False
-        assert ecs[0].governance_confidence == "complete"
+        assert ecs == []

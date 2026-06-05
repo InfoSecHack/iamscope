@@ -402,11 +402,50 @@ def test_cross_account_trust_ignores_non_scp_bindings_for_scp_check() -> None:
     }
 
     assert CONSTRAINT_TYPE_TRUST_CONDITION in bound_constraint_types
-    assert CONSTRAINT_TYPE_PERMISSION_BOUNDARY in bound_constraint_types
+    assert CONSTRAINT_TYPE_PERMISSION_BOUNDARY not in bound_constraint_types
     assert CONSTRAINT_TYPE_SCP not in bound_constraint_types
     assert scp_check.state is CheckState.PASS
     assert not any(blocker.kind == "scp" for blocker in finding.blockers_observed)
     assert trust_edge.edge_id in finding.evidence.edge_refs
+
+
+def test_cross_account_trust_defensively_ignores_malformed_non_scp_trust_binding() -> None:
+    bundle = _cross_account_bundle()
+    target = _role_arn(_account("2"), "PipelineExternalIdTrustTarget")
+    trust_edge = next(
+        edge for edge in bundle.edges if edge.dst.provider_id == target and _edge_action(edge) == "sts:AssumeRole"
+    )
+    boundary_constraint = next(
+        constraint
+        for constraint in bundle.constraints
+        if constraint.constraint_type == CONSTRAINT_TYPE_PERMISSION_BOUNDARY
+    )
+    malformed_boundary_binding = EdgeConstraint(
+        edge_id=trust_edge.edge_id,
+        constraint_id=boundary_constraint.constraint_id,
+        governance_confidence="complete",
+        likely_blocking=True,
+        binding_reason="malformed legacy boundary binding on trust edge",
+    )
+    facts = _facts(
+        bundle.nodes,
+        bundle.edges,
+        bundle.constraints,
+        bundle.edge_constraints + (malformed_boundary_binding,),
+    )
+
+    findings = CrossAccountTrustReasoner().run(facts)
+    finding = _single_finding(findings, pattern_id="cross_account_trust", target=target)
+    scp_check = _check(finding, "no_scp_blocks_sts_assumerole")
+    bound_constraint_types = {
+        facts.constraint_by_id(binding.constraint_id).constraint_type
+        for binding in facts.bindings_for_edge(trust_edge.edge_id)
+    }
+
+    assert CONSTRAINT_TYPE_PERMISSION_BOUNDARY in bound_constraint_types
+    assert CONSTRAINT_TYPE_SCP not in bound_constraint_types
+    assert scp_check.state is CheckState.PASS
+    assert not any(blocker.kind == "scp" for blocker in finding.blockers_observed)
 
 
 def test_cross_account_trust_real_scp_binding_blocks_scp_check() -> None:
