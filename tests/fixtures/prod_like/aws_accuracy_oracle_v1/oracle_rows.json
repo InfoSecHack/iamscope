@@ -237,9 +237,9 @@
       "expected_iamscope_behavior": "Emit inconclusive or preserve uncertainty",
       "oracle_row_id": "oracle-i-001",
       "pattern": "Wildcard target resource scope unknown",
-      "reviewer_note": "Keeps shared uncertainty visible.",
+      "reviewer_note": "Uses split wildcard resource-scope source with no complete-confidence boundary blocker.",
       "source_principal_alias": "principal-wildcard-scope",
-      "target_alias": "role-wildcard-target"
+      "target_alias": "role-lambda-exec-scoped"
     },
     {
       "blocker_precondition_uncertainty_reason": "Condition key context unavailable",

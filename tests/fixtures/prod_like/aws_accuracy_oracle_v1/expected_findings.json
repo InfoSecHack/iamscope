@@ -126,7 +126,7 @@
       "expected_iamscope_behavior": "Emit inconclusive or preserve uncertainty",
       "oracle_row_id": "oracle-i-001",
       "pattern": "Wildcard target resource scope unknown",
-      "reviewer_note": "Keeps shared uncertainty visible."
+      "reviewer_note": "Uses split wildcard resource-scope source with no complete-confidence boundary blocker."
     },
     {
       "evidence_required": "Permission/trust evidence with unresolved condition key",

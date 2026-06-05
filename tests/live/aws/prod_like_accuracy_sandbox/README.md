@@ -36,6 +36,7 @@ unless:
 The source models frozen oracle rows with IAM-only resources:
 
 - source-principal inline policies for selected allow/precondition/inconclusive shapes;
+- separate wildcard resource-scope and boundary/session uncertainty source principals;
 - target-role trust policies for selected AWS service trust and direct assume-role shapes;
 - permission boundaries attached to selected test users;
 - an explicit deny policy attached to the selected deny probe user;

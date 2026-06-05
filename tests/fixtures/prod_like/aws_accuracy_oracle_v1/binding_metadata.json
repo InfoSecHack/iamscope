@@ -93,7 +93,7 @@
     {
       "binding_kind": "inconclusive",
       "oracle_row_id": "oracle-i-001",
-      "reason": "Target resource scope cannot be proven specific enough",
+      "reason": "Target resource scope cannot be proven specific enough; wildcard source is split from boundary/session source",
       "static_fixture_support_only": true
     },
     {

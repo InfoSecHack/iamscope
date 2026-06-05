@@ -139,6 +139,27 @@ def test_every_oracle_row_has_required_fields_and_allowed_values() -> None:
         assert str(row["reviewer_note"]).strip()
 
 
+def test_oracle_i001_uses_split_wildcard_resource_scope_alias() -> None:
+    rows = {row["oracle_row_id"]: row for row in _rows()}
+    row = rows["oracle-i-001"]
+
+    assert row["source_principal_alias"] == "principal-wildcard-scope"
+    assert row["target_alias"] == "role-lambda-exec-scoped"
+    assert "split wildcard resource-scope source" in row["reviewer_note"]
+
+
+def test_inconclusive_oracle_row_aliases_are_present_in_scenario_support() -> None:
+    scenario = _load("scenario.json")
+    principal_aliases = {principal["alias"] for principal in scenario["principals"]}
+    role_aliases = {role["alias"] for role in scenario["roles"]}
+
+    for row in _rows():
+        if row["expected_category"] != "inconclusive":
+            continue
+        assert row["source_principal_alias"] in principal_aliases
+        assert row["target_alias"] in role_aliases
+
+
 def test_unsupported_rows_are_static_only_and_not_counted_as_mismatches() -> None:
     expected_findings = _load("expected_findings.json")
     comparison = _load("expected_comparison.json")
