@@ -149,9 +149,11 @@ This checkpoint records current v3/current-main evidence. The old pre-v3 /tmp
 collection is stale and must not be used for current claims.
 
 The single comparator mismatch is oracle-i-001: expected inconclusive, emitted
-blocked. Triage indicates complete-confidence boundary evidence likely reflects
-an oracle or fixture expectation conflict, not automatically an IAMScope false
-positive.
+blocked. Follow-up triage in
+docs/specs/prod-like-oracle-i001-mismatch-triage.md records the decision:
+`fixture_should_change_to_make_row_truly_inconclusive`. Complete-confidence
+boundary evidence reflects a fixture/oracle expectation conflict, not
+automatically an IAMScope false positive.
 
 Environmental extras are messy-account findings from non-sandbox source
 principals to sandbox target roles. Unsupported rows are static-only and must
