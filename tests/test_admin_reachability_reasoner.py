@@ -17,13 +17,17 @@ fact-graph builders are identical.
 
 from __future__ import annotations
 
+from iamscope.collector.passrole import build_permission_edges
 from iamscope.constants import (
     CONSTRAINT_TYPE_PERMISSION_BOUNDARY,
     CONSTRAINT_TYPE_SCP,
+    NODE_TYPE_IAM_ROLE,
     PROVIDER_AWS,
     REGION_GLOBAL,
 )
-from iamscope.models import Constraint, EdgeConstraint
+from iamscope.controls.expansion import ExpansionController
+from iamscope.models import Constraint, Edge, EdgeConstraint, Node
+from iamscope.parser.permission_policy import parse_permission_policy
 from iamscope.reasoner import AdminReachabilityReasoner, FactGraph
 from tests.test_assume_role_chain_reasoner import (  # noqa: I001
     _ADMIN_ARN,
@@ -42,6 +46,8 @@ from tests.test_assume_role_chain_reasoner import (  # noqa: I001
     _user,
     _wildcard_trust_edge,
 )
+
+_AWS_MANAGED_ADMINISTRATOR_ACCESS_ARN = "arn:aws:iam::aws:policy/AdministratorAccess"
 
 # ---------------------------------------------------------------------------
 # Preconditions
@@ -300,6 +306,144 @@ class TestWildcardTrustPrincipalReachability:
         findings = AdminReachabilityReasoner().run(facts)
 
         assert not any(f.source.provider_id == _ALICE_ARN for f in findings)
+
+
+class TestAdministratorAccessCalibration:
+    def _admin_edges_from_policy(
+        self,
+        *,
+        role_arn: str,
+        policy_arn: str,
+        conditions: dict | None = None,
+    ) -> tuple[tuple[Edge, ...], tuple[Node, ...]]:
+        policy: dict = {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Action": "*",
+                    "Resource": "*",
+                }
+            ],
+        }
+        if conditions is not None:
+            policy["Statement"][0]["Condition"] = conditions
+        parse_results = parse_permission_policy(
+            policy,
+            source_arn=role_arn,
+            source_node_type=NODE_TYPE_IAM_ROLE,
+            source_account_id="111111\u003111111",
+            policy_source="managed",
+            policy_name="AdministratorAccess",
+            policy_arn=policy_arn,
+        )
+        edges, hyperedge_nodes = build_permission_edges(
+            parse_results,
+            ExpansionController(global_mode="warn"),
+            known_role_arns=[role_arn],
+        )
+        return (tuple(edges), tuple(hyperedge_nodes))
+
+    def _single_hop_to_admin_with_policy(
+        self,
+        *,
+        source_arn: str = _ALICE_ARN,
+        target_arn: str = _ADMIN_ARN,
+        policy_arn: str = _AWS_MANAGED_ADMINISTRATOR_ACCESS_ARN,
+        conditions: dict | None = None,
+        wildcard_assume_role_permission: bool = False,
+    ) -> FactGraph:
+        source = _user(source_arn) if ":user/" in source_arn else _role(source_arn)
+        target = _role(target_arn)
+        assume_perm = _assume_perm_edge(
+            src_arn=source_arn,
+            dst_arn=target_arn,
+            is_wildcard_resource=wildcard_assume_role_permission,
+        )
+        trust = _trust_edge(principal_arn=source_arn, target_arn=target_arn)
+        admin_edges, hyperedge_nodes = self._admin_edges_from_policy(
+            role_arn=target_arn,
+            policy_arn=policy_arn,
+            conditions=conditions,
+        )
+        return _make_facts(
+            nodes=(source, target, *hyperedge_nodes),
+            edges=(assume_perm, trust, *admin_edges),
+        )
+
+    def _finding_for_source(self, facts: FactGraph, source_arn: str) -> object:
+        return next(f for f in AdminReachabilityReasoner().run(facts) if f.source.provider_id == source_arn)
+
+    def _clean_witness_check_state(self, finding: object) -> str:
+        check = next(
+            c for c in finding.required_checks if c.name == "at_least_one_reachable_chain_uses_clean_witnesses"
+        )
+        return check.state.value
+
+    def test_aws_managed_administratoraccess_is_clean_admin_witness(self) -> None:
+        facts = self._single_hop_to_admin_with_policy(policy_arn=_AWS_MANAGED_ADMINISTRATOR_ACCESS_ARN)
+
+        finding = self._finding_for_source(facts, _ALICE_ARN)
+
+        assert finding.verdict.value == "validated"
+        assert self._clean_witness_check_state(finding) == "pass"
+
+    def test_custom_wildcard_admin_policy_remains_conservative(self) -> None:
+        facts = self._single_hop_to_admin_with_policy(
+            policy_arn="arn:aws:iam::111111\u003111111:policy/CustomAdminPolicy"
+        )
+
+        finding = self._finding_for_source(facts, _ALICE_ARN)
+
+        assert finding.verdict.value == "inconclusive"
+        assert self._clean_witness_check_state(finding) == "unknown"
+
+    def test_spoofed_administratoraccess_policy_arn_remains_conservative(self) -> None:
+        facts = self._single_hop_to_admin_with_policy(
+            policy_arn="arn:aws:iam::111111\u003111111:policy/MyAdministratorAccess"
+        )
+
+        finding = self._finding_for_source(facts, _ALICE_ARN)
+
+        assert finding.verdict.value == "inconclusive"
+        assert self._clean_witness_check_state(finding) == "unknown"
+
+    def test_conditioned_administratoraccess_witness_remains_conservative(self) -> None:
+        facts = self._single_hop_to_admin_with_policy(
+            policy_arn=_AWS_MANAGED_ADMINISTRATOR_ACCESS_ARN,
+            conditions={"StringEquals": {"aws:PrincipalTag/admin-review": "approved"}},
+        )
+
+        finding = self._finding_for_source(facts, _ALICE_ARN)
+
+        assert finding.verdict.value == "inconclusive"
+        assert self._clean_witness_check_state(finding) == "unknown"
+
+    def test_ambiguous_assumerole_path_to_aws_managed_administratoraccess_stays_inconclusive(self) -> None:
+        facts = self._single_hop_to_admin_with_policy(
+            policy_arn=_AWS_MANAGED_ADMINISTRATOR_ACCESS_ARN,
+            wildcard_assume_role_permission=True,
+        )
+
+        finding = self._finding_for_source(facts, _ALICE_ARN)
+
+        assert finding.verdict.value == "inconclusive"
+        assert self._clean_witness_check_state(finding) == "unknown"
+
+    def test_real_pilot_shape_prodapprole_to_proddbadminrole_validates(self) -> None:
+        source_arn = "arn:aws:iam::111111\u003111111:role/ProdAppRole"
+        target_arn = "arn:aws:iam::111111\u003111111:role/ProdDBAdminRole"
+        facts = self._single_hop_to_admin_with_policy(
+            source_arn=source_arn,
+            target_arn=target_arn,
+            policy_arn=_AWS_MANAGED_ADMINISTRATOR_ACCESS_ARN,
+        )
+
+        finding = self._finding_for_source(facts, source_arn)
+
+        assert finding.target.provider_id == target_arn
+        assert finding.verdict.value == "validated"
+        assert self._clean_witness_check_state(finding) == "pass"
 
 
 class TestPermissionBoundaryReachability:

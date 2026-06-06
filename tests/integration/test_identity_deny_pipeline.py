@@ -115,14 +115,18 @@ def _permission_results(
     principal_type: str,
     policy_doc: dict[str, Any],
     policy_name: str,
+    *,
+    policy_source: str = "inline",
+    policy_arn: str = "",
 ) -> list[PermissionParseResult]:
     return parse_permission_policy(
         policy_doc,
         source_arn=principal_arn,
         source_node_type=principal_type,
         source_account_id=_ACCOUNT,
-        policy_source="inline",
+        policy_source=policy_source,
         policy_name=policy_name,
+        policy_arn=policy_arn,
     )
 
 
@@ -158,6 +162,8 @@ def _build_case(
             NODE_TYPE_IAM_ROLE,
             _allow_doc("*", "*"),
             "AdminAccess",
+            policy_source="managed",
+            policy_arn="arn:aws:iam::aws:policy/AdministratorAccess",
         )
     )
 
