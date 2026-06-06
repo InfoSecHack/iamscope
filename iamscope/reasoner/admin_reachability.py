@@ -66,6 +66,7 @@ logger = logging.getLogger(__name__)
 
 _ASSUMEROLE_ACTION: str = "sts:AssumeRole"
 _MAX_DEPTH: int = 4
+_AWS_MANAGED_ADMINISTRATOR_ACCESS_ARN: str = "arn:aws:iam::aws:policy/AdministratorAccess"
 
 
 class AdminReachabilityReasoner:
@@ -159,13 +160,16 @@ class AdminReachabilityReasoner:
                         current_node,
                     )
                     if admin_witness is not None:
+                        admin_witness_is_clean = self._is_clean_admin_witness(admin_witness, current_node)
                         reachable_admins.add(current_arn)
                         self._append_unique_edge(admin_witness_edges, admin_witness)
-                        if path_is_clean:
+                        if path_is_clean and admin_witness_is_clean:
                             clean_reachable_admins.add(current_arn)
                             self._append_unique_edge(clean_admin_witness_edges, admin_witness)
                             self._append_unique_edges(clean_proof_walk_edges, path_edges)
                         else:
+                            if not admin_witness_is_clean:
+                                any_hyperedge_traversed = True
                             ambiguous_reachable_admins.add(current_arn)
 
             # Stop walking deeper if depth limit hit.
@@ -276,6 +280,33 @@ class AdminReachabilityReasoner:
         from iamscope.reasoner.fact_graph import _is_unknown_witness
 
         return _is_unknown_witness(edge)
+
+    def _is_clean_admin_witness(self, edge: Edge, target_role: Node) -> bool:
+        """Return True when an admin witness is clean enough for VALIDATED.
+
+        Arbitrary wildcard admin-like policies remain conservative.
+        The one supported clean wildcard admin witness is the exact AWS
+        managed AdministratorAccess policy, represented as an Allow over
+        resource "*" with no conditions, attached to the role being
+        classified as admin-equivalent.
+        """
+        if not edge.edge_type.endswith("_permission"):
+            return False
+        if edge.src.provider_id != target_role.provider_id:
+            return False
+        if not _is_admin_equivalent_wildcard_permission_edge(edge):
+            return False
+        if edge.features.get("effect") != "Allow":
+            return False
+        if edge.features.get("resource_pattern") != "*":
+            return False
+        if edge.features.get("has_conditions") is True:
+            return False
+        if edge.features.get("raw_conditions") not in ({}, None):
+            return False
+        if edge.features.get("parse_status") not in (None, "", "complete"):
+            return False
+        return _policy_arn_from_edge(edge) == _AWS_MANAGED_ADMINISTRATOR_ACCESS_ARN
 
     def _append_unique_edge(self, edges: list[Edge], edge: Edge) -> None:
         """Append edge once, preserving first-seen deterministic order."""
@@ -524,13 +555,13 @@ class AdminReachabilityReasoner:
         elif has_clean_admin_path:
             check_3_reason = "all BFS paths use clean witness edges"
         else:
-            check_3_reason = "BFS walk traversed at least one wildcard/hyperedge edge"
+            check_3_reason = "reachable admin path or admin witness uses wildcard/hyperedge evidence"
         check_results.append(
             Check(
                 name="at_least_one_reachable_chain_uses_clean_witnesses",
                 description=(
                     "At least one BFS path from source to a reachable admin "
-                    "traverses only non-wildcard, non-hyperedge edges"
+                    "uses only clean AssumeRole and admin-equivalence witnesses"
                 ),
                 state=check_3_state,
                 evidence_refs=tuple(edge_refs),
@@ -554,7 +585,7 @@ class AdminReachabilityReasoner:
                 reason=(
                     "clean path with ambiguous alternate walk"
                     if has_clean_admin_path and any_hyperedge_traversed
-                    else ("clean walk" if has_clean_admin_path else "ambiguity in walk")
+                    else ("clean walk" if has_clean_admin_path else "ambiguity in walk or admin witness")
                 ),
             )
         )
@@ -780,3 +811,26 @@ class AdminReachabilityReasoner:
                         int(ref.get("statement_index", 0)),
                         ref.get("summary", ""),
                     )
+
+
+def _is_admin_equivalent_wildcard_permission_edge(edge: Edge) -> bool:
+    action = edge.edge_type[: -len("_permission")]
+    if action in ("*", "iam:*"):
+        return True
+    action_matched_via = edge.features.get("action_matched_via")
+    return action_matched_via in ("wildcard_star", "wildcard_iam")
+
+
+def _policy_arn_from_edge(edge: Edge) -> str:
+    policy_arn = edge.features.get("policy_arn")
+    if isinstance(policy_arn, str) and policy_arn:
+        return policy_arn
+    allow_controls = edge.features.get("allow_controls")
+    if isinstance(allow_controls, list):
+        for control in allow_controls:
+            if not isinstance(control, dict):
+                continue
+            control_policy_arn = control.get("policy_arn")
+            if isinstance(control_policy_arn, str) and control_policy_arn:
+                return control_policy_arn
+    return ""
