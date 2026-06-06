@@ -21,9 +21,13 @@ from iamscope.collector.passrole import build_permission_edges
 from iamscope.constants import (
     CONSTRAINT_TYPE_PERMISSION_BOUNDARY,
     CONSTRAINT_TYPE_SCP,
+    NODE_TYPE_ACCOUNT_ROOT,
     NODE_TYPE_IAM_ROLE,
+    NODE_TYPE_WILDCARD_PRINCIPAL,
     PROVIDER_AWS,
     REGION_GLOBAL,
+    TRUST_SCOPE_ACCOUNT_ROOT,
+    TRUST_SCOPE_ANY_AWS_PRINCIPAL,
 )
 from iamscope.controls.expansion import ExpansionController
 from iamscope.models import Constraint, Edge, EdgeConstraint, Node
@@ -270,7 +274,7 @@ class TestWildcardTrustPrincipalReachability:
         assert check.state.value == "unknown"
         assert trust.edge_id in alice_f.evidence.edge_refs
 
-    def test_account_root_trust_path_remains_validated(self) -> None:
+    def test_account_root_trust_without_principalarn_is_inconclusive(self) -> None:
         alice = _user(_ALICE_ARN)
         admin = _role(_ADMIN_ARN)
         root_arn = "arn:aws:iam::111111\u003111111:root"
@@ -285,11 +289,11 @@ class TestWildcardTrustPrincipalReachability:
         findings = AdminReachabilityReasoner().run(facts)
         alice_f = next(f for f in findings if f.source.provider_id == _ALICE_ARN)
 
-        assert alice_f.verdict.value == "validated"
+        assert alice_f.verdict.value == "inconclusive"
         check = next(
             c for c in alice_f.required_checks if c.name == "at_least_one_reachable_chain_uses_clean_witnesses"
         )
-        assert check.state.value == "pass"
+        assert check.state.value == "unknown"
 
     def test_unrelated_trust_still_produces_no_reachability(self) -> None:
         alice = _user(_ALICE_ARN)
@@ -380,6 +384,76 @@ class TestAdministratorAccessCalibration:
         )
         return check.state.value
 
+    def _conditioned_root_trust_facts(
+        self,
+        *,
+        source_arn: str,
+        target_arn: str,
+        principal_arn_value: str | list[str] | None,
+        extra_conditions: dict | None = None,
+        wildcard_principal: bool = False,
+        include_external_id: bool = True,
+    ) -> FactGraph:
+        source = _role(source_arn)
+        target = _role(target_arn)
+        account_id = source_arn.split(":")[4]
+        root_arn = f"arn:aws:iam::{account_id}:root"
+        raw_conditions: dict = {}
+        if principal_arn_value is not None:
+            raw_conditions["ArnLike"] = {"aws:PrincipalArn": principal_arn_value}
+        if include_external_id:
+            raw_conditions.setdefault("StringEquals", {})["sts:ExternalId"] = "reviewed-external-id"
+        if extra_conditions:
+            for operator, body in extra_conditions.items():
+                raw_conditions.setdefault(operator, {}).update(body)
+        assume_perm = _assume_perm_edge(src_arn=source_arn, dst_arn=target_arn)
+        trust_src = Node(
+            provider=PROVIDER_AWS,
+            node_type=NODE_TYPE_WILDCARD_PRINCIPAL if wildcard_principal else NODE_TYPE_ACCOUNT_ROOT,
+            provider_id="*" if wildcard_principal else root_arn,
+            properties={"account_id": account_id, "is_synthetic": True},
+        )
+        trust = Edge(
+            edge_type="sts:AssumeRole_trust",
+            src=trust_src.to_ref(),
+            dst=target.to_ref(),
+            region=REGION_GLOBAL,
+            features={
+                "allow_controls": [
+                    {
+                        "control_type": "TRUST",
+                        "policy_arn": target_arn,
+                        "statement_index": 0,
+                        "digest": "2" * 64,
+                        "summary": f"trust {trust_src.provider_id}",
+                    }
+                ],
+                "cross_account": False,
+                "effect": "Allow",
+                "has_conditions": bool(raw_conditions),
+                "has_external_id": include_external_id,
+                "is_wildcard_principal": wildcard_principal,
+                "layer": "trust",
+                "principal_type": "AWS",
+                "raw_conditions": raw_conditions,
+                "statement_index": 0,
+                "trust_scope": TRUST_SCOPE_ANY_AWS_PRINCIPAL if wildcard_principal else TRUST_SCOPE_ACCOUNT_ROOT,
+            },
+        )
+        admin_edges, hyperedge_nodes = self._admin_edges_from_policy(
+            role_arn=target_arn,
+            policy_arn=_AWS_MANAGED_ADMINISTRATOR_ACCESS_ARN,
+        )
+        return _make_facts(
+            nodes=(source, target, trust_src, *hyperedge_nodes),
+            edges=(assume_perm, trust, *admin_edges),
+        )
+
+    def _exact_assumed_role_pattern(self, role_arn: str) -> str:
+        account_id = role_arn.split(":")[4]
+        role_name = role_arn.rsplit("/", 1)[-1]
+        return f"arn:aws:sts::{account_id}:assumed-role/{role_name}/*"
+
     def test_aws_managed_administratoraccess_is_clean_admin_witness(self) -> None:
         facts = self._single_hop_to_admin_with_policy(policy_arn=_AWS_MANAGED_ADMINISTRATOR_ACCESS_ARN)
 
@@ -444,6 +518,187 @@ class TestAdministratorAccessCalibration:
         assert finding.target.provider_id == target_arn
         assert finding.verdict.value == "validated"
         assert self._clean_witness_check_state(finding) == "pass"
+
+    def test_conditioned_account_root_exact_source_role_principalarn_validates(self) -> None:
+        source_arn = "arn:aws:iam::111111\u003111111:role/ProdAppRole"
+        target_arn = "arn:aws:iam::111111\u003111111:role/ProdDBAdminRole"
+        facts = self._conditioned_root_trust_facts(
+            source_arn=source_arn,
+            target_arn=target_arn,
+            principal_arn_value=source_arn,
+        )
+
+        finding = self._finding_for_source(facts, source_arn)
+
+        assert finding.verdict.value == "validated"
+        assert self._clean_witness_check_state(finding) == "pass"
+
+    def test_conditioned_account_root_exact_assumed_role_pattern_validates(self) -> None:
+        source_arn = "arn:aws:iam::111111\u003111111:role/ProdDeployRole"
+        target_arn = "arn:aws:iam::111111\u003111111:role/ProdDBAdminRole"
+        facts = self._conditioned_root_trust_facts(
+            source_arn=source_arn,
+            target_arn=target_arn,
+            principal_arn_value=self._exact_assumed_role_pattern(source_arn),
+        )
+
+        finding = self._finding_for_source(facts, source_arn)
+
+        assert finding.verdict.value == "validated"
+        assert self._clean_witness_check_state(finding) == "pass"
+
+    def test_conditioned_account_root_externalid_only_stays_inconclusive(self) -> None:
+        source_arn = "arn:aws:iam::111111\u003111111:role/ProdAppRole"
+        target_arn = "arn:aws:iam::111111\u003111111:role/ProdDBAdminRole"
+        facts = self._conditioned_root_trust_facts(
+            source_arn=source_arn,
+            target_arn=target_arn,
+            principal_arn_value=None,
+        )
+
+        finding = self._finding_for_source(facts, source_arn)
+
+        assert finding.verdict.value == "inconclusive"
+        assert self._clean_witness_check_state(finding) == "unknown"
+
+    def test_conditioned_account_root_broad_role_wildcard_stays_inconclusive(self) -> None:
+        source_arn = "arn:aws:iam::111111\u003111111:role/ProdAppRole"
+        target_arn = "arn:aws:iam::111111\u003111111:role/ProdDBAdminRole"
+        facts = self._conditioned_root_trust_facts(
+            source_arn=source_arn,
+            target_arn=target_arn,
+            principal_arn_value="arn:aws:iam::111111\u003111111:role/*",
+        )
+
+        finding = self._finding_for_source(facts, source_arn)
+
+        assert finding.verdict.value == "inconclusive"
+        assert self._clean_witness_check_state(finding) == "unknown"
+
+    def test_conditioned_account_root_broad_assumed_role_wildcard_stays_inconclusive(self) -> None:
+        source_arn = "arn:aws:iam::111111\u003111111:role/ProdAppRole"
+        target_arn = "arn:aws:iam::111111\u003111111:role/ProdDBAdminRole"
+        facts = self._conditioned_root_trust_facts(
+            source_arn=source_arn,
+            target_arn=target_arn,
+            principal_arn_value="arn:aws:sts::111111\u003111111:assumed-role/*",
+        )
+
+        finding = self._finding_for_source(facts, source_arn)
+
+        assert finding.verdict.value == "inconclusive"
+        assert self._clean_witness_check_state(finding) == "unknown"
+
+    def test_conditioned_account_root_different_role_stays_inconclusive(self) -> None:
+        source_arn = "arn:aws:iam::111111\u003111111:role/ProdAppRole"
+        target_arn = "arn:aws:iam::111111\u003111111:role/ProdDBAdminRole"
+        facts = self._conditioned_root_trust_facts(
+            source_arn=source_arn,
+            target_arn=target_arn,
+            principal_arn_value="arn:aws:iam::111111\u003111111:role/OtherRole",
+        )
+
+        finding = self._finding_for_source(facts, source_arn)
+
+        assert finding.verdict.value == "inconclusive"
+        assert self._clean_witness_check_state(finding) == "unknown"
+
+    def test_conditioned_account_root_unsupported_condition_stays_inconclusive(self) -> None:
+        source_arn = "arn:aws:iam::111111\u003111111:role/ProdAppRole"
+        target_arn = "arn:aws:iam::111111\u003111111:role/ProdDBAdminRole"
+        facts = self._conditioned_root_trust_facts(
+            source_arn=source_arn,
+            target_arn=target_arn,
+            principal_arn_value=source_arn,
+            extra_conditions={"Bool": {"aws:MultiFactorAuthPresent": "true"}},
+        )
+
+        finding = self._finding_for_source(facts, source_arn)
+
+        assert finding.verdict.value == "inconclusive"
+        assert self._clean_witness_check_state(finding) == "unknown"
+
+    def test_conditioned_wildcard_principal_stays_inconclusive(self) -> None:
+        source_arn = "arn:aws:iam::111111\u003111111:role/ProdAppRole"
+        target_arn = "arn:aws:iam::111111\u003111111:role/ProdDBAdminRole"
+        facts = self._conditioned_root_trust_facts(
+            source_arn=source_arn,
+            target_arn=target_arn,
+            principal_arn_value=source_arn,
+            wildcard_principal=True,
+        )
+
+        finding = self._finding_for_source(facts, source_arn)
+
+        assert finding.verdict.value == "inconclusive"
+        assert self._clean_witness_check_state(finding) == "unknown"
+
+    def test_conditioned_account_root_scp_blocker_still_wins(self) -> None:
+        source_arn = "arn:aws:iam::111111\u003111111:role/ProdAppRole"
+        target_arn = "arn:aws:iam::111111\u003111111:role/ProdDBAdminRole"
+        facts = self._conditioned_root_trust_facts(
+            source_arn=source_arn,
+            target_arn=target_arn,
+            principal_arn_value=source_arn,
+        )
+        trust_edge = next(edge for edge in facts.edges if edge.edge_type == "sts:AssumeRole_trust")
+        scp = Constraint(
+            provider=PROVIDER_AWS,
+            constraint_type=CONSTRAINT_TYPE_SCP,
+            scope_type="Account",
+            scope_id="111111\u003111111",
+            policy_id="p-deny-assumerole",
+            statement_id="DenyAssumeRole",
+            region=REGION_GLOBAL,
+            properties={"deny_actions": ["sts:AssumeRole"], "resource_patterns": ["*"], "parse_status": "complete"},
+        )
+        blocked = FactGraph(
+            nodes=facts.nodes,
+            edges=facts.edges,
+            constraints=(scp,),
+            edge_constraints=(
+                EdgeConstraint(
+                    edge_id=trust_edge.edge_id,
+                    constraint_id=scp.constraint_id,
+                    governance_confidence="complete",
+                    likely_blocking=True,
+                    binding_reason="SCP denies sts:AssumeRole",
+                ),
+            ),
+            scenario_hash=facts.scenario_hash,
+            edge_budget_exhausted=False,
+        )
+
+        finding = self._finding_for_source(blocked, source_arn)
+
+        assert finding.verdict.value == "blocked"
+        assert finding.severity == "info"
+        assert finding.blockers_observed[0].kind == "scp"
+
+    def test_real_pilot_conditioned_account_root_sources_validate_under_safe_rule(self) -> None:
+        target_arn = "arn:aws:iam::111111\u003111111:role/ProdDBAdminRole"
+        source_arns = (
+            "arn:aws:iam::111111\u003111111:role/ProdAppRole",
+            "arn:aws:iam::111111\u003111111:role/ProdDeployRole",
+            "arn:aws:iam::111111\u003111111:role/ProdReadOnlyRole",
+        )
+        principal_patterns = [
+            *source_arns,
+            *(self._exact_assumed_role_pattern(source_arn) for source_arn in source_arns),
+        ]
+
+        for source_arn in source_arns:
+            facts = self._conditioned_root_trust_facts(
+                source_arn=source_arn,
+                target_arn=target_arn,
+                principal_arn_value=principal_patterns,
+            )
+
+            finding = self._finding_for_source(facts, source_arn)
+
+            assert finding.target.provider_id == target_arn
+            assert finding.verdict.value == "validated"
+            assert self._clean_witness_check_state(finding) == "pass"
 
 
 class TestPermissionBoundaryReachability:
