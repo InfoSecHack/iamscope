@@ -36,7 +36,7 @@ The 18 findings were not treated as a score, benchmark pass/fail result, or owne
 - `inconclusive_needs_context`: 3.
 - `needs_more_evidence`: 1.
 
-These labels are preliminary and not owner-confirmed. They represent a first-pass reviewer classification of sanitized finding rows, not a final authorization or risk determination.
+Except where explicitly noted in the owner-confirmation addendum, these labels are preliminary and not owner-confirmed. They represent a first-pass reviewer classification of sanitized finding rows, not a final authorization or risk determination.
 
 ## Current-Main Replay Addendum
 
@@ -60,10 +60,28 @@ The scenario counts were unchanged: 26 nodes, 63 edges, 3 constraints, and 6 edg
 
 The sanitized review outputs had no raw 12-digit account IDs and no raw IAM/STS ARNs. Raw replay findings are local-only and may contain raw ARNs or account IDs, so no raw replay artifacts are committed. This strengthens evidence hygiene but does not change the non-claims.
 
+## Owner-Confirmation Addendum
+
+A local owner-confirmation inspection reviewed trust policies for five priority trust findings. The raw `get-role` output, raw account IDs, IAM/STS ARNs, updated label JSON, and generated review artifacts remain local-only and are not committed.
+
+The inspection marked five reviewer labels as `owner_confirmed=true`: four `valid_path` wildcard-principal findings and one `expected_benign` `OrganizationAccountAccessRole` finding that remains pending confirmation that the redacted principal is the intended management/admin account.
+
+The four wildcard-principal trust findings were confirmed as reviewable trust exposures:
+
+- `ProdAdminRole`: `Principal "*"`, no condition.
+- `ProdDeployRole`: `Principal "*"`, no condition.
+- `SharedLambdaDeploy`: `Principal "*"`, no condition.
+- `BillingAdminRole`: `Principal "*"`, with an `ExternalId` condition.
+
+`OrganizationAccountAccessRole` trusted a specific AWS principal and remains expected-benign if that principal is the expected management/admin account.
+
+This owner-confirmation step strengthens the claim from “reviewable findings” to “some findings corresponded to real trust policies worth owner review.” It does not claim exploitation, production readiness, full IAM correctness, downstream authorization, or broad IAMScope correctness.
+
 ## What the Pilot Supports
 
 - Most findings were reviewable and meaningful to a human reviewer.
 - IAMScope surfaced real trust structures that were worth inspection, including findings later classified as expected-benign.
+- A bounded owner-confirmation pass found that some findings corresponded to real trust policies worth owner review.
 - The reviewer workflow successfully separated meaningful findings, expected-benign trust structures, and calibration questions.
 - Wildcard-principal trust findings repeatedly surfaced as valid-path, high-priority review items.
 - Account-root trust findings were generally classifiable as valid-path or expected-benign depending on role context.
@@ -90,7 +108,7 @@ The review question is whether AWS-managed AdministratorAccess should be treated
 
 ## Next Validation Step
 
-- Owner-confirm a small subset of trust findings.
+- Owner-confirm additional trust findings beyond the five priority rows covered in this addendum.
 - Separately test/admin-reachability calibration for AWS-managed AdministratorAccess as a clean admin witness.
 - Use replayed current-main findings with `collection_context` for any future publication, while keeping raw replay artifacts local-only.
 
@@ -105,4 +123,4 @@ The review question is whether AWS-managed AdministratorAccess should be treated
 - Not full SCP, permission-boundary, or session-policy semantics.
 - No composite score.
 - No pass/fail benchmark label.
-- Labels are preliminary and not owner-confirmed.
+- Labels are not a full owner-confirmed truth set; only the five priority trust findings noted above received bounded local owner-inspection.
