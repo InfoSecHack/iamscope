@@ -24,7 +24,7 @@ Raw `scenario.json`, `findings.json`, reviewer-label JSON, logs, account IDs, IA
 
 ## Finding Summary
 
-The pilot produced a small, reviewable set of findings dominated by cross-account trust observations, plus three admin-reachability findings that stayed inconclusive because the clean-admin-witness check could not be strengthened from the available representation.
+The pilot produced a small, reviewable set of findings dominated by cross-account trust observations, plus three admin-reachability findings that initially stayed inconclusive because the trust-cleanliness check could not be strengthened from the available representation. The final calibrated replay addendum below records the current result after the PR #76 conditioned account-root trust calibration.
 
 The 18 findings were not treated as a score, benchmark pass/fail result, or owner-confirmed truth set. They were reviewed as evidence-bearing rows that a human could classify into useful review categories.
 
@@ -77,6 +77,47 @@ The four wildcard-principal trust findings were confirmed as reviewable trust ex
 
 This owner-confirmation step strengthens the claim from “reviewable findings” to “some findings corresponded to real trust policies worth owner review.” It does not claim exploitation, production readiness, full IAM correctness, downstream authorization, or broad IAMScope correctness.
 
+## Final Calibrated Replay Addendum
+
+PR #76 calibrated conditioned account-root trust for `admin_reachability`. The final replay of the frozen real-pilot scenario preserved 18 findings and moved the verdict counts to 18 validated.
+
+The pattern counts remained stable:
+
+- `cross_account_trust`: 15.
+- `admin_reachability`: 3.
+
+The three `admin_reachability` findings moved from inconclusive to validated under the narrow safe rule:
+
+- `ProdReadOnlyRole` -> `ProdDBAdminRole`.
+- `ProdDeployRole` -> `ProdDBAdminRole`.
+- `ProdAppRole` -> `ProdDBAdminRole`.
+
+Each admin-reachability row now has clean witness PASS:
+
+- `clean_witness_check`: pass.
+- `admin_witness_policy`: `AdministratorAccess`.
+- `source_has_assume_role`: pass.
+- `reaches_at_least_one_admin`: pass.
+- `walk_terminated_within_depth_limit`: pass.
+
+Reviewer labels were remapped to the new admin finding IDs. Final labels include 14 valid_path rows:
+
+- 18 labeled, 0 unlabeled.
+- 14 `valid_path`.
+- 3 `expected_benign`.
+- 1 `needs_more_evidence`.
+- 5 labels remain `owner_confirmed`.
+
+The final replay retained the same graph shape: 26 nodes, 63 edges, 3 constraints, and 6 edge constraints. `collection_context` remained complete:
+
+- `graph_collection_complete`: true.
+- `has_collection_failures`: false.
+- `has_policy_parse_failures`: false.
+
+Sanitized outputs had no raw 12-digit account IDs and no raw IAM/STS ARNs. Raw replay artifacts, raw findings, raw labels, and generated review outputs remain local-only and uncommitted.
+
+This addendum updates the replay status and reviewer labels only. It does not change the non-claims, and owner confirmation still covers only five priority trust findings, not a full owner-confirmed truth set.
+
 ## What the Pilot Supports
 
 - Most findings were reviewable and meaningful to a human reviewer.
@@ -85,6 +126,7 @@ This owner-confirmation step strengthens the claim from “reviewable findings�
 - The reviewer workflow successfully separated meaningful findings, expected-benign trust structures, and calibration questions.
 - Wildcard-principal trust findings repeatedly surfaced as valid-path, high-priority review items.
 - Account-root trust findings were generally classifiable as valid-path or expected-benign depending on role context.
+- The calibrated replay showed the three admin-reachability rows as validated when the narrowed conditioned account-root trust rule was satisfied.
 
 ## What It Does Not Support
 
@@ -97,20 +139,20 @@ The pilot also does not prove the absence of findings outside IAMScope’s model
 - Wildcard-principal trust findings were repeatedly classified as `valid_path` and high-priority review.
 - Account-root trust findings were mostly classified as `valid_path` or `expected_benign` depending on role context.
 - StackSets, `OrganizationAccountAccessRole`, and IAMScopeReader-style findings were treated as expected-benign but still owner-confirmation targets.
-- `admin_reachability` findings were `inconclusive_needs_context` because of clean witness uncertainty and AdministratorAccess/wildcard admin witness representation.
+- `admin_reachability` findings initially exposed clean-witness uncertainty, then moved to `validated` after the AWS-managed `AdministratorAccess` and conditioned account-root trust calibrations.
 - The expected-benign findings were still useful because IAMScope surfaced real trust structures that should be confirmed with an owner.
 
 ## Calibration Candidates
 
-The three `admin_reachability` findings exposed a calibration candidate around AWS-managed AdministratorAccess and clean admin witness handling.
+The first real-pilot replay exposed two calibration questions: AWS-managed `AdministratorAccess` as a clean admin-equivalence witness, and conditioned account-root trust narrowed by `aws:PrincipalArn` as a clean trust witness for `admin_reachability`.
 
-The review question is whether AWS-managed AdministratorAccess should be treated as a clean admin-equivalence witness when the AssumeRole permission and trust path are otherwise clean, while keeping arbitrary custom wildcard policies conservative unless separately reviewed.
+Those two calibration slices are now reflected in the final replay addendum. Future calibration work should remain similarly bounded and test-backed.
 
 ## Next Validation Step
 
 - Owner-confirm additional trust findings beyond the five priority rows covered in this addendum.
-- Separately test/admin-reachability calibration for AWS-managed AdministratorAccess as a clean admin witness.
-- Use replayed current-main findings with `collection_context` for any future publication, while keeping raw replay artifacts local-only.
+- Review whether the three newly validated admin-reachability rows should receive owner confirmation.
+- Use final replayed current-main findings with `collection_context` for any future publication, while keeping raw replay artifacts local-only.
 
 ## Non-Claims
 
