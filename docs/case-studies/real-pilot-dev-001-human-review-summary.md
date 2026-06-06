@@ -20,7 +20,7 @@ Raw `scenario.json`, `findings.json`, reviewer-label JSON, logs, account IDs, IA
 - IAMScope verdicts: 15 `validated`, 3 `inconclusive`.
 - Pattern mix: 15 `cross_account_trust`, 3 `admin_reachability`.
 - Severity mix: 5 `critical`, 10 `high`, 3 `medium`.
-- `collection_context` was not provided because the original findings were generated before PR #66 added per-finding collection-context metadata.
+- The original findings predated PR #66, so they did not include per-finding `collection_context`; replayed current-main findings now include complete `collection_context`.
 
 ## Finding Summary
 
@@ -37,6 +37,28 @@ The 18 findings were not treated as a score, benchmark pass/fail result, or owne
 - `needs_more_evidence`: 1.
 
 These labels are preliminary and not owner-confirmed. They represent a first-pass reviewer classification of sanitized finding rows, not a final authorization or risk determination.
+
+## Current-Main Replay Addendum
+
+The frozen real-pilot scenario was replayed on current main after the `collection_context` and trust-safety fixes. The replay preserved the same result shape: 18 findings, 15 `validated`, and 3 `inconclusive`.
+
+The same human-review labels still applied to all 18 findings:
+
+- 18 labeled, 0 unlabeled.
+- `valid_path`: 11.
+- `expected_benign`: 3.
+- `inconclusive_needs_context`: 3.
+- `needs_more_evidence`: 1.
+
+The scenario counts were unchanged: 26 nodes, 63 edges, 3 constraints, and 6 edge constraints. The replayed findings now include complete per-finding `collection_context`:
+
+- `graph_collection_complete`: true.
+- `has_collection_failures`: false.
+- `has_policy_parse_failures`: false.
+- `related_collection_failures`: empty.
+- `related_policy_parse_failures`: empty.
+
+The sanitized review outputs had no raw 12-digit account IDs and no raw IAM/STS ARNs. Raw replay findings are local-only and may contain raw ARNs or account IDs, so no raw replay artifacts are committed. This strengthens evidence hygiene but does not change the non-claims.
 
 ## What the Pilot Supports
 
@@ -70,7 +92,7 @@ The review question is whether AWS-managed AdministratorAccess should be treated
 
 - Owner-confirm a small subset of trust findings.
 - Separately test/admin-reachability calibration for AWS-managed AdministratorAccess as a clean admin witness.
-- Optionally replay the frozen scenario with current main to regenerate findings with `collection_context` before any future publication.
+- Use replayed current-main findings with `collection_context` for any future publication, while keeping raw replay artifacts local-only.
 
 ## Non-Claims
 
