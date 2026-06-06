@@ -1,0 +1,86 @@
+# Real Pilot Dev-001 Human Review Summary
+
+## Purpose
+
+This note records a bounded, sanitized human-review summary for the first real pre-existing dev-account IAMScope pilot. It is intended to show whether IAMScope findings were reviewable and useful to a human reviewer without publishing raw AWS artifacts or turning the review into a fake score.
+
+## Input Artifacts, Sanitized/Local Only
+
+The source collection and reviewer outputs remained local under `/tmp`:
+
+- Collection input directory: `/tmp/iamscope-real-pilot-dev-001`
+- Sanitized reviewer classification output directory: `/tmp/iamscope-real-pilot-dev-001-review-all18`
+
+Raw `scenario.json`, `findings.json`, reviewer-label JSON, logs, account IDs, IAM/STS ARNs, and generated review artifacts are intentionally not committed. The counts and observations below are sanitized summaries only.
+
+## Collection Summary
+
+- Scenario graph: 26 nodes, 63 edges, 3 constraints, 6 edge constraints.
+- Findings emitted: 18.
+- IAMScope verdicts: 15 `validated`, 3 `inconclusive`.
+- Pattern mix: 15 `cross_account_trust`, 3 `admin_reachability`.
+- Severity mix: 5 `critical`, 10 `high`, 3 `medium`.
+- `collection_context` was not provided because the original findings were generated before PR #66 added per-finding collection-context metadata.
+
+## Finding Summary
+
+The pilot produced a small, reviewable set of findings dominated by cross-account trust observations, plus three admin-reachability findings that stayed inconclusive because the clean-admin-witness check could not be strengthened from the available representation.
+
+The 18 findings were not treated as a score, benchmark pass/fail result, or owner-confirmed truth set. They were reviewed as evidence-bearing rows that a human could classify into useful review categories.
+
+## Human-Review Classification Summary
+
+- Reviewer labels: 18 labeled, 0 unlabeled.
+- `valid_path`: 11.
+- `expected_benign`: 3.
+- `inconclusive_needs_context`: 3.
+- `needs_more_evidence`: 1.
+
+These labels are preliminary and not owner-confirmed. They represent a first-pass reviewer classification of sanitized finding rows, not a final authorization or risk determination.
+
+## What the Pilot Supports
+
+- Most findings were reviewable and meaningful to a human reviewer.
+- IAMScope surfaced real trust structures that were worth inspection, including findings later classified as expected-benign.
+- The reviewer workflow successfully separated meaningful findings, expected-benign trust structures, and calibration questions.
+- Wildcard-principal trust findings repeatedly surfaced as valid-path, high-priority review items.
+- Account-root trust findings were generally classifiable as valid-path or expected-benign depending on role context.
+
+## What It Does Not Support
+
+This pilot does not support broad safety or correctness claims. It does not establish that the dev account is safe, that IAMScope covers all IAM risks, or that every finding is owner-confirmed.
+
+The pilot also does not prove the absence of findings outside IAMScope’s modeled coverage. It is one bounded human-review exercise over one collected real dev-account graph.
+
+## Key Observations
+
+- Wildcard-principal trust findings were repeatedly classified as `valid_path` and high-priority review.
+- Account-root trust findings were mostly classified as `valid_path` or `expected_benign` depending on role context.
+- StackSets, `OrganizationAccountAccessRole`, and IAMScopeReader-style findings were treated as expected-benign but still owner-confirmation targets.
+- `admin_reachability` findings were `inconclusive_needs_context` because of clean witness uncertainty and AdministratorAccess/wildcard admin witness representation.
+- The expected-benign findings were still useful because IAMScope surfaced real trust structures that should be confirmed with an owner.
+
+## Calibration Candidates
+
+The three `admin_reachability` findings exposed a calibration candidate around AWS-managed AdministratorAccess and clean admin witness handling.
+
+The review question is whether AWS-managed AdministratorAccess should be treated as a clean admin-equivalence witness when the AssumeRole permission and trust path are otherwise clean, while keeping arbitrary custom wildcard policies conservative unless separately reviewed.
+
+## Next Validation Step
+
+- Owner-confirm a small subset of trust findings.
+- Separately test/admin-reachability calibration for AWS-managed AdministratorAccess as a clean admin witness.
+- Optionally replay the frozen scenario with current main to regenerate findings with `collection_context` before any future publication.
+
+## Non-Claims
+
+- Not production readiness.
+- Not broad IAMScope correctness.
+- Not full IAM safety.
+- Not exploitability proof.
+- Not downstream authorization proof.
+- Not full resource-policy reasoning.
+- Not full SCP, permission-boundary, or session-policy semantics.
+- No composite score.
+- No pass/fail benchmark label.
+- Labels are preliminary and not owner-confirmed.
