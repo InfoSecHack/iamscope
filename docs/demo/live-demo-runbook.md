@@ -10,13 +10,34 @@ This runbook supports two demo modes: a no-AWS walkthrough and an explicitly aut
 - Do not commit raw `scenario.json`, `findings.json`, labels, logs, or generated review artifacts.
 - Do not present any result as production readiness, exploitability proof, full IAM safety, a composite score, or a pass/fail benchmark label.
 
+## Redaction Preflight Before Screen Sharing
+
+Before showing repo docs or generated demo output, run safe local checks like:
+
+```bash
+grep -R --line-number -E '[0-9]{12}' docs/demo docs/case-studies docs/reference || true
+grep -R --line-number -E 'arn:aws:' docs/demo docs/case-studies docs/reference || true
+```
+
+Review any hits before screen sharing. Pattern-only command examples are not raw artifacts, but raw 12-digit account IDs, raw IAM/STS ARNs, local role names, raw policy docs, and local real-pilot outputs should stay off-screen unless separately authorized and sanitized.
+
+Do not screen-share raw `scenario.json`, `binding_metadata.json`, `findings.json`, or local real-pilot artifacts unless they have been separately sanitized.
+
+Prefer showing:
+
+- [`sanitized-finding-card.md`](sanitized-finding-card.md)
+- [`demo-narrative-one-pager.md`](demo-narrative-one-pager.md)
+- [`iamscope-vs-pacu-pmapper.md`](iamscope-vs-pacu-pmapper.md)
+- [`../reference/capability-honesty-matrix.md`](../reference/capability-honesty-matrix.md)
+- [`../case-studies/real-pilot-dev-001-human-review-summary.md`](../case-studies/real-pilot-dev-001-human-review-summary.md)
+
 ## Mode A — No-AWS Demo
 
 Use this mode for recorded demos, public walkthroughs, and first-pass reviewer conversations.
 
 Steps:
 
-1. Open [`README.md`](README.md).
+1. Open [`sanitized-finding-card.md`](sanitized-finding-card.md).
 2. Open [`demo-narrative-one-pager.md`](demo-narrative-one-pager.md).
 3. Open [`iamscope-vs-pacu-pmapper.md`](iamscope-vs-pacu-pmapper.md).
 4. Open [`../reference/capability-honesty-matrix.md`](../reference/capability-honesty-matrix.md).

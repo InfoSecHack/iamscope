@@ -51,11 +51,12 @@ This package does not claim:
 
 ## What To Open First
 
-1. [`demo-narrative-one-pager.md`](demo-narrative-one-pager.md) — shortest public-facing story.
-2. [`iamscope-vs-pacu-pmapper.md`](iamscope-vs-pacu-pmapper.md) — positioning against Pacu and PMapper without disparaging either tool.
-3. [`recorded-demo-script.md`](recorded-demo-script.md) — 7-10 minute recording script.
-4. [`live-demo-runbook.md`](live-demo-runbook.md) — safe no-AWS and authorized-AWS demo modes.
-5. [`../case-studies/real-pilot-dev-001-human-review-summary.md`](../case-studies/real-pilot-dev-001-human-review-summary.md) — final calibrated real-pilot evidence.
+1. [`sanitized-finding-card.md`](sanitized-finding-card.md) — concrete sanitized finding artifact to show in the first minute.
+2. [`demo-narrative-one-pager.md`](demo-narrative-one-pager.md) — shortest public-facing story.
+3. [`iamscope-vs-pacu-pmapper.md`](iamscope-vs-pacu-pmapper.md) — positioning against Pacu and PMapper without disparaging either tool.
+4. [`recorded-demo-script.md`](recorded-demo-script.md) — 7-10 minute recording script.
+5. [`live-demo-runbook.md`](live-demo-runbook.md) — safe no-AWS and authorized-AWS demo modes.
+6. [`../case-studies/real-pilot-dev-001-human-review-summary.md`](../case-studies/real-pilot-dev-001-human-review-summary.md) — final calibrated real-pilot evidence.
 
 ## How To Use The Final Real-Pilot Case Study
 
@@ -70,5 +71,6 @@ Use the case study as the evidence anchor, not as a broad score. The useful revi
 
 - [`recorded-demo-script.md`](recorded-demo-script.md)
 - [`live-demo-runbook.md`](live-demo-runbook.md)
+- [`sanitized-finding-card.md`](sanitized-finding-card.md)
 - [`iamscope-vs-pacu-pmapper.md`](iamscope-vs-pacu-pmapper.md)
 - [`demo-narrative-one-pager.md`](demo-narrative-one-pager.md)

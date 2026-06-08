@@ -2,15 +2,29 @@
 
 Target length: 7-10 minutes.
 
-## 0:00-0:45 — Problem
+## 0:00-1:00 — Concrete Finding First
 
-IAM trust is messy. A reviewer does not only need a scary graph edge or an exploit module; they need to know what is supported by evidence, what is blocked, what is uncertain, and what should be reviewed first.
+Open [`sanitized-finding-card.md`](sanitized-finding-card.md).
 
 Say:
 
-> “IAMScope is built for evidence-grade IAM review. It does not try to prove the account is safe, and it does not claim exploitability.”
+> “IAMScope helps cloud security teams turn messy AWS IAM relationships into evidence-backed attack-path findings a reviewer can actually act on.”
 
-## 0:45-1:45 — Positioning: Pacu vs PMapper vs IAMScope
+Show the card fields first:
+
+- Source: `ExternalOrBroadPrincipalAlias`.
+- Target: `ProdDeployRoleAlias`.
+- Pattern: `cross_account_trust`.
+- Verdict: `validated`.
+- Reviewer label: `valid_path`.
+- Owner confirmed: `true`.
+- Collection context: `complete`.
+
+Say:
+
+> “This is a sanitized presentation artifact, not raw findings.json. Validated does not mean exploited, but it does mean IAMScope has enough modeled evidence to send this trust relationship to an owner for review.”
+
+## 1:00-2:00 — Positioning: Pacu vs PMapper vs IAMScope
 
 Show [`iamscope-vs-pacu-pmapper.md`](iamscope-vs-pacu-pmapper.md).
 
@@ -22,7 +36,7 @@ Talk track:
 
 Do not disparage Pacu or PMapper. They solve different jobs.
 
-## 1:45-3:00 — Capability-Honesty Matrix
+## 2:00-2:45 — Capability-Honesty Matrix
 
 Open [`../reference/capability-honesty-matrix.md`](../reference/capability-honesty-matrix.md).
 
@@ -37,7 +51,7 @@ Say:
 
 > “The matrix is part of the product. It tells reviewers what not to believe.”
 
-## 3:00-4:30 — Real-Pilot Case Study And Final Calibrated Replay
+## 2:45-4:15 — Real-Pilot Case Study And Final Calibrated Replay
 
 Open [`../case-studies/real-pilot-dev-001-human-review-summary.md`](../case-studies/real-pilot-dev-001-human-review-summary.md).
 
@@ -58,9 +72,9 @@ Say:
 
 > “This is bounded real-pilot evidence. It is not production readiness, exploitability proof, or full IAM safety.”
 
-## 4:30-6:00 — Cross-Account Trust Finding
+## 4:15-5:45 — Cross-Account Trust Finding
 
-Walk through one `cross_account_trust` row from the sanitized local review material if it is present locally. If the raw or sanitized table is not available, use the case-study summary instead.
+Return to [`sanitized-finding-card.md`](sanitized-finding-card.md) or walk through one `cross_account_trust` row from sanitized local review material if it is present locally. If the raw or sanitized table is not available, use the committed sanitized card and case-study summary instead.
 
 Explain:
 
@@ -71,7 +85,7 @@ Explain:
 
 Avoid showing raw account IDs or raw IAM/STS ARNs unless the demo owner explicitly authorizes it.
 
-## 6:00-7:30 — Admin Reachability Finding
+## 5:45-7:15 — Admin Reachability Finding
 
 Walk through one `admin_reachability` row from the sanitized local review material if present.
 
@@ -87,7 +101,7 @@ Say:
 
 > “Validated does not mean exploited. It means IAMScope’s modeled checks for this finding passed under the current bounded evidence.”
 
-## 7:30-8:30 — Collection Context And Non-Claims
+## 7:15-8:15 — Collection Context And Non-Claims
 
 Show that `collection_context` is complete:
 
@@ -105,7 +119,7 @@ Then read the non-claims:
 - no composite score.
 - no pass/fail benchmark label.
 
-## 8:30-9:30 — Owner-Confirmation Layer
+## 8:15-9:15 — Owner-Confirmation Layer
 
 Explain why owner-confirmation matters:
 
@@ -114,7 +128,7 @@ Explain why owner-confirmation matters:
 - owner confirmation is bounded to those findings only;
 - this creates a review trail without claiming broad IAMScope correctness.
 
-## 9:30-10:00 — Close
+## 9:15-10:00 — Close
 
 Close with:
 
